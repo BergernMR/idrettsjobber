@@ -2544,7 +2544,7 @@ let cloudTimer;
 function cloudSave(now) {
   if (!sb || !authUser) return;
   clearTimeout(cloudTimer);
-  const go = () => sb.from("profiles").upsert({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() });
+  const go = () => sb.from("profiles").upsert({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() }).then(r => { if (r.error) console.warn("Aurora lagring:", r.error.message); });
   if (now === true) return go(); cloudTimer = setTimeout(go, 800);
 }
 let redrawAuth = () => {};
@@ -4120,19 +4120,23 @@ const HERO_PHOTOS = [
 const heroUrl = id => { if (id.startsWith("local:")) return id.slice(6);
   const w = Math.min(3840, Math.ceil(innerWidth * (devicePixelRatio || 1) / 640) * 640);
   return `https://images.unsplash.com/photo-${id}?w=${w}&q=78&auto=format&fit=crop`; };
-let heroIdx = 0, heroTimer = null, heroLayer = 0;
+// Nytt tilfeldig bilde hver gang siden åpnes, aldri det samme som sist (huskes i aurora-hero)
+let heroIdx = 0, heroTimer = null, heroLayer = 0, heroFails = 0;
+try { const last = +localStorage.getItem("aurora-hero"); heroIdx = Math.floor(Math.random() * HERO_PHOTOS.length);
+  if (HERO_PHOTOS.length > 1 && heroIdx === last) heroIdx = (heroIdx + 1 + Math.floor(Math.random() * (HERO_PHOTOS.length - 1))) % HERO_PHOTOS.length;
+  localStorage.setItem("aurora-hero", heroIdx); } catch (e) { heroIdx = Math.floor(Math.random() * HERO_PHOTOS.length); }
 function showHero(i) {
   const box = $("heroslides"); if (!box) return;
   const [id, who, page, pos] = HERO_PHOTOS[i], url = heroUrl(id), img = new Image();
   img.onload = () => {
     heroLayer = 1 - heroLayer; const L = box.children[heroLayer], O = box.children[1 - heroLayer];
-    L.style.backgroundImage = `url("${url}")`; L.style.backgroundPosition = pos; L.classList.add("on"); O.classList.remove("on");
+    L.style.backgroundImage = `url("${url}")`; L.style.backgroundPosition = pos; L.classList.add("on"); O.classList.remove("on"); heroFails = 0;
     const c = $("herocredit"); c.href = page; c.textContent = `${t("Foto")}: ${who} / Unsplash`;
     // Last neste bilde i forveien, så byttet går rett
     const n = HERO_PHOTOS[(i + 1) % HERO_PHOTOS.length]; new Image().src = heroUrl(n[0]);
   };
   // Får siden ikke hente bildet (f.eks. blokkert), hopper vi videre til neste
-  img.onerror = () => { if (heroIdx === i && HERO_PHOTOS.length > 1) { heroIdx = (i + 1) % HERO_PHOTOS.length; if (heroIdx) setTimeout(() => showHero(heroIdx), 500); } };
+  img.onerror = () => { if (heroIdx === i && ++heroFails < HERO_PHOTOS.length) { heroIdx = (i + 1) % HERO_PHOTOS.length; setTimeout(() => showHero(heroIdx), 500); } };
   img.src = url;
 }
 function startHero() {
