@@ -942,6 +942,39 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
 .fynext, .fyev span { color: var(--muted); font-size: 13.5px; }
 .fynews { font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 6px; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .fyclub .live { margin: 2px 0 0; padding: 6px 10px; font-size: 13px; }
+/* Til deg, mer liv */
+.foryou { background: linear-gradient(135deg, #10241d 0%, #14332a 55%, #173b4a 100%); color: #fff; border: 0; position: relative; overflow: hidden; }
+.foryou::after { content: ""; position: absolute; right: -60px; top: -80px; width: 260px; height: 160px; border: 26px solid rgba(127,224,183,.10); border-bottom: 0; border-radius: 260px 260px 0 0; pointer-events: none; }
+.fyhello { margin: 0; width: 100%; font-size: 14px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #7fe0b7; }
+.foryou .fysum, .foryou .fyl { color: rgba(255,255,255,.66); }
+.foryou .fyedit, .foryou .fyskip { color: #7fe0b7; }
+.foryou .fypick { background: rgba(255,255,255,.07); }
+.foryou .fyhome select { background: #0e1f19; color: #fff; border-color: rgba(255,255,255,.2); }
+.fyint { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.18); }
+.fyint svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.fyint[aria-pressed="true"] { background: var(--kc); border-color: var(--kc); color: #fff; }
+.foryou .fyclub, .foryou .fyev { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: #fff; position: relative; overflow: hidden; }
+.foryou .fyclub::before, .foryou .fyev::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--kc); }
+.foryou .fyclub:hover, .foryou .fyev:hover { border-color: var(--kc); background: rgba(255,255,255,.1); }
+.fyhead { display: flex; align-items: center; gap: 8px; }
+.fyico { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: color-mix(in oklab, var(--kc) 30%, transparent); color: #fff; flex: none; }
+.fyico svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.fybig { font-family: "Barlow Condensed", var(--font-display); font-weight: 800; text-transform: uppercase; font-size: 27px; line-height: 1; margin-top: 8px; }
+.fybig small { font-size: 18px; opacity: .7; white-space: nowrap; }
+.fybig.live { color: #ff8080; }
+.fyscore { font-family: "Barlow Condensed", var(--font-display); font-weight: 800; font-size: 26px; }
+.fyscore small { font-family: var(--font-body); font-size: 14px; font-weight: 600; opacity: .8; }
+.foryou .fyvs, .foryou .fynext, .foryou .fyev span { color: rgba(255,255,255,.72); }
+.foryou .fynews { border-top-color: rgba(255,255,255,.12); color: rgba(255,255,255,.9); }
+.fyev { grid-template-columns: auto 1fr; align-items: center; gap: 12px; }
+.fybib { display: grid; place-items: center; width: 54px; height: 58px; border-radius: 12px; background: #fff; color: #14211d; line-height: 1; }
+.fybib b { font-family: "Barlow Condensed", var(--font-display); font-size: 28px; font-weight: 800; }
+.fybib small { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--kc); }
+.fyevt { display: grid; gap: 3px; }
+.foryou .fyev .fyevt span { font-size: 13.5px; }
+.foryou .fyclub .fyn, .foryou .fyev .fyevt b { color: #fff; }
+.foryou .fyev .fybib b { color: #14211d; }
+.foryou .fyclub .fyvs { font-size: 14px; }
 .sechero::before { display: none; }
 .eyebrow { color: var(--accent); }
 .sechero { border-top: 5px solid var(--accent); }
@@ -1524,6 +1557,14 @@ const I18N = {
 "Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
 "Klubber nær {x}": ["Klubbar nära {x}","Klubber nær {x}","Seuroja lähellä: {x}","Félög nálægt {x}","Clubs near {x}"],
 "Arrangementer nær {x}": ["Evenemang nära {x}","Arrangementer nær {x}","Tapahtumia lähellä: {x}","Viðburðir nálægt {x}","Events near {x}"],
+"God natt": ["God natt","God nat","Hyvää yötä","Góða nótt","Good night"],
+"God morgen": ["God morgon","God morgen","Hyvää huomenta","Góðan daginn","Good morning"],
+"God dag": ["God dag","God dag","Hyvää päivää","Góðan dag","Good afternoon"],
+"God kveld": ["God kväll","God aften","Hyvää iltaa","Gott kvöld","Good evening"],
+"om {n} t": ["om {n} h","om {n} t","{n} t päästä","eftir {n} klst.","in {n} h"],
+"om {n} min": ["om {n} min","om {n} min","{n} min päästä","eftir {n} mín.","in {n} min"],
+"I morgen": ["I morgon","I morgen","Huomenna","Á morgun","Tomorrow"],
+"mot {x}": ["mot {x}","mod {x}","vs. {x}","gegn {x}","vs {x}"],
 "Vis alle steder ✕": ["Visa alla orter ✕","Vis alle steder ✕","Näytä kaikki ✕","Sýna alla staði ✕","Show all places ✕"],
 "{x} og omegn": ["{x} med omnejd","{x} og omegn","{x} ja lähialue","{x} og nágrenni","{x} and around"],
 "jobb": ["jobb","job","työpaikka","starf","job"],
@@ -4023,29 +4064,47 @@ const liked = sp => likes.size > 0 && INTERESTS.some(([k, , sps]) => likes.has(k
 const kmFrom = (lat, lon) => { const R = 6371, r = Math.PI / 180, dLat = (lat - home.lat) * r, dLon = (lon - home.lon) * r;
   return 2 * R * Math.asin(Math.sqrt(Math.sin(dLat / 2) ** 2 + Math.cos(home.lat * r) * Math.cos(lat * r) * Math.sin(dLon / 2) ** 2)); };
 let fyEdit = false;
+const KIND_COLOR = { fotball: "#1f9254", ski: "#2f6fd6", alpint: "#2f6fd6", kompass: "#2f6fd6", hockey: "#0b7a92", basket: "#e0610e", handball: "#c2255c",
+  friidrett: "#d4452a", lop: "#d4452a", fjell: "#d4452a", sykkel: "#d08a00", vann: "#1c7ed6", seil: "#1c7ed6", ro: "#1c7ed6", annet: "#7048e8" };
+const CLUB_KIND = { Fotball: "fotball", Ishockey: "hockey", Bandy: "hockey", Håndball: "handball", Basketball: "basket", Volleyball: "basket", Innebandy: "basket", Friidrett: "friidrett", Svømming: "vann", Orientering: "kompass", Pesäpallo: "basket" };
+const kindOf = sp => CLUB_KIND[sp] || SPORT_KIND[sp] || "annet";
+const icoOf = sp => `<svg viewBox="0 0 24 24" aria-hidden="true">${SPORT_ICON[kindOf(sp)] || SPORT_ICON.medalje || ""}</svg>`;
+const greet = () => { const h = new Date().getHours(); return t(h < 5 ? "God natt" : h < 10 ? "God morgen" : h < 17 ? "God dag" : "God kveld"); };
+// Nedtelling til kampstart: «om 3 t», «i morgen 18:00», ellers dag og dato
+const countdown = n => { const at = new Date(`${n[0]}T${n[4] || "12:00"}:00`), hrs = (at - Date.now()) / 36e5;
+  if (hrs < 0) return { big: t("I dag"), small: n[4] || "" };
+  if (hrs < 1) return { big: t("om {n} min", { n: Math.max(1, Math.round(hrs * 60)) }), small: n[4] };
+  if (hrs < 12) return { big: t("om {n} t", { n: Math.round(hrs) }), small: n[4] };
+  const d0 = new Date(); d0.setHours(0, 0, 0, 0); const days = Math.round((new Date(n[0] + "T00:00:00") - d0) / 864e5);
+  if (days === 0) return { big: t("I dag"), small: n[4] };
+  if (days === 1) return { big: t("I morgen"), small: n[4] };
+  return { big: fxDate(n[0]), small: n[4] || "" }; };
 function renderForYou() {
   const box = $("foryou"); if (!box) return;
   const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
   const picker = `<div class="fypick"><p class="fyq">${t("Hva interesserer deg?")}</p>
-      <div class="fychips">${INTERESTS.map(([k, l]) => `<button type="button" class="chip" data-k="${k}" aria-pressed="${likes.has(k)}">${t(l)}</button>`).join("")}</div>
+      <div class="fychips">${INTERESTS.map(([k, l, sps]) => `<button type="button" class="chip fyint" data-k="${k}" aria-pressed="${likes.has(k)}" style="--kc:${KIND_COLOR[kindOf(sps[0])]}">${icoOf(sps[0])}${t(l)}</button>`).join("")}</div>
       <label class="fyhome">${t("Hjemsted")} <select id="fyHome">${(CITIES.some(c => c[0] === home.name) ? "" : `<option value="pos" selected>${t("Min posisjon")}</option>`) + CITIES.map(([n]) => `<option${n === home.name ? " selected" : ""}>${esc(n)}</option>`).join("")}</select></label>
       <div class="fyacts"><button type="button" class="tablebtn fydone">${t("Ferdig")}</button>${likes.size ? "" : `<button type="button" class="fyskip">${t("Hopp over")}</button>`}</div></div>`;
   const ask = fyEdit || (!likes.size && !fySkip);
   // Mine klubber: live, neste kamp og siste sak
   const mine = FAN.filter(k => follows.has(k.id));
-  const clubCard = k => { const n = nextMatch(k), ns = newsOf(k)[0];
-    return `<button type="button" class="fyclub" data-id="${k.id}"><span class="fyn">${esc(k.n)}</span>${LIVE[k.id] ? liveHtml(k) : n ? `<span class="fynext">${esc(fxDate(n[0]))}${n[4] ? " " + n[4] : ""} · ${vsText(n)}</span>` : `<span class="fynext">${esc(t(k.sport))}</span>`}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
+  const clubCard = k => { const n = nextMatch(k), ns = newsOf(k)[0], L = LIVE[k.id], cd = n && countdown(n);
+    const top = L && L[4] !== "ft" ? `<span class="fybig live">${L[4] === "ht" ? t("Pause") : "LIVE " + esc(L[5] || "")}</span><span class="fyscore">${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} <small>${t("mot {x}", { x: esc(L[3]) })}</small></span>`
+      : cd ? `<span class="fybig">${esc(cd.big)}${cd.small ? `<small> ${cd.small}</small>` : ""}</span><span class="fyvs">${vsText(n)}</span>` : `<span class="fyvs">${t("Ingen kamp satt opp ennå")}</span>`;
+    return `<button type="button" class="fyclub" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="fyhead"><span class="fyico">${icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span>${top}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
   // Arrangementer nær hjemstedet, i idrettene man liker først
   const evs = EVENTS.map(e => { const g = evGeo(e), d = evOrder(e); return { e, km: g ? kmFrom(g[1], g[2]) : 1e9, d }; })
     .filter(x => x.d >= 0 && x.d < 200 && x.km < 400 && (!likes.size || liked(x.e.sport)))
     .sort((a, b) => a.d - b.d).slice(0, 4);
   // Forslag til klubber nær deg når man ikke følger noen ennå
   const near = mine.length ? [] : FAN.filter(k => k.geo && (!likes.size || liked(k.sport))).map(k => ({ k, km: kmFrom(k.geo[1], k.geo[2]) })).sort((a, b) => a.km - b.km).slice(0, 4);
-  box.innerHTML = `<div class="fyh"><h3 id="fyH">${t("Til deg")}</h3>${ask ? "" : `<span class="fysum">${likes.size ? INTERESTS.filter(([k]) => likes.has(k)).map(([, l]) => t(l)).join(", ") + " · " : ""}${esc(homeName)}</span><button type="button" class="fyedit">${t("Tilpass")}</button>`}</div>
+  box.innerHTML = `<div class="fyh"><p class="fyhello">${greet()}${typeof authName === "function" && authName() ? ", " + esc(authName()) : ""}</p><h3 id="fyH">${t("Til deg")}</h3>${ask ? "" : `<span class="fysum">${likes.size ? INTERESTS.filter(([k]) => likes.has(k)).map(([, l]) => t(l)).join(", ") + " · " : ""}${esc(homeName)}</span><button type="button" class="fyedit">${t("Tilpass")}</button>`}</div>
     ${ask ? picker : ""}
     ${mine.length ? `<div class="fysec"><p class="fyl">${t("Dine klubber")}</p><div class="fyclubs">${mine.slice(0, 6).map(clubCard).join("")}</div></div>` : ""}
-    ${near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyn">${esc(k.n)}</span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""}
-    ${evs.length ? `<div class="fysec"><p class="fyl">${t("Arrangementer nær {x}", { x: esc(homeName) })}</p><div class="fyevs">${evs.map(({ e, km }) => `<button type="button" class="fyev" data-id="${e.id}"><b>${esc(t(e.t))}</b><span>${esc(t(e.when))} · ${esc(t(e.place))}${km < 1e9 ? " · " + fmtKm(km) : ""}</span></button>`).join("")}</div></div>` : ""}`;
+    ${near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyhead"><span class="fyico">${icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""}
+    ${evs.length ? `<div class="fysec"><p class="fyl">${t("Arrangementer nær {x}", { x: esc(homeName) })}</p><div class="fyevs">${evs.map(({ e, km }) => { const d = evDate(e), dt = d ? new Date(d[0] + "T12:00:00") : null;
+      return `<button type="button" class="fyev" data-id="${e.id}" style="--kc:${KIND_COLOR[kindOf(e.sport)]}"><span class="fybib"><b>${dt ? dt.getDate() : "—"}</b><small>${esc((dt ? monthName(dt.getMonth() + 1) : monthName(e.m)).slice(0, 3))}</small></span><span class="fyevt"><b>${esc(t(e.t))}</b><span>${esc(t(e.sport))} · ${esc(t(e.place))}${km < 1e9 ? " · " + fmtKm(km) : ""}</span></span></button>`; }).join("")}</div></div>` : ""}`;
   box.querySelectorAll(".fychips .chip").forEach(b => b.onclick = () => { const k = b.dataset.k; likes.has(k) ? likes.delete(k) : likes.add(k); saveLikes(); b.setAttribute("aria-pressed", String(likes.has(k))); });
   const hs = $("fyHome"); if (hs) hs.onchange = () => { const c = CITIES.find(c => c[0] === hs.value); if (c) { home = { name: c[0], lat: c[1], lon: c[2] }; saveHome(); } };
   const done = box.querySelector(".fydone"); if (done) done.onclick = () => { fyEdit = false; render(); };
