@@ -481,6 +481,7 @@ table.league td.team { white-space: normal; }
 .remind b { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .remind span { font-size: 14.5px; }
 .remind .rgo { font: inherit; font-weight: 700; font-size: 13.5px; padding: 8px 12px; border-radius: 999px; border: 0; background: var(--accent); color: var(--accent-fg); cursor: pointer; white-space: nowrap; }
+.remind.undo { grid-template-columns: 1fr auto; }
 .remind .rx { font: inherit; font-size: 20px; line-height: 1; width: 32px; height: 32px; border-radius: 50%; border: 0; background: none; color: var(--muted); cursor: pointer; }
 @media (max-width: 560px) { .remind { grid-template-columns: auto 1fr auto; } .remind .rgo { grid-column: 2 / -1; justify-self: start; } .remind .rx { grid-column: 3; grid-row: 1; } }
 .bib .d { font-size: 28px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -1202,6 +1203,9 @@ const LANG = (() => {
 })();
 document.documentElement.lang = LANG === "nb" ? "no" : LANG;
 const I18N = {
+"Angre": ["Ångra", "Fortryd", "Kumoa", "Afturkalla", "Undo"],
+"Fjernet «{x}» fra lagret": ["Tog bort «{x}» från sparade", "Fjernede «{x}» fra gemte", "«{x}» poistettiin tallennetuista", "«{x}» fjarlægt úr vistuðu", "Removed «{x}» from saved"],
+"Du følger ikke lenger {x}": ["Du följer inte längre {x}", "Du følger ikke længere {x}", "Et enää seuraa: {x}", "Þú fylgir ekki lengur {x}", "You no longer follow {x}"],
 "Du følger ingen klubber ennå. Trykk på stjernen ved en klubb under Klubber, så havner den her.": ["Du följer inga klubbar ännu. Tryck på stjärnan vid en klubb under Klubbar så hamnar den här.", "Du følger ingen klubber endnu. Tryk på stjernen ved en klub under Klubber, så havner den her.", "Et seuraa vielä yhtään seuraa. Paina tähteä seuran kohdalla Seurat-välilehdellä, niin se tulee tänne.", "Þú fylgir engum félögum enn. Ýttu á stjörnuna við félag undir Félög og það birtist hér.", "You don't follow any clubs yet. Tap the star on a club under Clubs and it will show up here."],
 "Finn flere klubber": ["Hitta fler klubbar", "Find flere klubber", "Löydä lisää seuroja", "Finna fleiri félög", "Find more clubs"],
 "Finn klubber": ["Hitta klubbar", "Find klubber", "Löydä seuroja", "Finna félög", "Find clubs"],
@@ -2471,7 +2475,8 @@ function reqText(j) {
   return t("Se annonsen");
 }
 const reqScore = j => { const [e, u] = reqOf(j); return e === null && u === null ? 9 : (e || 0) + (u || 0); };
-const ARTIFACT_URL = "https://claude.ai/artifact/UAJLSn2Q75ZCgT8qf31hgn";
+// Delte lenker går til den offentlige nettsiden (bytt hit når domenet er kjøpt)
+const SHARE_URL = "https://bergernmr.github.io/idrettsjobber/";
 const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>';
 const LINK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
 
@@ -2493,10 +2498,23 @@ function askLogin(msg) {
 }
 function toggleFav(id) {
   if (needLogin()) return;
+  if (favs.has(id)) { const j = JOBS.find(x => x.id === id); undoToast(t("Fjernet «{x}» fra lagret", { x: j ? j.t : id }), () => toggleFav(id)); }
   favs.has(id) ? favs.delete(id) : favs.add(id);
   try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch (e) {}
   if (typeof updSaved === "function") updSaved();
   cloudSave();
+}
+// Angre: en liten boks i noen sekunder etter at du har fjernet noe
+let curSheet = null, undoTimer;
+function undoToast(msg, undo) {
+  document.querySelectorAll(".remind.undo").forEach(x => x.remove()); clearTimeout(undoTimer);
+  const box = document.createElement("div"); box.className = "remind undo"; box.setAttribute("role", "status");
+  box.innerHTML = `<div><span>${esc(msg)}</span></div><button type="button" class="rgo">${t("Angre")}</button>`;
+  document.body.appendChild(box);
+  box.querySelector(".rgo").onclick = () => { box.remove(); undo();
+    if (typeof render === "function") render(); updSaved(); updClubs();
+    if (curSheet && $("sheet").open) curSheet(); };
+  undoTimer = setTimeout(() => box.remove(), 6000);
 }
 // Lagrede arrangementer ligger for seg selv, så «Bare favoritter» under Jobber bare teller jobber
 const EVSAVE_KEY = "aurora-lagrede-arr";
@@ -2504,6 +2522,7 @@ let evSaved = new Set();
 try { evSaved = new Set(JSON.parse(localStorage.getItem(EVSAVE_KEY) || "[]")); } catch (e) {}
 function toggleEvSave(id) {
   if (needLogin()) return;
+  if (evSaved.has(id)) { const e = EVENTS.find(x => x.id === id); undoToast(t("Fjernet «{x}» fra lagret", { x: e ? t(e.t) : id }), () => toggleEvSave(id)); }
   evSaved.has(id) ? evSaved.delete(id) : evSaved.add(id);
   try { localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {}
   document.querySelectorAll(`.evfav[data-id="${id}"]`).forEach(b => b.setAttribute("aria-pressed", String(evSaved.has(id))));
@@ -3985,6 +4004,7 @@ const FOLLOW_KEY = "aurora-klubber";
 let follows = new Set();
 try { follows = new Set(JSON.parse(localStorage.getItem(FOLLOW_KEY) || "[]")); } catch (e) {}
 function toggleFollow(id) {
+  if (follows.has(id)) { const k = FAN.find(x => x.id === id); undoToast(t("Du følger ikke lenger {x}", { x: k ? k.n : id }), () => toggleFollow(id)); }
   follows.has(id) ? follows.delete(id) : follows.add(id);
   try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); } catch (e) {}
   cloudSave(); updClubs();
@@ -4149,6 +4169,7 @@ function openTable(d) {
   $("closeBtn").focus();
 }
 function openClub(id) {
+  curSheet = () => openClub(id);
   const k = FAN.find(x => x.id === id);
   if (!k) return;
   const [stadium, cap, about] = CLUB_INFO[id] || [];
@@ -4190,6 +4211,7 @@ function openClub(id) {
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
   $("sheetFollow").onclick = () => { toggleFollow(id); render(); openClub(id); };
+  if (location.hash !== "#klubb-" + id) history.replaceState(history.state, "", "#klubb-" + id);
   if ($("sheetTable")) $("sheetTable").onclick = () => openTable(k.div);
   $("closeBtn").focus();
 }
@@ -4693,6 +4715,7 @@ function renderMap() {
 
 let lastFocus = null;
 function openJob(id) {
+  curSheet = () => openJob(id);
   const j = JOBS.find(x => x.id === id);
   if (!j) return;
   const n = daysLeft(j.dl);
@@ -4736,10 +4759,10 @@ function openJob(id) {
   lastFocus = document.activeElement;
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
-  $("shareBtn").onclick = () => shareThing(j.t, `${ARTIFACT_URL}#${j.id}`);
+  $("shareBtn").onclick = () => shareThing(j.t, `${SHARE_URL}#${j.id}`);
   bindSheetSave("job", j.id);
   $("closeBtn").focus();
-  if (location.hash !== "#" + j.id) history.replaceState(null, "", "#" + j.id);
+  if (location.hash !== "#" + j.id) history.replaceState(history.state, "", "#" + j.id);
 }
 // Del: bruker mobilens egen delemeny når den finnes, ellers knapper for lenke, e-post, WhatsApp og SMS
 const SHARE_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 12v7h14v-7"/></svg>`;
@@ -4759,6 +4782,7 @@ function shareThing(title, link) {
 }
 // Egen side for et arrangement, i samme ark som jobbene
 function openEvent(id) {
+  curSheet = () => openEvent(id);
   const e = EVENTS.find(x => x.id === id);
   if (!e) return;
   const info = EV_INFO[id] || {};
@@ -4797,10 +4821,10 @@ function openEvent(id) {
   lastFocus = document.activeElement;
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
-  $("shareBtn").onclick = () => shareThing(t(e.t), `${ARTIFACT_URL}#${e.id}`);
+  $("shareBtn").onclick = () => shareThing(t(e.t), `${SHARE_URL}#${e.id}`);
   bindSheetSave("ev", e.id);
   $("closeBtn").focus();
-  if (location.hash !== "#" + e.id) history.replaceState(null, "", "#" + e.id);
+  if (location.hash !== "#" + e.id) history.replaceState(history.state, "", "#" + e.id);
 }
 // ---------- Lagret: jobber og arrangementer du har trykket hjerte på, med påminnelse og kalender ----------
 const isSaved = (kind, id) => kind === "job" ? favs.has(id) : evSaved.has(id);
@@ -4882,6 +4906,7 @@ function savedItemFor(kind, id) {
   return it;
 }
 function openSaved() {
+  curSheet = openSaved;
   const items = savedItems();
   const row = it => { const [w, cls] = savedWhen(it);
     return `<div class="svitem${it.kind === "job" && it.n !== null && it.n < 0 ? " gone" : ""}">
@@ -4946,6 +4971,7 @@ function updClubs() {
   b.setAttribute("aria-label", t("Dine klubber") + (n ? ` (${n})` : "")); b.title = t("Dine klubber");
 }
 function openClubs() {
+  curSheet = openClubs;
   const mine = FAN.filter(k => follows.has(k.id)).sort((a, b) => (nextMatch(a) ? nextMatch(a)[0] : "9") < (nextMatch(b) ? nextMatch(b)[0] : "9") ? -1 : 1);
   const row = k => { const n = nextMatch(k), L = LIVE[k.id], cd = n && countdown(n);
     const w = L && L[4] !== "ft" ? `<span class="mcw live">${L[4] === "ht" ? t("Pause") : "LIVE"} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`}</span>`
@@ -4975,8 +5001,14 @@ function closeJob() {
   const dlg = $("sheet");
   if (dlg.open) dlg.close();
 }
+// Tilbake-knappen: arket får et eget steg i historikken, så «tilbake» lukker arket i stedet for å forlate siden
+let sheetPushed = false;
+{ const dlg = $("sheet"), show = dlg.showModal.bind(dlg);
+  dlg.showModal = () => { show(); if (!sheetPushed) { history.pushState({ sheet: 1 }, "", location.href); sheetPushed = true; } }; }
+window.addEventListener("popstate", () => { if (sheetPushed && $("sheet").open) { sheetPushed = false; $("sheet").close(); } });
 $("sheet").addEventListener("close", () => {
-  history.replaceState(null, "", state.tab === "forside" ? location.pathname + location.search : "#" + state.tab);
+  if (sheetPushed) { sheetPushed = false; history.back(); }
+  else history.replaceState(null, "", state.tab === "forside" ? location.pathname + location.search : "#" + state.tab);
   if (lastFocus && lastFocus.focus) lastFocus.focus();
 });
 $("sheetWrap").addEventListener("click", e => { if (e.target === $("sheetWrap")) closeJob(); });
@@ -5005,10 +5037,12 @@ renderCredits();
 const startId = location.hash.slice(1);
 const isJobLink = startId && JOBS.some(j => j.id === startId);
 const isEventLink = startId && EVENTS.some(e => e.id === startId);
-state.tab = isJobLink ? "jobber" : isEventLink ? "arrangementer" : TABS[startId] ? startId : "forside";
+const clubLink = startId.startsWith("klubb-") && FAN.some(k => k.id === startId.slice(6)) ? startId.slice(6) : "";
+state.tab = isJobLink ? "jobber" : isEventLink ? "arrangementer" : clubLink ? "klubber" : TABS[startId] ? startId : "forside";
 render();
 setStage(state.country);
 if (isJobLink) openJob(startId);
 if (isEventLink) openEvent(startId);
+if (clubLink) openClub(clubLink);
 pollLive();
 </script>
