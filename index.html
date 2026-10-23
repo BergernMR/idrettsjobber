@@ -447,6 +447,18 @@ table.league td.team { white-space: normal; }
 .savedbtn .n { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--lane); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
 .savedbtn .n[hidden] { display: none; }
 .savedbtn.due .n { background: var(--urgent); }
+#clubsBtn .n { background: var(--accent); }
+.tbtns { display: inline-flex; gap: 8px; flex: none; }
+@media (max-width: 560px) { header .topline { gap: 8px; } .langpick > svg { display: none; } .langpick .langbtn { padding: 5px 3px; } .tbtns { gap: 6px; } .tbtns .setbtn { width: 36px; height: 36px; } .tbtns .setbtn svg { width: 17px; height: 17px; } }
+#clubsBtn.live .n { background: var(--urgent); }
+.mcitem { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; width: 100%; text-align: left; font: inherit; color: var(--fg); padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; }
+.mcitem:hover { border-color: var(--accent); }
+.mcitem .mcico { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: color-mix(in srgb, var(--kc) 14%, transparent); color: var(--kc); }
+.mcitem .mcico svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.mcitem b { display: block; }
+.mcitem small { display: block; color: var(--muted); font-size: 13px; }
+.mcitem .mcw { font-size: 12.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.mcitem .mcw.live { background: var(--urgent); color: #fff; }
 .share.savetog[aria-pressed="true"] { color: var(--lane); border-color: var(--lane); }
 .share.savetog[aria-pressed="true"] svg { fill: currentColor; }
 .share.savetog svg { width: 16px; height: 16px; }
@@ -1043,7 +1055,7 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
 <div class="wrap">
   <header>
     <div class="topline"><div class="eyebrow">Norge · Sverige · Danmark · Finland · Island</div>
-      <div class="langpick" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><div class="setpop" id="setPop" role="dialog" hidden></div></div>
+      <div class="langpick" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
     <h1><b class="brand"><svg class="mark" viewBox="1.5 13.5 37 21" aria-hidden="true"><path d="M4 32a16 16 0 0 1 32 0" fill="none" stroke="#2f6fdc" stroke-width="5" stroke-linecap="round"/><path d="M11 32a9 9 0 0 1 18 0" fill="none" stroke="#1fae7c" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="31" r="2.6" fill="currentColor"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
     <div class="heroslides" id="heroslides" aria-hidden="true"><i></i><i></i></div><a class="herocredit" id="herocredit" target="_blank" rel="noopener"></a>
@@ -1190,6 +1202,9 @@ const LANG = (() => {
 })();
 document.documentElement.lang = LANG === "nb" ? "no" : LANG;
 const I18N = {
+"Du følger ingen klubber ennå. Trykk på stjernen ved en klubb under Klubber, så havner den her.": ["Du följer inga klubbar ännu. Tryck på stjärnan vid en klubb under Klubbar så hamnar den här.", "Du følger ingen klubber endnu. Tryk på stjernen ved en klub under Klubber, så havner den her.", "Et seuraa vielä yhtään seuraa. Paina tähteä seuran kohdalla Seurat-välilehdellä, niin se tulee tänne.", "Þú fylgir engum félögum enn. Ýttu á stjörnuna við félag undir Félög og það birtist hér.", "You don't follow any clubs yet. Tap the star on a club under Clubs and it will show up here."],
+"Finn flere klubber": ["Hitta fler klubbar", "Find flere klubber", "Löydä lisää seuroja", "Finna fleiri félög", "Find more clubs"],
+"Finn klubber": ["Hitta klubbar", "Find klubber", "Löydä seuroja", "Finna félög", "Find clubs"],
 "E-post eller brukernavn": ["E-post eller användarnamn", "E-mail eller brugernavn", "Sähköposti tai käyttäjänimi", "Netfang eða notandanafn", "Email or username"],
 "Feil brukernavn, e-post eller passord.": ["Fel användarnamn, e-post eller lösenord.", "Forkert brugernavn, e-mail eller adgangskode.", "Väärä käyttäjänimi, sähköposti tai salasana.", "Rangt notandanafn, netfang eða lykilorð.", "Wrong username, email or password."],
 "Brukernavnet er tatt. Velg et annet.": ["Användarnamnet är upptaget. Välj ett annat.", "Brugernavnet er taget. Vælg et andet.", "Käyttäjänimi on varattu. Valitse toinen.", "Notandanafnið er frátekið. Veldu annað.", "That username is taken. Choose another."],
@@ -2639,7 +2654,7 @@ async function cloudLoad() {
     if (data.saved) { (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
       try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {} updSaved(); }
     try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} }
-  await cloudSave(true); redrawAuth(); if (typeof render === "function") render();
+  await cloudSave(true); updClubs(); redrawAuth(); if (typeof render === "function") render();
 }
 let cloudTimer;
 function cloudSave(now) {
@@ -2655,7 +2670,7 @@ function cloudSave(now) {
 function clearLocalPrefs() {
   follows.clear(); likes.clear(); favs.clear(); evSaved.clear(); home = { name: "Oslo", lat: 59.91, lon: 10.75 };
   try { [FOLLOW_KEY, "aurora-idretter", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
-  updSaved();
+  updSaved(); updClubs();
 }
 let redrawAuth = () => {};
 function accountHtml() {
@@ -3972,7 +3987,7 @@ try { follows = new Set(JSON.parse(localStorage.getItem(FOLLOW_KEY) || "[]")); }
 function toggleFollow(id) {
   follows.has(id) ? follows.delete(id) : follows.add(id);
   try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); } catch (e) {}
-  cloudSave();
+  cloudSave(); updClubs();
 }
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
 const clubMatch = (k, skip) => inCountry(k) && (skip === "place" || inPlace("cplace", k.geo)) && (skip === "sport" || state.csport === "all" || k.sport === state.csport) &&
@@ -4067,7 +4082,7 @@ const liveMine = () => FAN.filter(k => follows.has(k.id) && LIVE[k.id]);
 function paintLive() {
   document.querySelectorAll(".livebox").forEach(b => { const k = FAN.find(x => x.id === b.dataset.k); if (k) b.innerHTML = liveHtml(k); });
   const on = liveMine().filter(k => LIVE[k.id][4] !== "ft");
-  document.body.classList.toggle("haslive", on.length > 0);
+  document.body.classList.toggle("haslive", on.length > 0); updClubs();
   if (state.tab === "forside" && typeof renderForYou === "function") renderForYou();
   const s = $("liveStrip"); if (!s) return;
   const ks = liveMine(); s.hidden = !ks.length;
@@ -4923,6 +4938,39 @@ function checkReminders() {
 }
 document.addEventListener("click", ev => { const b = ev.target.closest(".evfav"); if (!b) return; ev.preventDefault(); ev.stopPropagation(); toggleEvSave(b.dataset.id); });
 $("savedBtn").onclick = openSaved;
+// ---------- Dine klubber: egen knapp øverst med klubbene du følger, live-stilling og neste kamp ----------
+function updClubs() {
+  const b = $("clubsBtn"); if (!b) return;
+  const n = follows.size, live = FAN.some(k => follows.has(k.id) && LIVE[k.id] && LIVE[k.id][4] !== "ft");
+  $("clubsN").hidden = !n; $("clubsN").textContent = n; b.classList.toggle("live", live);
+  b.setAttribute("aria-label", t("Dine klubber") + (n ? ` (${n})` : "")); b.title = t("Dine klubber");
+}
+function openClubs() {
+  const mine = FAN.filter(k => follows.has(k.id)).sort((a, b) => (nextMatch(a) ? nextMatch(a)[0] : "9") < (nextMatch(b) ? nextMatch(b)[0] : "9") ? -1 : 1);
+  const row = k => { const n = nextMatch(k), L = LIVE[k.id], cd = n && countdown(n);
+    const w = L && L[4] !== "ft" ? `<span class="mcw live">${L[4] === "ht" ? t("Pause") : "LIVE"} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`}</span>`
+      : cd ? `<span class="mcw">${esc(cd.big)}${cd.small ? " " + cd.small : ""}</span>` : "";
+    return `<button type="button" class="mcitem" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="mcico">${icoOf(k.sport)}</span>
+      <span><b>${esc(k.n)}</b><small>${esc(t(k.sport))}${k.div ? " · " + esc(k.div) : ""}${n ? " · " + vsText(n) : ""}</small></span>${w}</button>`; };
+  $("sheetBody").innerHTML = `
+    <div class="sheet-top">
+      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="s-eyebrow">Aurora</div>
+      <h2 class="s-title" id="s-title">${t("Dine klubber")}</h2>
+      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      ${mine.length ? `<div class="svlist">${mine.map(row).join("")}</div>`
+        : `<div class="empty">${t("Du følger ingen klubber ennå. Trykk på stjernen ved en klubb under Klubber, så havner den her.")}</div>`}
+      <div class="actions"><div class="btns"><button type="button" class="share" id="mcAll">${t(mine.length ? "Finn flere klubber" : "Finn klubber")}</button></div></div>
+    </div>`;
+  const dlg = $("sheet");
+  if (!dlg.open) { lastFocus = document.activeElement; dlg.showModal(); }
+  $("closeBtn").onclick = closeJob; $("closeBtn").focus();
+  $("sheetBody").querySelectorAll(".mcitem").forEach(b => b.onclick = () => openClub(b.dataset.id));
+  $("mcAll").onclick = () => { closeJob(); setTab("klubber", true); scrollTo({ top: 0, behavior: "smooth" }); };
+}
+$("clubsBtn").onclick = openClubs;
 function closeJob() {
   const dlg = $("sheet");
   if (dlg.open) dlg.close();
@@ -4948,6 +4996,7 @@ renderFoot();
 setupGlobalSearch();
 setupSettings();
 updSaved();
+updClubs();
 setTimeout(checkReminders, 1500);
 setupAuth();
 setupFilters();
