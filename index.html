@@ -744,12 +744,23 @@ body.dockon .controls { top: calc(env(safe-area-inset-top, 0px) + 66px); }
 .setbtn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; transition: transform .4s ease; }
 .setbtn[aria-expanded="true"] svg { transform: rotate(60deg); }
 .setpop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: min(88vw, 300px); padding: 16px; box-sizing: border-box; border-radius: 20px; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 18px 50px rgba(0,0,0,.22); text-shadow: none; display: grid; gap: 10px; }
-.setpop h4 { margin: 0; font-size: 16px; }
+.setpop h4 { margin: 0; font-size: 16px; color: var(--fg); }
+.setpop { color: var(--fg); }
 .setpop .sl { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .setpop .seg { display: flex; padding: 4px; gap: 4px; border-radius: 999px; background: var(--surface-2); }
 .setpop .seg button { flex: 1; padding: 8px 6px; border: 0; border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 .setpop .seg button[aria-checked="true"] { background: var(--fg); color: var(--bg); }
 .setpop small { color: var(--muted); font-size: 12.5px; }
+.setpop hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; width: 100%; }
+.aform { display: grid; gap: 8px; }
+.aform input { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); font: inherit; font-size: 14px; }
+.abtn { padding: 10px 14px; border-radius: 999px; border: 0; background: var(--fg); color: var(--bg); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.abtn.ghost { background: none; color: var(--muted); border: 1px solid var(--line); }
+.arow { display: flex; gap: 8px; flex-wrap: wrap; }
+.acct { display: flex; align-items: center; gap: 10px; }
+.acct > span:last-child { display: grid; }
+.aava { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #1fae7c; color: #fff; font-weight: 800; }
+.setpop .amsg { color: var(--fg); font-weight: 600; }
 .shareopts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
 .shareopts b { font-size: 13px; color: var(--muted); margin-right: 2px; }
 .shareopts button, .shareopts a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; }
@@ -1565,6 +1576,22 @@ const I18N = {
 "om {n} min": ["om {n} min","om {n} min","{n} min päästä","eftir {n} mín.","in {n} min"],
 "I morgen": ["I morgon","I morgen","Huomenna","Á morgun","Tomorrow"],
 "mot {x}": ["mot {x}","mod {x}","vs. {x}","gegn {x}","vs {x}"],
+"Konto": ["Konto", "Konto", "Tili", "Aðgangur", "Account"],
+"Innlogging kommer snart.": ["Inloggning kommer snart.", "Login kommer snart.", "Kirjautuminen tulossa pian.", "Innskráning kemur fljótlega.", "Login coming soon."],
+"Innlogget": ["Inloggad", "Logget ind", "Kirjautunut", "Innskráð(ur)", "Signed in"],
+"Klubbene, idrettene og hjemstedet ditt lagres på kontoen din, så du har dem på alle enheter.": ["Dina klubbar, sporter och hemort sparas på ditt konto, så du har dem på alla enheter.", "Dine klubber, sportsgrene og hjemby gemmes på din konto, så du har dem på alle enheder.", "Seurasi, lajisi ja kotipaikkasi tallennetaan tilillesi, joten ne ovat kaikilla laitteillasi.", "Félögin þín, íþróttir og heimabær vistast á aðganginum þínum, svo þú hefur þau í öllum tækjum.", "Your clubs, sports and home town are saved to your account, so you have them on every device."],
+"Logg ut": ["Logga ut", "Log ud", "Kirjaudu ulos", "Skrá út", "Sign out"],
+"Slett mine data": ["Radera mina data", "Slet mine data", "Poista tietoni", "Eyða gögnunum mínum", "Delete my data"],
+"Logg inn": ["Logga in", "Log ind", "Kirjaudu", "Skrá inn", "Sign in"],
+"Logg inn for å ha klubbene og valgene dine på mobil og PC.": ["Logga in för att ha dina klubbar och val på mobil och dator.", "Log ind for at have dine klubber og valg på mobil og computer.", "Kirjaudu, niin seurasi ja valintasi ovat sekä puhelimessa että tietokoneella.", "Skráðu þig inn til að hafa félögin þín og val í síma og tölvu.", "Sign in to keep your clubs and choices on phone and computer."],
+"Din e-post": ["Din e-post", "Din e-mail", "Sähköpostisi", "Netfangið þitt", "Your email"],
+"Send innloggingslenke": ["Skicka inloggningslänk", "Send login-link", "Lähetä kirjautumislinkki", "Senda innskráningartengil", "Send sign-in link"],
+"Vi lagrer bare e-posten din og valgene dine (klubber, idretter og hjemsted). Ingenting deles eller selges.": ["Vi sparar bara din e-post och dina val (klubbar, sporter och hemort). Inget delas eller säljs.", "Vi gemmer kun din e-mail og dine valg (klubber, sportsgrene og hjemby). Intet deles eller sælges.", "Tallennamme vain sähköpostisi ja valintasi (seurat, lajit ja kotipaikka). Mitään ei jaeta eikä myydä.", "Við vistum aðeins netfangið þitt og val (félög, íþróttir og heimabæ). Engu er deilt eða selt.", "We only store your email and your choices (clubs, sports and home town). Nothing is shared or sold."],
+"Sender …": ["Skickar …", "Sender …", "Lähetetään …", "Sendi …", "Sending …"],
+"Fikk ikke kontakt. Prøv igjen senere.": ["Ingen kontakt. Försök igen senare.", "Ingen forbindelse. Prøv igen senere.", "Yhteys ei onnistunut. Yritä myöhemmin uudelleen.", "Engin tenging. Reyndu aftur síðar.", "Could not connect. Try again later."],
+"Noe gikk galt. Sjekk e-postadressen og prøv igjen.": ["Något gick fel. Kontrollera e-postadressen och försök igen.", "Noget gik galt. Tjek e-mailadressen og prøv igen.", "Jokin meni vikaan. Tarkista sähköpostiosoite ja yritä uudelleen.", "Eitthvað fór úrskeiðis. Athugaðu netfangið og reyndu aftur.", "Something went wrong. Check the email address and try again."],
+"Sjekk e-posten din og trykk på lenken for å logge inn.": ["Kolla din e-post och tryck på länken för att logga in.", "Tjek din e-mail og tryk på linket for at logge ind.", "Tarkista sähköpostisi ja kirjaudu linkistä.", "Athugaðu póstinn þinn og smelltu á tengilinn til að skrá þig inn.", "Check your email and tap the link to sign in."],
+"Slette klubbene og valgene som er lagret på kontoen din?": ["Radera klubbarna och valen som sparats på ditt konto?", "Slette klubberne og valgene, der er gemt på din konto?", "Poistetaanko tilillesi tallennetut seurat ja valinnat?", "Eyða félögum og vali sem vistað er á aðganginum þínum?", "Delete the clubs and choices saved to your account?"],
 "Vis alle steder ✕": ["Visa alla orter ✕","Vis alle steder ✕","Näytä kaikki ✕","Sýna alla staði ✕","Show all places ✕"],
 "{x} og omegn": ["{x} med omnejd","{x} og omegn","{x} ja lähialue","{x} og nágrenni","{x} and around"],
 "jobb": ["jobb","job","työpaikka","starf","job"],
@@ -2468,6 +2495,50 @@ function fillLayer(k) {
 // Innstillinger: lys, mørk eller automatisk (lagres i aurora-tema)
 function applyTheme(v) { if (v === "light" || v === "dark") document.documentElement.dataset.theme = v; else delete document.documentElement.dataset.theme; }
 try { applyTheme(localStorage.getItem("aurora-tema")); } catch (e) {}
+// Innlogging med Supabase: e-postlenke (og Google senere). Lagrer bare klubber, idretter og hjemsted i tabellen profiles.
+const SUPA = { url: "https://beddkwgxhdyloiewhpll.supabase.co", key: "sb_publishable__K2LpHIMgT5XxGlpCwH5bQ_nJ2Qz3iH" };
+let sb = null, authUser = null, authMsg = "";
+const authName = () => authUser ? (authUser.user_metadata?.full_name || authUser.user_metadata?.name || "").split(" ")[0] : "";
+function loadSupa() {
+  if (sb || !SUPA.key) return Promise.resolve(sb);
+  return new Promise(ok => { const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js";
+    s.onload = () => { sb = window.supabase.createClient(SUPA.url, SUPA.key, { auth: { flowType: "pkce", detectSessionInUrl: true, persistSession: true } });
+      sb.auth.onAuthStateChange((ev, ses) => { const was = authUser?.id; authUser = ses?.user || null; if (authUser && authUser.id !== was) cloudLoad(); else redrawAuth(); });
+      ok(sb); };
+    s.onerror = () => ok(null); document.head.appendChild(s); });
+}
+// Slår sammen det som er lagret på kontoen med det som er valgt i denne nettleseren
+async function cloudLoad() {
+  const { data } = await sb.from("profiles").select("clubs,likes,home").eq("id", authUser.id).maybeSingle();
+  if (data) { (data.clubs || []).forEach(id => follows.add(id)); (data.likes || []).forEach(k => likes.add(k));
+    if (data.home && typeof data.home.lat === "number") home = data.home;
+    try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} }
+  await cloudSave(true); redrawAuth(); if (typeof render === "function") render();
+}
+let cloudTimer;
+function cloudSave(now) {
+  if (!sb || !authUser) return;
+  clearTimeout(cloudTimer);
+  const go = () => sb.from("profiles").upsert({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() });
+  if (now === true) return go(); cloudTimer = setTimeout(go, 800);
+}
+let redrawAuth = () => {};
+function accountHtml() {
+  if (!SUPA.key) return `<p class="sl">${t("Konto")}</p><small>${t("Innlogging kommer snart.")}</small>`;
+  if (authUser) return `<p class="sl">${t("Konto")}</p><div class="acct"><span class="aava">${esc((authName() || authUser.email || "?")[0].toUpperCase())}</span><span><b>${esc(authName() || t("Innlogget"))}</b><small>${esc(authUser.email || "")}</small></span></div>
+    <small>${t("Klubbene, idrettene og hjemstedet ditt lagres på kontoen din, så du har dem på alle enheter.")}</small>
+    <div class="arow"><button type="button" class="abtn" data-a="out">${t("Logg ut")}</button><button type="button" class="abtn ghost" data-a="del">${t("Slett mine data")}</button></div>`;
+  return `<p class="sl">${t("Logg inn")}</p><small>${t("Logg inn for å ha klubbene og valgene dine på mobil og PC.")}</small>
+    <form class="aform" id="aForm"><input type="email" id="aMail" required autocomplete="email" placeholder="${t("Din e-post")}" aria-label="${t("Din e-post")}"><button type="submit" class="abtn">${t("Send innloggingslenke")}</button></form>
+    ${authMsg ? `<small class="amsg">${esc(authMsg)}</small>` : ""}
+    <small>${t("Vi lagrer bare e-posten din og valgene dine (klubber, idretter og hjemsted). Ingenting deles eller selges.")}</small>`;
+}
+function setupAuth() {
+  if (!SUPA.key) return;
+  let has = /[?&]code=/.test(location.search); try { has = has || Object.keys(localStorage).some(k => k.startsWith("sb-")); } catch (e) {}
+  if (has) loadSupa();
+}
 function setupSettings() {
   const btn = $("setBtn"), pop = $("setPop"); if (!btn) return;
   btn.setAttribute("aria-label", t("Innstillinger")); btn.title = t("Innstillinger"); pop.setAttribute("aria-label", t("Innstillinger"));
@@ -2475,10 +2546,18 @@ function setupSettings() {
   const draw = () => {
     pop.innerHTML = `<h4>${t("Innstillinger")}</h4><p class="sl">${t("Utseende")}</p>
       <div class="seg" role="radiogroup" aria-label="${t("Utseende")}">${[["auto", "Automatisk"], ["light", "Lys"], ["dark", "Mørk"]].map(([k, l]) => `<button type="button" role="radio" data-v="${k}" aria-checked="${cur() === k}">${t(l)}</button>`).join("")}</div>
-      <small>${t("Automatisk følger innstillingen på mobilen eller PC-en din.")}</small>`;
+      <small>${t("Automatisk følger innstillingen på mobilen eller PC-en din.")}</small><hr>${accountHtml()}`;
+    const f = $("aForm"); if (f) f.onsubmit = async e => { e.preventDefault(); const mail = $("aMail").value.trim(); authMsg = t("Sender …"); draw();
+      const c = await loadSupa(); if (!c) { authMsg = t("Fikk ikke kontakt. Prøv igjen senere."); return draw(); }
+      const { error } = await c.auth.signInWithOtp({ email: mail, options: { emailRedirectTo: location.origin + location.pathname } });
+      authMsg = error ? t("Noe gikk galt. Sjekk e-postadressen og prøv igjen.") : t("Sjekk e-posten din og trykk på lenken for å logge inn."); draw(); };
+    pop.querySelectorAll("[data-a]").forEach(b => b.onclick = async () => {
+      if (b.dataset.a === "del") { if (!confirm(t("Slette klubbene og valgene som er lagret på kontoen din?"))) return; await sb.from("profiles").delete().eq("id", authUser.id); }
+      await sb.auth.signOut(); authUser = null; authMsg = ""; draw(); if (typeof render === "function") render(); });
     pop.querySelectorAll("[data-v]").forEach(b => b.onclick = () => { applyTheme(b.dataset.v); try { b.dataset.v === "auto" ? localStorage.removeItem("aurora-tema") : localStorage.setItem("aurora-tema", b.dataset.v); } catch (e) {} draw(); });
   };
   const close = () => { pop.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+  redrawAuth = () => { if (!pop.hidden) draw(); if (typeof renderForYou === "function" && $("foryou")) renderForYou(); };
   btn.onclick = () => { if (!pop.hidden) return close(); draw(); pop.hidden = false; btn.setAttribute("aria-expanded", "true"); pop.querySelector("[aria-checked=true]").focus(); };
   document.addEventListener("pointerdown", e => { if (!e.target.closest("#setPop, #setBtn")) close(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !pop.hidden) { close(); btn.focus(); } });
@@ -3723,6 +3802,7 @@ try { follows = new Set(JSON.parse(localStorage.getItem(FOLLOW_KEY) || "[]")); }
 function toggleFollow(id) {
   follows.has(id) ? follows.delete(id) : follows.add(id);
   try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); } catch (e) {}
+  cloudSave();
 }
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
 const clubMatch = (k, skip) => inCountry(k) && (skip === "place" || inPlace("cplace", k.geo)) && (skip === "sport" || state.csport === "all" || k.sport === state.csport) &&
@@ -4059,7 +4139,7 @@ const INTERESTS = [
 ];
 let likes = new Set(), fySkip = false;
 try { likes = new Set(JSON.parse(localStorage.getItem("aurora-idretter") || "[]")); fySkip = localStorage.getItem("aurora-idretter-hopp") === "1"; } catch (e) {}
-const saveLikes = () => { try { localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); } catch (e) {} };
+const saveLikes = () => { try { localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); } catch (e) {} cloudSave(); };
 const liked = sp => likes.size > 0 && INTERESTS.some(([k, , sps]) => likes.has(k) && sps.includes(sp));
 const kmFrom = (lat, lon) => { const R = 6371, r = Math.PI / 180, dLat = (lat - home.lat) * r, dLon = (lon - home.lon) * r;
   return 2 * R * Math.asin(Math.sqrt(Math.sin(dLat / 2) ** 2 + Math.cos(home.lat * r) * Math.cos(lat * r) * Math.sin(dLon / 2) ** 2)); };
@@ -4193,7 +4273,7 @@ const CITIES = [
 ];
 let home = { name: "Oslo", lat: 59.91, lon: 10.75 };
 try { const h = JSON.parse(localStorage.getItem("idrettsjobber-hjem") || "null"); if (h && typeof h.lat === "number") home = h; } catch (e) {}
-const saveHome = () => { try { localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} };
+const saveHome = () => { try { localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} cloudSave(); };
 const distTo = j => {
   const g = GEO[j.id]; if (!g) return null;
   const R = 6371, rad = Math.PI / 180, dLat = (g[1] - home.lat) * rad, dLon = (g[2] - home.lon) * rad;
@@ -4551,6 +4631,7 @@ translateStatic();
 renderFoot();
 setupGlobalSearch();
 setupSettings();
+setupAuth();
 setupFilters();
 buildStage();
 renderCredits();
