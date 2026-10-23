@@ -1601,7 +1601,7 @@ const I18N = {
 "Lagre nytt passord": ["Spara nytt lösenord", "Gem ny adgangskode", "Tallenna uusi salasana", "Vista nýtt lykilorð", "Save new password"],
 "Lag bruker": ["Skapa konto", "Opret bruger", "Luo tili", "Stofna aðgang", "Create account"],
 "Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.": ["Skapa ett gratis konto, så har du dina klubbar och val på mobil och dator.", "Opret en gratis bruger, så har du dine klubber og valg på mobil og computer.", "Luo ilmainen tili, niin seurasi ja valintasi ovat puhelimessa ja tietokoneella.", "Stofnaðu ókeypis aðgang og hafðu félögin þín og val í síma og tölvu.", "Create a free account to keep your clubs and choices on phone and computer."],
-"Fornavn": ["Förnamn", "Fornavn", "Etunimi", "Fornafn", "First name"],
+"Brukernavn": ["Användarnamn", "Brugernavn", "Käyttäjänimi", "Notandanafn", "Username"],
 "Passord (minst 8 tegn)": ["Lösenord (minst 8 tecken)", "Adgangskode (mindst 8 tegn)", "Salasana (vähintään 8 merkkiä)", "Lykilorð (minnst 8 stafir)", "Password (at least 8 characters)"],
 "Passord": ["Lösenord", "Adgangskode", "Salasana", "Lykilorð", "Password"],
 "Send lenke for nytt passord": ["Skicka länk för nytt lösenord", "Send link til ny adgangskode", "Lähetä linkki uuteen salasanaan", "Senda tengil fyrir nýtt lykilorð", "Send new password link"],
@@ -2521,7 +2521,7 @@ try { applyTheme(localStorage.getItem("aurora-tema")); } catch (e) {}
 // Innlogging med Supabase: e-postlenke (og Google senere). Lagrer bare klubber, idretter og hjemsted i tabellen profiles.
 const SUPA = { url: "https://beddkwgxhdyloiewhpll.supabase.co", key: "sb_publishable__K2LpHIMgT5XxGlpCwH5bQ_nJ2Qz3iH" };
 let sb = null, authUser = null, authMsg = "", authMode = "up", openSettings = () => {};
-const authName = () => authUser ? (authUser.user_metadata?.full_name || authUser.user_metadata?.name || "").split(" ")[0] : "";
+const authName = () => { const m = authUser?.user_metadata || {}; return m.username || (m.full_name || m.name || "").split(" ")[0] || ""; };
 function loadSupa() {
   if (sb || !SUPA.key) return Promise.resolve(sb);
   return new Promise(ok => { const s = document.createElement("script");
@@ -2558,7 +2558,7 @@ function accountHtml() {
   const mail = `<input type="email" id="aMail" required autocomplete="email" placeholder="${t("E-post")}" aria-label="${t("E-post")}">`;
   return `<p class="sl">${t("Konto")}</p><div class="seg" role="tablist">${[["up", "Lag bruker"], ["in", "Logg inn"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
     ${m === "up" ? `<small>${t("Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.")}</small>` : ""}
-    <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required autocomplete="given-name" placeholder="${t("Fornavn")}" aria-label="${t("Fornavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
+    <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required minlength="2" maxlength="30" autocomplete="username" placeholder="${t("Brukernavn")}" aria-label="${t("Brukernavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
     <button type="submit" class="abtn">${t(m === "up" ? "Lag bruker" : m === "in" ? "Logg inn" : "Send lenke for nytt passord")}</button></form>
     ${m === "in" ? `<button type="button" class="alink" data-m="reset">${t("Glemt passordet?")}</button>` : m === "reset" ? `<button type="button" class="alink" data-m="in">← ${t("Tilbake")}</button>` : ""}
     ${authMsg ? `<small class="amsg">${esc(authMsg)}</small>` : ""}
@@ -2583,7 +2583,7 @@ function setupSettings() {
       authMsg = t("Vent litt …"); const keep = [v("aName"), v("aMail")]; draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1];
       const c = await loadSupa(); if (!c) { authMsg = t("Fikk ikke kontakt. Prøv igjen senere."); return draw(); }
       let r;
-      if (authMode === "up") { r = await c.auth.signUp({ email: keep[1], password: pw, options: { data: { full_name: keep[0] }, emailRedirectTo: to } });
+      if (authMode === "up") { r = await c.auth.signUp({ email: keep[1], password: pw, options: { data: { username: keep[0] }, emailRedirectTo: to } });
         if (!r.error && !r.data.session) { authMsg = t("Nesten ferdig! Vi har sendt deg en e-post. Trykk på lenken i den for å bekrefte brukeren din."); authMode = "in"; return draw(); } }
       else if (authMode === "in") r = await c.auth.signInWithPassword({ email: keep[1], password: pw });
       else if (authMode === "reset") { r = await c.auth.resetPasswordForEmail(keep[1], { redirectTo: to }); if (!r.error) { authMsg = t("Sjekk e-posten din for en lenke til å lage nytt passord."); return draw(); } }
