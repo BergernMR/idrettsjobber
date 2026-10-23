@@ -2615,7 +2615,7 @@ function applyTheme(v) { if (v === "light" || v === "dark") document.documentEle
 try { applyTheme(localStorage.getItem("aurora-tema")); } catch (e) {}
 // Innlogging med Supabase: e-postlenke (og Google senere). Lagrer bare klubber, idretter og hjemsted i tabellen profiles.
 const SUPA = { url: "https://beddkwgxhdyloiewhpll.supabase.co", key: "sb_publishable__K2LpHIMgT5XxGlpCwH5bQ_nJ2Qz3iH" };
-let sb = null, authUser = null, authMsg = "", authMode = "up", openSettings = () => {};
+let sb = null, authUser = null, authMsg = "", authMode = "in", openSettings = () => {};
 const authName = () => { const m = authUser?.user_metadata || {}; return m.username || (m.full_name || m.name || "").split(" ")[0] || ""; };
 function loadSupa() {
   if (sb || !SUPA.key) return Promise.resolve(sb);
@@ -2668,7 +2668,7 @@ function accountHtml() {
   // Logg inn godtar både e-post og brukernavn; ellers må det være en e-post
   const mail = m === "in" ? `<input type="text" id="aMail" required autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="${t("E-post eller brukernavn")}" aria-label="${t("E-post eller brukernavn")}">`
     : `<input type="email" id="aMail" required autocomplete="email" placeholder="${t("E-post")}" aria-label="${t("E-post")}">`;
-  return `<p class="sl">${t("Konto")}</p><div class="seg" role="tablist">${[["up", "Lag bruker"], ["in", "Logg inn"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
+  return `<p class="sl">${t("Konto")}</p><div class="seg" role="tablist">${[["in", "Logg inn"], ["up", "Lag bruker"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
     ${m === "up" ? `<small>${t("Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.")}</small>` : ""}
     <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required minlength="2" maxlength="30" pattern="[^@ ]+" title="${t("Brukernavnet kan ikke ha mellomrom eller @")}" autocomplete="username" placeholder="${t("Brukernavn")}" aria-label="${t("Brukernavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
     <button type="submit" class="abtn">${t(m === "up" ? "Lag bruker" : m === "in" ? "Logg inn" : "Send lenke for nytt passord")}</button></form>
