@@ -918,6 +918,30 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
 /* Seksjonstitler med samme skrift som logoen */
 .sechero h2, .welcome h2 { font-family: "Barlow Condensed", var(--font-display); text-transform: uppercase; letter-spacing: .005em; line-height: .95; }
 .livestrip { margin-top: 0; }
+/* Til deg */
+.foryou { display: grid; gap: 16px; margin-top: 30px; padding: clamp(18px, 3vw, 26px); border-radius: 22px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 6px 24px -14px rgba(20,33,29,.25); }
+.foryou:empty { display: none; }
+.fyh { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.fyh h3 { margin: 0; font-family: "Barlow Condensed", var(--font-display); font-weight: 800; text-transform: uppercase; font-size: clamp(30px, 4vw, 40px); line-height: 1; }
+.fysum { color: var(--muted); font-size: 14px; flex: 1; }
+.fyedit, .fyskip { font: inherit; font-size: 14px; font-weight: 700; border: 0; background: none; color: var(--accent); cursor: pointer; padding: 4px 0; }
+.fypick { display: grid; gap: 12px; padding: 16px; border-radius: 16px; background: var(--surface-2); }
+.fyq { margin: 0; font-weight: 800; font-size: 18px; }
+.fychips { display: flex; flex-wrap: wrap; gap: 8px; }
+.fyhome { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; }
+.fyhome select { font: inherit; padding: 7px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.fyacts { display: flex; gap: 16px; align-items: center; }
+.fysec { display: grid; gap: 10px; }
+.fyl { margin: 0; font-size: 12.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.fyclubs, .fyevs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 10px; }
+.fyclub, .fyev, .fyopen { font: inherit; color: var(--fg); text-align: left; cursor: pointer; display: grid; gap: 4px; align-content: start; padding: 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); }
+.fyclub:hover, .fyev:hover { border-color: var(--accent); }
+.fysug { cursor: default; grid-template-columns: 1fr auto; align-items: center; }
+.fyopen { padding: 0; border: 0; background: none; }
+.fyn, .fyev b { font-weight: 800; font-size: 16px; }
+.fynext, .fyev span { color: var(--muted); font-size: 13.5px; }
+.fynews { font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 6px; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.fyclub .live { margin: 2px 0 0; padding: 6px 10px; font-size: 13px; }
 .sechero::before { display: none; }
 .eyebrow { color: var(--accent); }
 .sechero { border-top: 5px solid var(--accent); }
@@ -1486,6 +1510,20 @@ const I18N = {
 "Se kalenderen": ["Se kalendern","Se kalenderen","Katso kalenteri","Sjá dagatalið","See the calendar"],
 "Se utdanning": ["Se utbildning","Se uddannelse","Katso koulutus","Sjá nám","See education"],
 "Se ledige jobber": ["Se lediga jobb","Se ledige job","Katso avoimet työpaikat","Sjá laus störf","See open jobs"],
+"Hva interesserer deg?": ["Vad är du intresserad av?","Hvad interesserer dig?","Mikä sinua kiinnostaa?","Hvað vekur áhuga þinn?","What are you interested in?"],
+"Ski og langrenn": ["Skidor och längdåkning","Ski og langrend","Hiihto","Skíði og skíðaganga","Skiing and cross-country"],
+"Ishockey og bandy": ["Ishockey och bandy","Ishockey og bandy","Jääkiekko ja jääpallo","Íshokkí og bandí","Ice hockey and bandy"],
+"Løping og friidrett": ["Löpning och friidrott","Løb og atletik","Juoksu ja yleisurheilu","Hlaup og frjálsar","Running and athletics"],
+"Vannsport": ["Vattensport","Vandsport","Vesiurheilu","Vatnaíþróttir","Water sports"],
+"Basket, volleyball og innebandy": ["Basket, volleyboll och innebandy","Basket, volleyball og floorball","Koripallo, lentopallo ja salibandy","Körfubolti, blak og floorball","Basketball, volleyball and floorball"],
+"Hjemsted": ["Hemort","Hjemsted","Kotipaikka","Heimabær","Home town"],
+"Ferdig": ["Klar","Færdig","Valmis","Lokið","Done"],
+"Hopp over": ["Hoppa över","Spring over","Ohita","Sleppa","Skip"],
+"Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
+"Tilpass": ["Anpassa","Tilpas","Muokkaa","Aðlaga","Customise"],
+"Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
+"Klubber nær {x}": ["Klubbar nära {x}","Klubber nær {x}","Seuroja lähellä: {x}","Félög nálægt {x}","Clubs near {x}"],
+"Arrangementer nær {x}": ["Evenemang nära {x}","Arrangementer nær {x}","Tapahtumia lähellä: {x}","Viðburðir nálægt {x}","Events near {x}"],
 "Vis alle steder ✕": ["Visa alla orter ✕","Vis alle steder ✕","Näytä kaikki ✕","Sýna alla staði ✕","Show all places ✕"],
 "{x} og omegn": ["{x} med omnejd","{x} og omegn","{x} ja lähialue","{x} og nágrenni","{x} and around"],
 "jobb": ["jobb","job","työpaikka","starf","job"],
@@ -3739,6 +3777,7 @@ function paintLive() {
   document.querySelectorAll(".livebox").forEach(b => { const k = FAN.find(x => x.id === b.dataset.k); if (k) b.innerHTML = liveHtml(k); });
   const on = liveMine().filter(k => LIVE[k.id][4] !== "ft");
   document.body.classList.toggle("haslive", on.length > 0);
+  if (state.tab === "forside" && typeof renderForYou === "function") renderForYou();
   const s = $("liveStrip"); if (!s) return;
   const ks = liveMine(); s.hidden = !ks.length;
   s.innerHTML = ks.length ? `<span class="lbl">${t("Dine klubber nå")}</span>${ks.map(k => `<button type="button" class="livego" data-id="${k.id}">${liveHtml(k)}</button>`).join("")}` : "";
@@ -3963,9 +4002,58 @@ function renderHome() {
       <div class="pgrid">${paths.map(([tab, title, d], i) => `<button type="button" class="pcard" data-t="${tab}">
         <span class="im"><img src="${PATH_IMG[tab]}" alt="" ${i > 1 ? 'loading="lazy" ' : ""}decoding="async"></span>
         <span class="tx"><b>${t(title)}</b><small>${t(d)}</small><span class="go">${t(cta[tab])} →</span></span></button>`).join("")}</div>
+      <section class="foryou" id="foryou" aria-labelledby="fyH"></section>
     </div>`;
   $("hub").querySelectorAll(".pcard").forEach(b => b.onclick = () => { setTab(b.dataset.t); scrollTo({ top: 0, behavior: reduceMotion() ? "auto" : "smooth" }); });
+  renderForYou();
   renderGnews();
+}
+// «Til deg»: idretter man liker, hjemsted og klubbene man følger. Alt lagres bare i nettleseren (aurora-idretter, idrettsjobber-hjem, aurora-klubber).
+const INTERESTS = [
+  ["fotball", "Fotball", ["Fotball"]], ["ski", "Ski og langrenn", ["Langrenn", "Ski", "Langrenn, hopp og kombinert", "Skiorientering"]],
+  ["alpint", "Alpint", ["Alpint"]], ["hockey", "Ishockey og bandy", ["Ishockey", "Bandy"]], ["handball", "Håndball", ["Håndball"]],
+  ["lop", "Løping og friidrett", ["Løping", "Terrengløp", "Friidrett"]], ["sykkel", "Sykling", ["Sykling"]],
+  ["vann", "Vannsport", ["Svømming", "Swimrun", "Triatlon", "Kano", "Roing", "Seiling"]], ["kompass", "Orientering", ["Orientering", "Skiorientering"]],
+  ["ball", "Basket, volleyball og innebandy", ["Basketball", "Volleyball", "Innebandy", "Pesäpallo"]]
+];
+let likes = new Set(), fySkip = false;
+try { likes = new Set(JSON.parse(localStorage.getItem("aurora-idretter") || "[]")); fySkip = localStorage.getItem("aurora-idretter-hopp") === "1"; } catch (e) {}
+const saveLikes = () => { try { localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); } catch (e) {} };
+const liked = sp => likes.size > 0 && INTERESTS.some(([k, , sps]) => likes.has(k) && sps.includes(sp));
+const kmFrom = (lat, lon) => { const R = 6371, r = Math.PI / 180, dLat = (lat - home.lat) * r, dLon = (lon - home.lon) * r;
+  return 2 * R * Math.asin(Math.sqrt(Math.sin(dLat / 2) ** 2 + Math.cos(home.lat * r) * Math.cos(lat * r) * Math.sin(dLon / 2) ** 2)); };
+let fyEdit = false;
+function renderForYou() {
+  const box = $("foryou"); if (!box) return;
+  const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
+  const picker = `<div class="fypick"><p class="fyq">${t("Hva interesserer deg?")}</p>
+      <div class="fychips">${INTERESTS.map(([k, l]) => `<button type="button" class="chip" data-k="${k}" aria-pressed="${likes.has(k)}">${t(l)}</button>`).join("")}</div>
+      <label class="fyhome">${t("Hjemsted")} <select id="fyHome">${(CITIES.some(c => c[0] === home.name) ? "" : `<option value="pos" selected>${t("Min posisjon")}</option>`) + CITIES.map(([n]) => `<option${n === home.name ? " selected" : ""}>${esc(n)}</option>`).join("")}</select></label>
+      <div class="fyacts"><button type="button" class="tablebtn fydone">${t("Ferdig")}</button>${likes.size ? "" : `<button type="button" class="fyskip">${t("Hopp over")}</button>`}</div></div>`;
+  const ask = fyEdit || (!likes.size && !fySkip);
+  // Mine klubber: live, neste kamp og siste sak
+  const mine = FAN.filter(k => follows.has(k.id));
+  const clubCard = k => { const n = nextMatch(k), ns = newsOf(k)[0];
+    return `<button type="button" class="fyclub" data-id="${k.id}"><span class="fyn">${esc(k.n)}</span>${LIVE[k.id] ? liveHtml(k) : n ? `<span class="fynext">${esc(fxDate(n[0]))}${n[4] ? " " + n[4] : ""} · ${vsText(n)}</span>` : `<span class="fynext">${esc(t(k.sport))}</span>`}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
+  // Arrangementer nær hjemstedet, i idrettene man liker først
+  const evs = EVENTS.map(e => { const g = evGeo(e), d = evOrder(e); return { e, km: g ? kmFrom(g[1], g[2]) : 1e9, d }; })
+    .filter(x => x.d >= 0 && x.d < 200 && x.km < 400 && (!likes.size || liked(x.e.sport)))
+    .sort((a, b) => a.d - b.d).slice(0, 4);
+  // Forslag til klubber nær deg når man ikke følger noen ennå
+  const near = mine.length ? [] : FAN.filter(k => k.geo && (!likes.size || liked(k.sport))).map(k => ({ k, km: kmFrom(k.geo[1], k.geo[2]) })).sort((a, b) => a.km - b.km).slice(0, 4);
+  box.innerHTML = `<div class="fyh"><h3 id="fyH">${t("Til deg")}</h3>${ask ? "" : `<span class="fysum">${likes.size ? INTERESTS.filter(([k]) => likes.has(k)).map(([, l]) => t(l)).join(", ") + " · " : ""}${esc(homeName)}</span><button type="button" class="fyedit">${t("Tilpass")}</button>`}</div>
+    ${ask ? picker : ""}
+    ${mine.length ? `<div class="fysec"><p class="fyl">${t("Dine klubber")}</p><div class="fyclubs">${mine.slice(0, 6).map(clubCard).join("")}</div></div>` : ""}
+    ${near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyn">${esc(k.n)}</span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""}
+    ${evs.length ? `<div class="fysec"><p class="fyl">${t("Arrangementer nær {x}", { x: esc(homeName) })}</p><div class="fyevs">${evs.map(({ e, km }) => `<button type="button" class="fyev" data-id="${e.id}"><b>${esc(t(e.t))}</b><span>${esc(t(e.when))} · ${esc(t(e.place))}${km < 1e9 ? " · " + fmtKm(km) : ""}</span></button>`).join("")}</div></div>` : ""}`;
+  box.querySelectorAll(".fychips .chip").forEach(b => b.onclick = () => { const k = b.dataset.k; likes.has(k) ? likes.delete(k) : likes.add(k); saveLikes(); b.setAttribute("aria-pressed", String(likes.has(k))); });
+  const hs = $("fyHome"); if (hs) hs.onchange = () => { const c = CITIES.find(c => c[0] === hs.value); if (c) { home = { name: c[0], lat: c[1], lon: c[2] }; saveHome(); } };
+  const done = box.querySelector(".fydone"); if (done) done.onclick = () => { fyEdit = false; render(); };
+  const skip = box.querySelector(".fyskip"); if (skip) skip.onclick = () => { fySkip = true; fyEdit = false; try { localStorage.setItem("aurora-idretter-hopp", "1"); } catch (e) {} render(); };
+  const ed = box.querySelector(".fyedit"); if (ed) ed.onclick = () => { fyEdit = true; renderForYou(); };
+  box.querySelectorAll(".fyclub[data-id], .fyopen").forEach(b => b.onclick = () => openClub(b.dataset.id));
+  box.querySelectorAll(".follow").forEach(b => b.onclick = () => { toggleFollow(b.dataset.id); renderForYou(); });
+  box.querySelectorAll(".fyev").forEach(b => b.onclick = () => openEvent(b.dataset.id));
 }
 // Slide for forsidekortene: nærmeste kort til midten er "aktivt"; bytter selv hvert 6. sekund til man rører den
 let slideTimer = null;
@@ -4019,6 +4107,7 @@ function renderGnews() {
   const items = region === "all"
     ? [0, 1, 2].flatMap(i => Object.keys(COUNTRIES).map(c => (GNEWS.r[c] || [])[i] && [...GNEWS.r[c][i], c]).filter(Boolean)).slice(0, 10)
     : (GNEWS.r[region] || []).map(x => [...x, region]);
+  if (likes.size) items.sort((a, b) => liked(b[1]) - liked(a[1]));
   // Toppsaken tar to ruter, så antallet tilpasses et fullt rutenett med tre kolonner
   while (items.length > 2 && (items.length + 1) % 3) items.pop();
   $("gnews").innerHTML = `<div class="gh"><h3 id="gnewsH">${t("Sportsnyheter")}</h3><small>${t("Hentet {d}", { d: esc(fxDate(GNEWS.at, "d")) })}</small></div>
