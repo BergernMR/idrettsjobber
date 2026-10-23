@@ -854,7 +854,14 @@ header { text-shadow: none; }
 body.home .wrap { padding-top: 0; }
 body.home header { position: relative; isolation: isolate; min-height: min(78vh, 640px); align-content: end; padding: 26px 0 34px; color: #fff; gap: 16px; }
 body.home header::before { content: ""; position: absolute; z-index: -1; top: -80px; bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%);
-  background: linear-gradient(90deg, rgba(8,20,16,.72) 0%, rgba(8,20,16,.3) 55%, rgba(8,20,16,.05) 85%), linear-gradient(180deg, rgba(8,20,16,.5) 0%, rgba(8,20,16,0) 30%, rgba(8,20,16,.65) 100%), #23302b url(img/forside-klubber.jpg) center 30% / cover; }
+  background: linear-gradient(90deg, rgba(8,20,16,.72) 0%, rgba(8,20,16,.3) 55%, rgba(8,20,16,.05) 85%), linear-gradient(180deg, rgba(8,20,16,.5) 0%, rgba(8,20,16,0) 30%, rgba(8,20,16,.65) 100%); }
+.heroslides, .herocredit { display: none; }
+body.home .heroslides { display: block; position: absolute; z-index: -2; top: -80px; bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%); background: #23302b; overflow: hidden; }
+body.home .heroslides i { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.6s ease, transform 16s linear; transform: scale(1.06); }
+body.home .heroslides i.on { opacity: 1; transform: scale(1); }
+@media (prefers-reduced-motion: reduce) { body.home .heroslides i { transition: none; transform: none; } }
+body.home .herocredit { display: block; position: absolute; right: 0; bottom: 10px; font-size: 11.5px; color: rgba(255,255,255,.75); text-decoration: none; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+body.home .herocredit:hover { color: #fff; text-decoration: underline; }
 body.home header .topline { order: 1; align-self: start; }
 body.home header h1 { order: 2; margin-top: auto; }
 body.home header .herohead { order: 3; }
@@ -933,6 +940,7 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
       <div class="langpick" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
     <h1><b class="brand"><svg class="mark" viewBox="1.5 13.5 37 21" aria-hidden="true"><path d="M4 32a16 16 0 0 1 32 0" fill="none" stroke="#2f6fdc" stroke-width="5" stroke-linecap="round"/><path d="M11 32a9 9 0 0 1 18 0" fill="none" stroke="#1fae7c" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="31" r="2.6" fill="currentColor"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
+    <div class="heroslides" id="heroslides" aria-hidden="true"><i></i><i></i></div><a class="herocredit" id="herocredit" target="_blank" rel="noopener"></a>
     <p class="herohead" id="herohead"></p>
     <p class="lede" id="hlede">Jobber, utdanning, arrangementer og klubber i Norge, Sverige, Danmark, Finland og Island, samlet på ett sted.</p>
     <div class="lanes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -2983,6 +2991,7 @@ function renderTabs() {
   $("stamp").innerHTML = STAMP[state.tab];
   const home = state.tab === "forside";
   $("board").hidden = $("stamp").hidden = $("hlede").hidden = home;
+  if (home) startHero();
   $("herohead").innerHTML = home ? `${t("Finn din plass i")} <em>${t("nordisk idrett")}</em>` : "";
   document.body.classList.toggle("home", home);
   document.body.dataset.tab = state.tab;
@@ -3891,6 +3900,41 @@ function renderClubs() {
 }
 // Forsiden: en hilsen og fire veier inn, uten tall og lister
 const HELLO = [["nb", "Velkommen"], ["sv", "Välkommen"], ["fi", "Tervetuloa"], ["is", "Velkomin"]];
+// Forsidebilder som bytter hvert 15. sekund: frie Unsplash-bilder (fri Unsplash-lisens), hentes i full skjermoppløsning opptil 4K
+const HERO_PHOTOS = [
+  ["local:img/forside-klubber.jpg", "Lars Bo Nielsen", "https://unsplash.com/photos/group-of-people-playing-soccer-on-green-grass-field-during-daytime-zXn5qinCDKg", "center 30%"],
+  ["1505985098938-d1db678d02b3", "Martine Jacobsen", "https://unsplash.com/photos/two-person-snow-skiing-4yc275iIlkY", "center 40%"],
+  ["1584196825674-e6f64590b914", "Kryštof Zajíček", "https://unsplash.com/photos/handball-players-in-action-during-a-game-YN2xypsV_cM", "center 35%"],
+  ["1735509903556-602b4d7d3ae5", "Hannes Knutsson", "https://unsplash.com/photos/a-person-on-skis-jumping-in-the-air-2icXZAriT_E", "center 40%"],
+  ["1762013315117-1c8005ad2b41", "Eduard Delputte", "https://unsplash.com/photos/soccer-match-in-a-packed-stadium-at-night-65yjpk2HSlA", "center 50%"],
+  ["1700957952693-a9028dfa323c", "Matt Busse", "https://unsplash.com/photos/a-group-of-people-riding-skis-across-snow-covered-ground-nhltCS68spc", "center 60%"],
+  ["1545471977-94cac22e71ed", "Markus Spiske", "https://unsplash.com/photos/people-playing-ice-hockey-XHTBZpRBoi0", "center 50%"],
+  ["1681491313239-9d0033095fde", "Greg Rosenke", "https://unsplash.com/photos/a-person-on-skis-in-the-snow-with-mountains-in-the-background-M8ZY87VBMAw", "70% 35%"],
+  ["1530143311094-34d807799e8f", "Alessio Soggetti", "https://unsplash.com/photos/man-running-on-the-mountain-GYr9A2CPMhY", "center 60%"],
+  ["1565992441121-4367c2967103", "Matthieu Pétiard", "https://unsplash.com/photos/skier-jumping-over-snowy-slope-Pf6e3o0GL4M", "center 40%"],
+  ["1673901736252-0bdb2bac74ab", "Patrick Federi", "https://unsplash.com/photos/a-couple-of-people-riding-skis-down-a-snow-covered-slope-h-IX8DUk0pI", "center 50%"]
+];
+const heroUrl = id => { if (id.startsWith("local:")) return id.slice(6);
+  const w = Math.min(3840, Math.ceil(innerWidth * (devicePixelRatio || 1) / 640) * 640);
+  return `https://images.unsplash.com/photo-${id}?w=${w}&q=78&auto=format&fit=crop`; };
+let heroIdx = 0, heroTimer = null, heroLayer = 0;
+function showHero(i) {
+  const box = $("heroslides"); if (!box) return;
+  const [id, who, page, pos] = HERO_PHOTOS[i], url = heroUrl(id), img = new Image();
+  img.onload = () => {
+    heroLayer = 1 - heroLayer; const L = box.children[heroLayer], O = box.children[1 - heroLayer];
+    L.style.backgroundImage = `url("${url}")`; L.style.backgroundPosition = pos; L.classList.add("on"); O.classList.remove("on");
+    const c = $("herocredit"); c.href = page; c.textContent = `${t("Foto")}: ${who} / Unsplash`;
+    // Last neste bilde i forveien, så byttet går rett
+    const n = HERO_PHOTOS[(i + 1) % HERO_PHOTOS.length]; new Image().src = heroUrl(n[0]);
+  };
+  img.src = url;
+}
+function startHero() {
+  if (heroTimer) return;
+  showHero(heroIdx);
+  heroTimer = setInterval(() => { if (document.hidden || state.tab !== "forside") return; heroIdx = (heroIdx + 1) % HERO_PHOTOS.length; showHero(heroIdx); }, 15000);
+}
 const PATH_IMG = { klubber: "img/forside-klubber.jpg", arrangementer: "img/forside-arrangementer.jpg", utdanning: "img/forside-utdanning.jpg", jobber: "img/forside-jobber.jpg" };
 // Forsidebildene er fra Unsplash (fri Unsplash-lisens), 1600 px brede: [kort, tekst, fotograf, side]
 const FRONT_PHOTOS = [
