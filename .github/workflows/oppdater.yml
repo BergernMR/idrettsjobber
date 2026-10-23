@@ -1,0 +1,32 @@
+name: Oppdater kamper og tabeller
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: oppdater
+  cancel-in-progress: false
+jobs:
+  oppdater:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Hent nye kamper og tabeller
+        run: python3 scripts/update_data.py index.html
+      - name: Sjekk at siden fortsatt er gyldig
+        run: |
+          awk '/<script>/{f=1;next}/<\/script>/{f=0}f' index.html > /tmp/chk.js
+          node --check /tmp/chk.js
+      - name: Lagre endringer
+        run: |
+          if git diff --quiet; then echo "Ingen endringer"; exit 0; fi
+          git config user.name "aurora-oppdatering"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Oppdater kamper og tabeller"
+          git push
