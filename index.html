@@ -1,8 +1,11 @@
 <title>Aurora – Idretten i Norden</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M4 32a16 16 0 0 1 32 0' fill='none' stroke='%232f6fdc' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M11 32a9 9 0 0 1 18 0' fill='none' stroke='%231fae7c' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='31' r='2.6' fill='%230d1b2a'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#0d1b2a">
+<meta name="description" content="Jobber, utdanning, arrangementer og klubber innen idrett i Norge, Sverige, Danmark, Finland og Island.">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Barlow+Condensed:wght@800&display=swap">
 <style>
 /* Layout: a start list. Header with a country scoreboard, a sticky heat selector, each job a row with a bib-style deadline. Clicking a row opens a summary sheet. */
 :root {
@@ -833,6 +836,12 @@ td.pos.p1, td.pos.p2, td.pos.p3 { font-weight: 800; }
 }
 @media (max-width: 400px) { .tabbtn { padding: 9px 3px; font-size: 12px; } }
 @media (max-width: 360px) { .tabbtn { padding: 9px 2px; font-size: 11.5px; } }
+/* Logo: nordlys-buer + ordmerke i ren farge */
+h1 .brand, body.home .brand { background: none !important; -webkit-background-clip: border-box; background-clip: border-box; color: var(--fg); animation: none !important; display: inline-flex; align-items: flex-end; gap: .12em; font-family: "Barlow Condensed", var(--font-display); font-weight: 800; letter-spacing: .05em; }
+h1 .brand .wm { color: inherit; display: inline; font-size: 1em; margin: 0; letter-spacing: inherit; font-weight: 800; }
+h1 .brand .mark { height: .62em; width: 1.09em; flex: none; margin: 0 .04em .1em 0; color: var(--fg); }
+.sitefoot .fb b { background: none; color: var(--fg); -webkit-text-fill-color: currentColor; display: inline-flex; align-items: center; gap: 8px; font-family: "Barlow Condensed", var(--font-display); letter-spacing: .05em; }
+.sitefoot .fb b .mark { width: 36px; height: 21px; }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -844,7 +853,7 @@ td.pos.p1, td.pos.p2, td.pos.p3 { font-weight: 800; }
     <div class="topline"><div class="eyebrow">Norge · Sverige · Danmark · Finland · Island</div>
       <div class="langpick" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
-    <h1><b class="brand">Aurora</b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
+    <h1><b class="brand"><svg class="mark" viewBox="1.5 13.5 37 21" aria-hidden="true"><path d="M4 32a16 16 0 0 1 32 0" fill="none" stroke="#2f6fdc" stroke-width="5" stroke-linecap="round"/><path d="M11 32a9 9 0 0 1 18 0" fill="none" stroke="#1fae7c" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="31" r="2.6" fill="currentColor"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
     <p class="lede" id="hlede">Jobber, utdanning, arrangementer og klubber i Norge, Sverige, Danmark, Finland og Island, samlet på ett sted.</p>
     <div class="lanes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="board" id="board" aria-label="Antall jobber per land"></div>
@@ -2351,7 +2360,7 @@ const ICON_TAB = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</s
 function renderFoot() {
   const f = $("sitefoot"); if (!f) return;
   f.setAttribute("aria-label", t("Sider"));
-  f.innerHTML = `<div class="fb"><b>Aurora</b><span>${t("Idretten i Norden")}</span><small>${t("Jobber og nyheter oppdateres hver dag.")}</small></div>
+  f.innerHTML = `<div class="fb"><b><svg class="mark" viewBox="1.5 13.5 37 21" aria-hidden="true"><path d="M4 32a16 16 0 0 1 32 0" fill="none" stroke="#2f6fdc" stroke-width="5" stroke-linecap="round"/><path d="M11 32a9 9 0 0 1 18 0" fill="none" stroke="#1fae7c" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="31" r="2.6" fill="currentColor"/></svg>Aurora</b><span>${t("Idretten i Norden")}</span><small>${t("Jobber og nyheter oppdateres hver dag.")}</small></div>
     <div class="fc"><h4>${t("Sider")}</h4>${Object.entries(TABS).map(([k, l]) => `<button type="button" data-t="${k}">${l}</button>`).join("")}</div>
     <div class="fc"><h4>${t("Språk")}</h4>${Object.entries(LANGS).map(([k, l]) => `<button type="button" data-l="${k}" lang="${k === "nb" ? "no" : k}"${k === LANG ? ' aria-current="true"' : ""}>${l}</button>`).join("")}</div>
     <button type="button" class="ftop">${t("Til toppen")} ↑</button>`;
