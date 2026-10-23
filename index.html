@@ -950,6 +950,11 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
   <div class="tab" id="tab-jobber" hidden>
 
 
+
+  <section class="mapcard" aria-label="Kart over jobbene">
+    <div class="maphead"><h2>Kart</h2><small id="mapNote">Trykk på en prikk for å se jobbene på stedet</small></div>
+    <div class="mapwrap" id="mapwrap"></div>
+  </section>
   <section class="controls" aria-label="Filtrer stillinger">
     <div class="search-wrap">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
@@ -970,11 +975,6 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
     </div>
   </section>
 
-  <section class="mapcard" aria-label="Kart over jobbene">
-    <div class="maphead"><h2>Kart</h2><small id="mapNote">Trykk på en prikk for å se jobbene på stedet</small></div>
-    <div class="mapwrap" id="mapwrap"></div>
-  </section>
-
   <section aria-live="polite">
     <div class="count"><span id="count"></span><small id="sortNote">Kortest frist øverst</small></div>
     <div class="list" id="list"></div>
@@ -990,6 +990,10 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
   </div>
 
   <div class="tab" id="tab-utdanning" hidden>
+    <section class="mapcard" aria-label="Kart over utdanning">
+      <div class="maphead"><h2>Kart</h2><small id="mapEduNote">Trykk på en prikk for å se hva som finnes på stedet</small></div>
+      <div class="mapwrap" id="mapEduwrap"></div>
+    </section>
     <section class="controls" aria-label="Filtrer utdanning">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
@@ -997,14 +1001,14 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
       </div>
       <div class="row" id="eduRow"><span class="row-label">Type</span></div>
     </section>
-    <section class="mapcard" aria-label="Kart over utdanning">
-      <div class="maphead"><h2>Kart</h2><small id="mapEduNote">Trykk på en prikk for å se hva som finnes på stedet</small></div>
-      <div class="mapwrap" id="mapEduwrap"></div>
-    </section>
     <section aria-live="polite"><div class="count"><span id="eduCount"></span><small>Lenkene går til skolenes egne sider</small></div><div class="list" id="eduList"></div></section>
   </div>
 
   <div class="tab" id="tab-arrangementer" hidden>
+    <section class="mapcard" aria-label="Kart over arrangementer">
+      <div class="maphead"><h2>Kart</h2><small id="mapEvNote">Trykk på en prikk for å se hva som finnes på stedet</small></div>
+      <div class="mapwrap" id="mapEvwrap"></div>
+    </section>
     <section class="controls" aria-label="Filtrer arrangementer">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
@@ -1012,10 +1016,6 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
       </div>
       <div class="row" id="evRow"><span class="row-label">Vis</span></div>
       <div class="row" id="sportRow"><span class="row-label">Type</span></div>
-    </section>
-    <section class="mapcard" aria-label="Kart over arrangementer">
-      <div class="maphead"><h2>Kart</h2><small id="mapEvNote">Trykk på en prikk for å se hva som finnes på stedet</small></div>
-      <div class="mapwrap" id="mapEvwrap"></div>
     </section>
     <section class="evmine" id="evMine" aria-labelledby="evMineH" hidden><div class="count"><span id="evMineH"></span><small id="evMineN"></small></div><div class="list" id="evMineList"></div></section>
     <section aria-live="polite"><div class="count"><span id="evCount"></span><small>Neste først</small></div><div class="list" id="evList"></div></section>
