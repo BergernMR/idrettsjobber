@@ -4103,19 +4103,23 @@ function renderClubs() {
 }
 // Forsiden: en hilsen og fire veier inn, uten tall og lister
 const HELLO = [["nb", "Velkommen"], ["sv", "Välkommen"], ["fi", "Tervetuloa"], ["is", "Velkomin"]];
-// Forsidebilder som bytter hvert 15. sekund: frie Unsplash-bilder (fri Unsplash-lisens), hentes i full skjermoppløsning opptil 4K
+// Forsidebilder som bytter hvert 15. sekund: 15 frie Unsplash-bilder (fri Unsplash-lisens), alle tatt i Norden (sted står bak hvert bilde), opptil 4K
 const HERO_PHOTOS = [
-  ["local:img/forside-klubber.jpg", "Lars Bo Nielsen", "https://unsplash.com/photos/group-of-people-playing-soccer-on-green-grass-field-during-daytime-zXn5qinCDKg", "center 30%"],
-  ["1505985098938-d1db678d02b3", "Martine Jacobsen", "https://unsplash.com/photos/two-person-snow-skiing-4yc275iIlkY", "center 40%"],
-  ["1584196825674-e6f64590b914", "Kryštof Zajíček", "https://unsplash.com/photos/handball-players-in-action-during-a-game-YN2xypsV_cM", "center 35%"],
-  ["1735509903556-602b4d7d3ae5", "Hannes Knutsson", "https://unsplash.com/photos/a-person-on-skis-jumping-in-the-air-2icXZAriT_E", "center 40%"],
-  ["1762013315117-1c8005ad2b41", "Eduard Delputte", "https://unsplash.com/photos/soccer-match-in-a-packed-stadium-at-night-65yjpk2HSlA", "center 50%"],
-  ["1700957952693-a9028dfa323c", "Matt Busse", "https://unsplash.com/photos/a-group-of-people-riding-skis-across-snow-covered-ground-nhltCS68spc", "center 60%"],
-  ["1545471977-94cac22e71ed", "Markus Spiske", "https://unsplash.com/photos/people-playing-ice-hockey-XHTBZpRBoi0", "center 50%"],
-  ["1681491313239-9d0033095fde", "Greg Rosenke", "https://unsplash.com/photos/a-person-on-skis-in-the-snow-with-mountains-in-the-background-M8ZY87VBMAw", "70% 35%"],
-  ["1530143311094-34d807799e8f", "Alessio Soggetti", "https://unsplash.com/photos/man-running-on-the-mountain-GYr9A2CPMhY", "center 60%"],
-  ["1565992441121-4367c2967103", "Matthieu Pétiard", "https://unsplash.com/photos/skier-jumping-over-snowy-slope-Pf6e3o0GL4M", "center 40%"],
-  ["1673901736252-0bdb2bac74ab", "Patrick Federi", "https://unsplash.com/photos/a-couple-of-people-riding-skis-down-a-snow-covered-slope-h-IX8DUk0pI", "center 50%"]
+  ["1505985098938-d1db678d02b3", "Martine Jacobsen", "https://unsplash.com/photos/two-person-snow-skiing-4yc275iIlkY", "center 40%"], // Lahti, FI
+  ["1561917423-2ce508445fe4", "Anders Krøgh Jørgensen", "https://unsplash.com/photos/people-onside-stadium-lASP347IMvE", "center 50%"], // Herning, DK
+  ["1683118829786-5ec8f4c758be", "Kato Bergli", "https://unsplash.com/photos/a-man-riding-skis-down-a-snow-covered-slope-Hhm9wpAr2V0", "center 55%"], // Rondane, NO
+  ["1710747533248-9153ff289230", "Atte Grönlund", "https://unsplash.com/photos/a-group-of-people-riding-skis-down-a-snow-covered-slope-YKGImVhzBdg", "center 50%"], // Åre, SE
+  ["1650449150503-a80d8a883632", "Freysteinn G. Jonsson", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-stadium-in-a-city-619HHezjQno", "center 50%"], // Reykjavík, IS
+  ["1533589067335-b0114bd0ab00", "Joakim Honkasalo", "https://unsplash.com/photos/man-using-bicycle-on-trail-BT9e-1olEkY", "center 50%"], // Borgå, FI
+  ["1511867511490-17e88600bd8e", "Marcus Löfvenberg", "https://unsplash.com/photos/man-riding-yellow-wakeboard-on-body-of-water-QDrkekkKTFM", "center 60%"], // Stockholm, SE
+  ["1677956718290-e546275b7531", "Stig Husby", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-field-Y9we8r_adGg", "center 50%"], // Røros, NO
+  ["1714423233581-62f2198c21d9", "Marcus Michaelsen", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-field-in-a-city-w1hZ3bF2KL8", "center 50%"], // Aarhus, DK
+  ["1642344497739-f07f66e6d22a", "Jamo Images", "https://unsplash.com/photos/a-group-of-people-riding-skis-down-a-snow-covered-slope-GeuqSpH8FpQ", "center 50%"], // Vuokatti, FI
+  ["1645613056335-cad20a2d5408", "Moa Alexandersson", "https://unsplash.com/photos/a-group-of-people-riding-skis-on-top-of-a-snow-covered-slope-KEY3WB4ou7w", "center 50%"], // Stockholm, SE
+  ["1683044414176-0e0d42b6fddf", "Harri P", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-field-hmzdQfpUqN8", "center 60%"], // Moskángáisi, NO
+  ["1610017128786-4a25f0f7756c", "Elin Tabitha", "https://unsplash.com/photos/man-in-white-long-sleeve-shirt-playing-soccer-in-grayscale-photography-Ob12aa_KLBQ", "center 60%"], // København, DK
+  ["1660227164836-7d3a7cf37e08", "Skellefteå kommun", "https://unsplash.com/photos/a-group-of-people-on-a-ski-slope-UdpcacE7BmQ", "center 50%"], // Skellefteå, SE
+  ["1676932390720-5a3e5ab28015", "Gunnar Ridderström", "https://unsplash.com/photos/a-person-riding-skis-down-a-snow-covered-slope-hrhOH92bqMc", "center 60%"] // Furusjøen, NO
 ];
 const heroUrl = id => { if (id.startsWith("local:")) return id.slice(6);
   const w = Math.min(3840, Math.ceil(innerWidth * (devicePixelRatio || 1) / 640) * 640);
