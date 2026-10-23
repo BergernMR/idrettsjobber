@@ -29,4 +29,4 @@ jobs:
           git config user.name "aurora-oppdatering"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am "Oppdater kamper og tabeller"
-          git push
+          for i in 1 2 3; do git pull --rebase -q && git push && exit 0; sleep 10; done; exit 1
