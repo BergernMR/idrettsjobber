@@ -437,6 +437,40 @@ table.league td.team { white-space: normal; }
 .evmine .who { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--accent); }
 .evmine .who svg { width: 14px; height: 14px; fill: currentColor; flex: none; }
 .bib { font-family: var(--font-display); text-align: center; border: 2px solid var(--line); border-radius: 8px; padding: 6px 2px 4px; background: var(--surface); }
+/* Lagret: hjerte på arrangementer, liste over lagrede ting og påminnelser */
+.bib .k { font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.evtile .eside { display: flex; gap: 8px; align-items: center; }
+.evtile .fav { width: 38px; height: 38px; }
+@media (max-width: 560px) { .evtile .eside { gap: 6px; } .evtile .fav { width: 32px; height: 32px; } .evtile .fav svg { width: 17px; height: 17px; } }
+.savedbtn { position: relative; }
+.savedbtn svg { fill: none; stroke: currentColor; stroke-width: 1.9; }
+.savedbtn .n { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--lane); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
+.savedbtn .n[hidden] { display: none; }
+.savedbtn.due .n { background: var(--urgent); }
+.share.savetog[aria-pressed="true"] { color: var(--lane); border-color: var(--lane); }
+.share.savetog[aria-pressed="true"] svg { fill: currentColor; }
+.share.savetog svg { width: 16px; height: 16px; }
+.svlist { display: grid; gap: 10px; margin: 6px 0 14px; }
+.svitem { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.svitem.gone { opacity: .55; }
+.svitem .svt { font-weight: 700; text-align: left; font: inherit; font-weight: 700; color: var(--fg); background: none; border: 0; padding: 0; cursor: pointer; }
+.svitem .svt:hover { color: var(--accent); }
+.svitem .svs { grid-column: 1; font-size: 13.5px; color: var(--muted); }
+.svitem .svw { grid-column: 2; grid-row: 1; justify-self: end; font-size: 12.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.svitem .svw.urgent { background: var(--urgent); color: #fff; }
+.svitem .svw.soon { background: var(--soon); color: #fff; }
+.svitem .svb { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.svitem .svb button { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.svitem .svb button:hover { border-color: var(--accent); color: var(--accent); }
+.sv-h { margin: 14px 0 4px; font-family: var(--font-display); font-size: 18px; }
+.remind { position: fixed; z-index: 60; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(520px, calc(100% - 32px)); display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 16px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+.remind .ric { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); }
+.remind .ric svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.remind b { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.remind span { font-size: 14.5px; }
+.remind .rgo { font: inherit; font-weight: 700; font-size: 13.5px; padding: 8px 12px; border-radius: 999px; border: 0; background: var(--accent); color: var(--accent-fg); cursor: pointer; white-space: nowrap; }
+.remind .rx { font: inherit; font-size: 20px; line-height: 1; width: 32px; height: 32px; border-radius: 50%; border: 0; background: none; color: var(--muted); cursor: pointer; }
+@media (max-width: 560px) { .remind { grid-template-columns: auto 1fr auto; } .remind .rgo { grid-column: 2 / -1; justify-self: start; } .remind .rx { grid-column: 3; grid-row: 1; } }
 .bib .d { font-size: 28px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 .bib .u { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .bib.urgent { border-color: var(--urgent); } .bib.urgent .d { color: var(--urgent); }
@@ -1009,7 +1043,7 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
 <div class="wrap">
   <header>
     <div class="topline"><div class="eyebrow">Norge · Sverige · Danmark · Finland · Island</div>
-      <div class="langpick" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><div class="setpop" id="setPop" role="dialog" hidden></div></div>
+      <div class="langpick" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
     <h1><b class="brand"><svg class="mark" viewBox="1.5 13.5 37 21" aria-hidden="true"><path d="M4 32a16 16 0 0 1 32 0" fill="none" stroke="#2f6fdc" stroke-width="5" stroke-linecap="round"/><path d="M11 32a9 9 0 0 1 18 0" fill="none" stroke="#1fae7c" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="31" r="2.6" fill="currentColor"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
     <div class="heroslides" id="heroslides" aria-hidden="true"><i></i><i></i></div><a class="herocredit" id="herocredit" target="_blank" rel="noopener"></a>
@@ -1156,6 +1190,34 @@ const LANG = (() => {
 })();
 document.documentElement.lang = LANG === "nb" ? "no" : LANG;
 const I18N = {
+"Lagret": ["Sparat", "Gemt", "Tallennetut", "Vistað", "Saved"],
+"Lagre": ["Spara", "Gem", "Tallenna", "Vista", "Save"],
+"Lagret av deg": ["Sparat av dig", "Gemt af dig", "Tallentamasi", "Vistað af þér", "Saved by you"],
+"Lagre arrangementet": ["Spara evenemanget", "Gem arrangementet", "Tallenna tapahtuma", "Vista viðburðinn", "Save event"],
+"Legg i kalender": ["Lägg i kalendern", "Føj til kalender", "Lisää kalenteriin", "Bæta í dagatal", "Add to calendar"],
+"Legg alle i kalenderen": ["Lägg alla i kalendern", "Føj alle til kalenderen", "Lisää kaikki kalenteriin", "Bæta öllu í dagatal", "Add all to calendar"],
+"Fjern": ["Ta bort", "Fjern", "Poista", "Fjarlægja", "Remove"],
+"Påminnelse": ["Påminnelse", "Påmindelse", "Muistutus", "Áminning", "Reminder"],
+"Se lagret": ["Visa sparade", "Se gemte", "Näytä tallennetut", "Sjá vistað", "See saved"],
+"Du har ikke lagret noe ennå. Trykk på hjertet ved en jobb eller et arrangement, så havner det her.": ["Du har inte sparat något ännu. Tryck på hjärtat vid ett jobb eller ett evenemang så hamnar det här.", "Du har ikke gemt noget endnu. Tryk på hjertet ved et job eller et arrangement, så havner det her.", "Et ole vielä tallentanut mitään. Paina sydäntä työpaikan tai tapahtuman kohdalla, niin se tulee tänne.", "Þú hefur ekki vistað neitt enn. Ýttu á hjartað við starf eða viðburð og það birtist hér.", "You haven't saved anything yet. Tap the heart on a job or an event and it will show up here."],
+"Vi minner deg på frister når du åpner Aurora. Vil du ha varsel på telefonen, kan du legge dem i kalenderen.": ["Vi påminner dig om datum när du öppnar Aurora. Vill du ha en avisering i telefonen kan du lägga dem i kalendern.", "Vi minder dig om frister, når du åbner Aurora. Vil du have en besked på telefonen, kan du føje dem til kalenderen.", "Muistutamme päivämääristä, kun avaat Auroran. Jos haluat ilmoituksen puhelimeen, lisää ne kalenteriin.", "Við minnum þig á fresti þegar þú opnar Aurora. Viltu fá tilkynningu í símann geturðu bætt þeim í dagatalið.", "We remind you of deadlines when you open Aurora. For a reminder on your phone, add them to your calendar."],
+"Fristen har gått ut": ["Sista dagen har passerat", "Fristen er overskredet", "Haku on päättynyt", "Fresturinn er liðinn", "Deadline has passed"],
+"Fristen er i dag": ["Sista dag i dag", "Fristen er i dag", "Haku päättyy tänään", "Fresturinn rennur út í dag", "Deadline is today"],
+"Fristen er i morgen": ["Sista dag i morgon", "Fristen er i morgen", "Haku päättyy huomenna", "Fresturinn rennur út á morgun", "Deadline is tomorrow"],
+"Frist om {n} dager": ["Sista dag om {n} dagar", "Frist om {n} dage", "Aikaa {n} päivää", "Frestur eftir {n} daga", "Deadline in {n} days"],
+"Løpende frist": ["Löpande ansökan", "Løbende frist", "Jatkuva haku", "Opinn frestur", "Rolling deadline"],
+"Pågår nå": ["Pågår nu", "I gang nu", "Käynnissä nyt", "Stendur yfir", "Happening now"],
+"Om {n} dager": ["Om {n} dagar", "Om {n} dage", "{n} päivän päästä", "Eftir {n} daga", "In {n} days"],
+"Dato ikke klar ennå": ["Datum inte klart ännu", "Dato ikke fastsat endnu", "Päivä ei vielä tiedossa", "Dagsetning ekki ljós enn", "Date not set yet"],
+"Søknadsfristen for «{x}» går ut {w}.": ["Sista ansökningsdag för «{x}» är {w}.", "Ansøgningsfristen for «{x}» udløber {w}.", "Haku paikkaan «{x}» päättyy {w}.", "Umsóknarfrestur fyrir «{x}» rennur út {w}.", "The deadline for «{x}» is {w}."],
+"«{x}» starter {w}.": ["«{x}» börjar {w}.", "«{x}» starter {w}.", "«{x}» alkaa {w}.", "«{x}» hefst {w}.", "«{x}» starts {w}."],
+"i dag": ["i dag", "i dag", "tänään", "í dag", "today"],
+"i morgen": ["i morgon", "i morgen", "huomenna", "á morgun", "tomorrow"],
+"om {n} dager": ["om {n} dagar", "om {n} dage", "{n} päivän päästä", "eftir {n} daga", "in {n} days"],
+"og {n} til": ["och {n} till", "og {n} til", "ja {n} muuta", "og {n} í viðbót", "and {n} more"],
+"Søknadsfrist: {x}": ["Sista ansökningsdag: {x}", "Ansøgningsfrist: {x}", "Haku päättyy: {x}", "Umsóknarfrestur: {x}", "Deadline: {x}"],
+"Frist om": ["Sista dag om", "Frist om", "Aikaa", "Frestur eftir", "Deadline in"],
+"Frist": ["Sista dag", "Frist", "Haku päättyy", "Frestur", "Deadline"],
 // Toppen
 "Norge · Sverige · Danmark · Finland · Island": ["Norge · Sverige · Danmark · Finland · Island","Norge · Sverige · Danmark · Finland · Island","Norja · Ruotsi · Tanska · Suomi · Islanti","Noregur · Svíþjóð · Danmörk · Finnland · Ísland","Norway · Sweden · Denmark · Finland · Iceland"],
 "Idretten i Norden": ["Idrotten i Norden","Idrætten i Norden","Pohjoismaiden urheilu","Íþróttir á Norðurlöndum","Sport in the Nordics"],
@@ -2398,6 +2460,17 @@ try { favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); } catch
 function toggleFav(id) {
   favs.has(id) ? favs.delete(id) : favs.add(id);
   try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch (e) {}
+  if (typeof updSaved === "function") updSaved();
+}
+// Lagrede arrangementer ligger for seg selv, så «Bare favoritter» under Jobber bare teller jobber
+const EVSAVE_KEY = "aurora-lagrede-arr";
+let evSaved = new Set();
+try { evSaved = new Set(JSON.parse(localStorage.getItem(EVSAVE_KEY) || "[]")); } catch (e) {}
+function toggleEvSave(id) {
+  evSaved.has(id) ? evSaved.delete(id) : evSaved.add(id);
+  try { localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {}
+  document.querySelectorAll(`.evfav[data-id="${id}"]`).forEach(b => b.setAttribute("aria-pressed", String(evSaved.has(id))));
+  updSaved();
 }
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -2426,8 +2499,8 @@ function matches(j, skip) {
 function bib(j) {
   const n = daysLeft(j.dl);
   if (n === null) return `<div class="bib open"><div class="d">${t("Løpende")}</div><div class="u">${t("frist")}</div></div>`;
-  if (n <= 0) return `<div class="bib urgent"><div class="d today">${t("I dag")}</div><div class="u">${fmtDate(j.dl)}</div></div>`;
-  return `<div class="bib ${n <= 3 ? "urgent" : n <= 10 ? "soon" : ""}"><div class="d">${n}</div><div class="u">${n === 1 ? t("dag igjen") : t("dager")}</div></div>`;
+  if (n <= 0) return `<div class="bib urgent"><div class="k">${t("Frist")}</div><div class="d today">${t("I dag")}</div><div class="u">${fmtDate(j.dl)}</div></div>`;
+  return `<div class="bib ${n <= 3 ? "urgent" : n <= 10 ? "soon" : ""}"><div class="k">${t("Frist om")}</div><div class="d">${n}</div><div class="u">${n === 1 ? t("dag") : t("dager")}</div></div>`;
 }
 
 function renderBoard() {
@@ -3277,7 +3350,7 @@ const SPORT_KIND = { "Ishockey": "hockey", "Basketball": "basket", "Kano": "ro",
 const sportIcon = sp => `<span class="sic" title="${esc(t(sp))}"><svg viewBox="0 0 24 24" aria-hidden="true">${SPORT_ICON[SPORT_KIND[sp] || "medalje"]}</svg></span>`;
 const evBib = e => evDate(e) ? `<div class="bib"><div class="d">${+evDate(e)[0].slice(8)}${evDate(e)[1] && evDate(e)[1].slice(5, 7) === evDate(e)[0].slice(5, 7) ? "–" + +evDate(e)[1].slice(8) : ""}</div><div class="u">${monthName(evMonth(e)).slice(0, 3)}</div></div>` : `<div class="bib"><div class="d mon">${monthName(e.m).slice(0, 3)}</div><div class="u">${evYear(e)}</div></div>`;
 const evTile = e => `<article class="evtile"><button type="button" class="job-hit ev-hit" data-id="${e.id}" aria-label="${esc(t(e.t))}. ${t("Les mer")}"></button>
-    <div class="etop">${evBib(e)}${sportIcon(e.sport)}</div>
+    <div class="etop">${evBib(e)}<span class="eside"><button type="button" class="fav evfav" data-id="${e.id}" aria-pressed="${evSaved.has(e.id)}" aria-label="${t("Lagre arrangementet")}">${HEART}</button>${sportIcon(e.sport)}</span></div>
     <div class="jtitle">${esc(t(e.t))}</div>
     <div class="trans">${esc(t(e.sum))}</div>
     <div class="meta"><span class="emp">${esc(evWhen(e))}</span><span class="where">${flag(e.c)}${esc(e.place)}</span></div>
@@ -4565,7 +4638,7 @@ function openJob(id) {
     </div>
     <div class="sheet-body">
       <div class="facts">
-        <div class="fact"><span class="k">${t("Søknadsfrist")}</span><span class="v ${dlCls}">${esc(dlText)}${n !== null && n > 0 ? ` (${n} ${n === 1 ? t("dag") : t("dager")})` : ""}</span></div>
+        <div class="fact"><span class="k">${t("Søknadsfrist")}</span><span class="v ${dlCls}">${esc(dlText)}${n !== null && n > 0 ? ` (${n === 1 ? t("i morgen") : t("om {n} dager", { n })})` : ""}</span></div>
         <div class="fact"><span class="k">${t("Sted")}</span><span class="v">${esc(j.place)}</span></div>
         <div class="fact"><span class="k">${t("Stilling")}</span><span class="v">${esc(j.kind || t("Se annonsen"))}</span></div>
         ${j.start ? `<div class="fact"><span class="k">${t("Oppstart")}</span><span class="v">${esc(j.start)}</span></div>` : ""}
@@ -4581,7 +4654,7 @@ function openJob(id) {
       <div class="actions">
         <div class="btns">
           <a class="cta" href="${j.url}" target="_blank" rel="noopener">${t("Les hele annonsen og søk")} ${ARROW}</a>
-          <button type="button" class="share" id="shareBtn">${SHARE_ICON}${t("Del")}</button>
+          <button type="button" class="share" id="shareBtn">${SHARE_ICON}${t("Del")}</button>${sheetSaveBtns("job", j.id)}
         </div>
         <span class="src" id="shareMsg">${t("Annonsen ligger på {x}", { x: esc(src) })}</span>
       </div>
@@ -4591,6 +4664,7 @@ function openJob(id) {
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
   $("shareBtn").onclick = () => shareThing(j.t, `${ARTIFACT_URL}#${j.id}`);
+  bindSheetSave("job", j.id);
   $("closeBtn").focus();
   if (location.hash !== "#" + j.id) history.replaceState(null, "", "#" + j.id);
 }
@@ -4641,7 +4715,7 @@ function openEvent(id) {
       <div class="actions">
         <div class="btns">
           <a class="cta" href="${e.url}" target="_blank" rel="noopener">${e.kind === "se" ? t("Program og billetter") : t("Påmelding og program")} ${ARROW}</a>
-          <button type="button" class="share" id="shareBtn">${SHARE_ICON}${t("Del")}</button>
+          <button type="button" class="share" id="shareBtn">${SHARE_ICON}${t("Del")}</button>${sheetSaveBtns("ev", e.id)}
         </div>
         <span class="src" id="shareMsg">${esc(new URL(e.url).hostname.replace(/^www\./, ""))}</span>
       </div>
@@ -4651,9 +4725,143 @@ function openEvent(id) {
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
   $("shareBtn").onclick = () => shareThing(t(e.t), `${ARTIFACT_URL}#${e.id}`);
+  bindSheetSave("ev", e.id);
   $("closeBtn").focus();
   if (location.hash !== "#" + e.id) history.replaceState(null, "", "#" + e.id);
 }
+// ---------- Lagret: jobber og arrangementer du har trykket hjerte på, med påminnelse og kalender ----------
+const isSaved = (kind, id) => kind === "job" ? favs.has(id) : evSaved.has(id);
+const BELL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0"/></svg>';
+const CAL = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
+function savedItems() {
+  const out = [];
+  for (const id of favs) { const j = JOBS.find(x => x.id === id); if (!j) continue;
+    out.push({ id, kind: "job", title: j.t, sub: `${j.emp} · ${j.place}`, start: j.dl || null, end: j.dl || null, n: daysLeft(j.dl), url: j.url }); }
+  for (const id of evSaved) { const e = EVENTS.find(x => x.id === id); if (!e) continue; const d = evDate(e);
+    out.push({ id, kind: "ev", title: t(e.t), sub: `${evWhen(e)} · ${e.place}`, start: d ? d[0] : null, end: d ? d[d.length - 1] : null, n: d ? daysLeft(d[0]) : null, url: e.url }); }
+  return out.sort((a, b) => (a.n === null ? 1e4 : a.n) - (b.n === null ? 1e4 : b.n));
+}
+function savedWhen(it) {
+  const n = it.n;
+  if (it.kind === "job") {
+    if (n === null) return [t("Løpende frist"), ""];
+    if (n < 0) return [t("Fristen har gått ut"), ""];
+    if (n === 0) return [t("Fristen er i dag"), "urgent"];
+    if (n === 1) return [t("Fristen er i morgen"), "urgent"];
+    return [t("Frist om {n} dager", { n }), n <= 3 ? "urgent" : n <= 10 ? "soon" : ""];
+  }
+  if (n === null) return [t("Dato ikke klar ennå"), ""];
+  if (n < 0) return [t("Pågår nå"), "urgent"];
+  if (n === 0) return [t("I dag"), "urgent"];
+  if (n === 1) return [t("I morgen"), "urgent"];
+  return [t("Om {n} dager", { n }), n <= 7 ? "soon" : ""];
+}
+// Jobber minnes på 3 dager før fristen, arrangementer en uke før
+const isDue = it => it.n !== null && it.n >= 0 && it.n <= (it.kind === "job" ? 3 : 7);
+function updSaved() {
+  const b = $("savedBtn"); if (!b) return;
+  const items = savedItems(), n = items.length;
+  $("savedN").hidden = !n; $("savedN").textContent = n;
+  b.classList.toggle("due", items.some(isDue));
+  b.setAttribute("aria-label", t("Lagret") + (n ? ` (${n})` : "")); b.title = t("Lagret");
+}
+// Kalenderfil (.ics) med varsel, så telefonen minner deg på det selv når Aurora er lukket
+function icsFile(items) {
+  const x = s => String(s).replace(/\\/g, "\\\\").replace(/[;,]/g, m => "\\" + m).replace(/\n/g, "\\n");
+  const ymd = d => d.replace(/-/g, "");
+  const next = d => { const z = new Date(d + "T12:00:00"); z.setDate(z.getDate() + 1); return z.toISOString().slice(0, 10); };
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  const ev = items.filter(it => it.start).map(it => {
+    const job = it.kind === "job", sum = job ? t("Søknadsfrist: {x}", { x: it.title }) : it.title;
+    const alarm = tr => `BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${x(sum)}\r\nTRIGGER:${tr}\r\nEND:VALARM\r\n`;
+    return `BEGIN:VEVENT\r\nUID:${it.kind}-${it.id}@aurora\r\nDTSTAMP:${stamp}\r\nDTSTART;VALUE=DATE:${ymd(it.start)}\r\nDTEND;VALUE=DATE:${ymd(next(it.end))}\r\nSUMMARY:${x(sum)}\r\nDESCRIPTION:${x(it.sub + "\n" + it.url)}\r\nURL:${it.url}\r\n`
+      + (job ? alarm("-P3D") + alarm("-PT15H") : alarm("-P7D") + alarm("-P1D")) + "END:VEVENT\r\n";
+  });
+  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Aurora//Idretten i Norden//NO\r\nCALSCALE:GREGORIAN\r\n${ev.join("")}END:VCALENDAR\r\n`;
+}
+function downloadIcs(items, name) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([icsFile(items)], { type: "text/calendar;charset=utf-8" }));
+  a.download = name + ".ics"; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+const slug = s => s.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "aurora";
+function sheetSaveBtns(kind, id) {
+  const on = isSaved(kind, id), it = { job: () => JOBS.find(x => x.id === id), ev: () => EVENTS.find(x => x.id === id) }[kind]();
+  const dated = kind === "job" ? !!(it && it.dl && daysLeft(it.dl) >= 0) : !!(it && evDate(it));
+  return `<button type="button" class="share savetog" id="saveTog" aria-pressed="${on}">${HEART}${t(on ? "Lagret" : "Lagre")}</button>`
+    + (dated ? `<button type="button" class="share" id="calBtn">${CAL}${t("Legg i kalender")}</button>` : "");
+}
+function bindSheetSave(kind, id) {
+  const b = $("saveTog");
+  if (b) b.onclick = () => { kind === "job" ? toggleFav(id) : toggleEvSave(id); const on = isSaved(kind, id);
+    b.setAttribute("aria-pressed", String(on)); b.innerHTML = HEART + t(on ? "Lagret" : "Lagre");
+    if (kind === "job") { const f = $("fav-" + id); if (f) f.setAttribute("aria-pressed", String(on)); if ($("favN")) $("favN").textContent = favs.size; } };
+  const c = $("calBtn");
+  if (c) c.onclick = () => { const it = savedItemFor(kind, id); if (it) downloadIcs([it], slug(it.title)); };
+}
+// Bygger et element på samme måte som i lista, også for ting som ikke er lagret
+function savedItemFor(kind, id) {
+  const had = isSaved(kind, id);
+  if (!had) (kind === "job" ? favs : evSaved).add(id);
+  const it = savedItems().find(x => x.kind === kind && x.id === id);
+  if (!had) (kind === "job" ? favs : evSaved).delete(id);
+  return it;
+}
+function openSaved() {
+  const items = savedItems();
+  const row = it => { const [w, cls] = savedWhen(it);
+    return `<div class="svitem${it.kind === "job" && it.n !== null && it.n < 0 ? " gone" : ""}">
+      <button type="button" class="svt" data-k="${it.kind}" data-id="${it.id}">${esc(it.title)}</button>
+      <span class="svw ${cls}">${esc(w)}</span>
+      <span class="svs">${esc(it.sub)}</span>
+      <div class="svb">${it.start && !(it.kind === "job" && it.n < 0) ? `<button type="button" data-cal="${it.kind}|${it.id}">${t("Legg i kalender")}</button>` : ""}<button type="button" data-rm="${it.kind}|${it.id}">${t("Fjern")}</button></div>
+    </div>`; };
+  const jobs = items.filter(i => i.kind === "job"), evs = items.filter(i => i.kind === "ev");
+  const dated = items.filter(i => i.start && !(i.kind === "job" && i.n < 0));
+  $("sheetBody").innerHTML = `
+    <div class="sheet-top">
+      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="s-eyebrow">Aurora</div>
+      <h2 class="s-title" id="s-title">${t("Lagret av deg")}</h2>
+      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      ${items.length ? `<p class="s-note">${t("Vi minner deg på frister når du åpner Aurora. Vil du ha varsel på telefonen, kan du legge dem i kalenderen.")}</p>
+        ${evs.length ? `<h3 class="sv-h">${t("Arrangementer")}</h3><div class="svlist">${evs.map(row).join("")}</div>` : ""}
+        ${jobs.length ? `<h3 class="sv-h">${t("Jobber")}</h3><div class="svlist">${jobs.map(row).join("")}</div>` : ""}
+        ${dated.length > 1 ? `<div class="actions"><div class="btns"><button type="button" class="share" id="calAll">${CAL}${t("Legg alle i kalenderen")}</button></div></div>` : ""}`
+      : `<div class="empty">${t("Du har ikke lagret noe ennå. Trykk på hjertet ved en jobb eller et arrangement, så havner det her.")}</div>`}
+    </div>`;
+  const dlg = $("sheet");
+  if (!dlg.open) { lastFocus = document.activeElement; dlg.showModal(); }
+  $("closeBtn").onclick = closeJob; $("closeBtn").focus();
+  const body = $("sheetBody");
+  body.querySelectorAll(".svt").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
+  body.querySelectorAll("[data-cal]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.cal.split("|"); const it = items.find(x => x.kind === k && x.id === id); if (it) downloadIcs([it], slug(it.title)); });
+  body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.rm.split("|");
+    k === "job" ? toggleFav(id) : toggleEvSave(id); if (typeof render === "function") render(); openSaved(); });
+  if ($("calAll")) $("calAll").onclick = () => downloadIcs(dated, "aurora-lagret");
+}
+// Når du åpner siden: en liten boks om noe du har lagret nærmer seg (én gang per ting per dag)
+function checkReminders() {
+  const due = savedItems().filter(isDue); if (!due.length) return;
+  let seen = {}; try { seen = JSON.parse(localStorage.getItem("aurora-paaminnet") || "{}"); } catch (e) {}
+  const today = TODAY.toISOString().slice(0, 10), fresh = due.filter(it => seen[it.kind + it.id] !== today);
+  if (!fresh.length) return;
+  fresh.forEach(it => seen[it.kind + it.id] = today);
+  try { localStorage.setItem("aurora-paaminnet", JSON.stringify(seen)); } catch (e) {}
+  const it = fresh[0], w = it.n === 0 ? t("i dag") : it.n === 1 ? t("i morgen") : t("om {n} dager", { n: it.n });
+  const msg = (it.kind === "job" ? t("Søknadsfristen for «{x}» går ut {w}.", { x: it.title, w }) : t("«{x}» starter {w}.", { x: it.title, w }))
+    + (fresh.length > 1 ? ` (+${fresh.length - 1})` : "");
+  const box = document.createElement("div"); box.className = "remind"; box.setAttribute("role", "status");
+  box.innerHTML = `<span class="ric">${BELL}</span><div><b>${t("Påminnelse")}</b><span>${esc(msg)}</span></div><button type="button" class="rgo">${t("Se lagret")}</button><button type="button" class="rx" aria-label="${t("Lukk")}">×</button>`;
+  document.body.appendChild(box);
+  box.querySelector(".rx").onclick = () => box.remove();
+  box.querySelector(".rgo").onclick = () => { box.remove(); openSaved(); };
+}
+document.addEventListener("click", ev => { const b = ev.target.closest(".evfav"); if (!b) return; ev.preventDefault(); ev.stopPropagation(); toggleEvSave(b.dataset.id); });
+$("savedBtn").onclick = openSaved;
 function closeJob() {
   const dlg = $("sheet");
   if (dlg.open) dlg.close();
@@ -4678,6 +4886,8 @@ translateStatic();
 renderFoot();
 setupGlobalSearch();
 setupSettings();
+updSaved();
+setTimeout(checkReminders, 1500);
 setupAuth();
 setupFilters();
 buildStage();
