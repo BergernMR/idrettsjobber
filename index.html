@@ -1190,6 +1190,9 @@ const LANG = (() => {
 })();
 document.documentElement.lang = LANG === "nb" ? "no" : LANG;
 const I18N = {
+"Logg inn eller lag en gratis bruker for å lagre.": ["Logga in eller skapa en gratis användare för att spara.", "Log ind eller opret en gratis bruger for at gemme.", "Kirjaudu sisään tai luo ilmainen käyttäjä tallentaaksesi.", "Skráðu þig inn eða búðu til ókeypis aðgang til að vista.", "Log in or create a free account to save."],
+"Du må logge inn for å lagre jobber og arrangementer. Da finner du dem igjen på mobil og PC.": ["Du måste logga in för att spara jobb och evenemang. Då hittar du dem igen på mobil och dator.", "Du skal logge ind for at gemme job og arrangementer. Så finder du dem igen på mobil og pc.", "Kirjaudu sisään tallentaaksesi työpaikkoja ja tapahtumia. Löydät ne silloin puhelimelta ja tietokoneelta.", "Þú þarft að skrá þig inn til að vista störf og viðburði. Þá finnurðu þau aftur í síma og tölvu.", "Log in to save jobs and events. Then you will find them again on your phone and computer."],
+"Logg inn eller lag bruker": ["Logga in eller skapa användare", "Log ind eller opret bruger", "Kirjaudu tai luo käyttäjä", "Skráðu þig inn eða búðu til aðgang", "Log in or sign up"],
 "Lagret": ["Sparat", "Gemt", "Tallennetut", "Vistað", "Saved"],
 "Lagre": ["Spara", "Gem", "Tallenna", "Vista", "Save"],
 "Lagret av deg": ["Sparat av dig", "Gemt af dig", "Tallentamasi", "Vistað af þér", "Saved by you"],
@@ -2457,20 +2460,35 @@ const LINK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 
 const FAV_KEY = "idrettsjobber-favoritter";
 let favs = new Set();
 try { favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); } catch (e) {}
+// Du må være logget inn for å lagre, så det du lagrer følger kontoen din
+function needLogin() {
+  if (!SUPA.key || authUser) return false;
+  askLogin(t("Logg inn eller lag en gratis bruker for å lagre."));
+  return true;
+}
+// Innloggingen ligger under tannhjulet øverst, så siden ruller opp dit
+function askLogin(msg) {
+  if ($("sheet").open) $("sheet").close();
+  authMode = "in"; authMsg = msg; scrollTo({ top: 0, behavior: "smooth" });
+  setTimeout(() => { openSettings(); const m = $("aMail"); if (m) m.focus({ preventScroll: true }); }, 50);
+}
 function toggleFav(id) {
+  if (needLogin()) return;
   favs.has(id) ? favs.delete(id) : favs.add(id);
   try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch (e) {}
   if (typeof updSaved === "function") updSaved();
+  cloudSave();
 }
 // Lagrede arrangementer ligger for seg selv, så «Bare favoritter» under Jobber bare teller jobber
 const EVSAVE_KEY = "aurora-lagrede-arr";
 let evSaved = new Set();
 try { evSaved = new Set(JSON.parse(localStorage.getItem(EVSAVE_KEY) || "[]")); } catch (e) {}
 function toggleEvSave(id) {
+  if (needLogin()) return;
   evSaved.has(id) ? evSaved.delete(id) : evSaved.add(id);
   try { localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {}
   document.querySelectorAll(`.evfav[data-id="${id}"]`).forEach(b => b.setAttribute("aria-pressed", String(evSaved.has(id))));
-  updSaved();
+  updSaved(); cloudSave();
 }
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -2606,10 +2624,16 @@ function loadSupa() {
     s.onerror = () => ok(null); document.head.appendChild(s); });
 }
 // Slår sammen det som er lagret på kontoen med det som er valgt i denne nettleseren
+// savedCol blir false hvis tabellen ennå mangler kolonnen «saved», så klubbene fortsatt lagres
+let savedCol = true;
 async function cloudLoad() {
-  const { data } = await sb.from("profiles").select("clubs,likes,home").eq("id", authUser.id).maybeSingle();
+  let r = await sb.from("profiles").select("clubs,likes,home,saved").eq("id", authUser.id).maybeSingle();
+  if (r.error && /saved/i.test(r.error.message)) { savedCol = false; r = await sb.from("profiles").select("clubs,likes,home").eq("id", authUser.id).maybeSingle(); }
+  const data = r.data;
   if (data) { (data.clubs || []).forEach(id => follows.add(id)); (data.likes || []).forEach(k => likes.add(k));
     if (data.home && typeof data.home.lat === "number") home = data.home;
+    if (data.saved) { (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
+      try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {} updSaved(); }
     try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} }
   await cloudSave(true); redrawAuth(); if (typeof render === "function") render();
 }
@@ -2617,8 +2641,17 @@ let cloudTimer;
 function cloudSave(now) {
   if (!sb || !authUser) return;
   clearTimeout(cloudTimer);
-  const go = () => sb.from("profiles").upsert({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() }).then(r => { if (r.error) console.warn("Aurora lagring:", r.error.message); });
+  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved] } } : {});
+  const go = () => sb.from("profiles").upsert(row()).then(r => {
+    if (r.error && savedCol && /saved/i.test(r.error.message)) { savedCol = false; return go(); }
+    if (r.error) console.warn("Aurora lagring:", r.error.message); });
   if (now === true) return go(); cloudTimer = setTimeout(go, 800);
+}
+// Ved utlogging: klubbene, idrettene, hjemstedet og det du har lagret ligger trygt på kontoen, så de fjernes fra denne nettleseren
+function clearLocalPrefs() {
+  follows.clear(); likes.clear(); favs.clear(); evSaved.clear(); home = { name: "Oslo", lat: 59.91, lon: 10.75 };
+  try { [FOLLOW_KEY, "aurora-idretter", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  updSaved();
 }
 let redrawAuth = () => {};
 function accountHtml() {
@@ -2668,7 +2701,8 @@ function setupSettings() {
       if (err) { draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1]; } };
     pop.querySelectorAll("[data-a]").forEach(b => b.onclick = async () => {
       if (b.dataset.a === "del") { if (!confirm(t("Slette klubbene og valgene som er lagret på kontoen din?"))) return; await sb.from("profiles").delete().eq("id", authUser.id); }
-      await sb.auth.signOut(); authUser = null; authMsg = ""; authMode = "in"; draw(); if (typeof render === "function") render(); });
+      else await cloudSave(true);
+      await sb.auth.signOut(); authUser = null; authMsg = ""; authMode = "in"; clearLocalPrefs(); draw(); redrawAuth(); if (typeof render === "function") render(); });
     pop.querySelectorAll("[data-v]").forEach(b => b.onclick = () => { applyTheme(b.dataset.v); try { b.dataset.v === "auto" ? localStorage.removeItem("aurora-tema") : localStorage.setItem("aurora-tema", b.dataset.v); } catch (e) {} draw(); });
   };
   const close = () => { pop.hidden = true; btn.setAttribute("aria-expanded", "false"); };
@@ -4835,6 +4869,8 @@ function openSaved() {
         ${evs.length ? `<h3 class="sv-h">${t("Arrangementer")}</h3><div class="svlist">${evs.map(row).join("")}</div>` : ""}
         ${jobs.length ? `<h3 class="sv-h">${t("Jobber")}</h3><div class="svlist">${jobs.map(row).join("")}</div>` : ""}
         ${dated.length > 1 ? `<div class="actions"><div class="btns"><button type="button" class="share" id="calAll">${CAL}${t("Legg alle i kalenderen")}</button></div></div>` : ""}`
+      : SUPA.key && !authUser ? `<div class="empty">${t("Du må logge inn for å lagre jobber og arrangementer. Da finner du dem igjen på mobil og PC.")}</div>
+        <div class="actions"><div class="btns"><button type="button" class="cta" id="svLogin">${t("Logg inn eller lag bruker")}</button></div></div>`
       : `<div class="empty">${t("Du har ikke lagret noe ennå. Trykk på hjertet ved en jobb eller et arrangement, så havner det her.")}</div>`}
     </div>`;
   const dlg = $("sheet");
@@ -4845,6 +4881,7 @@ function openSaved() {
   body.querySelectorAll("[data-cal]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.cal.split("|"); const it = items.find(x => x.kind === k && x.id === id); if (it) downloadIcs([it], slug(it.title)); });
   body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.rm.split("|");
     k === "job" ? toggleFav(id) : toggleEvSave(id); if (typeof render === "function") render(); openSaved(); });
+  if ($("svLogin")) $("svLogin").onclick = () => askLogin("");
   if ($("calAll")) $("calAll").onclick = () => downloadIcs(dated, "aurora-lagret");
 }
 // Når du åpner siden: en liten boks om noe du har lagret nærmer seg (én gang per ting per dag)
