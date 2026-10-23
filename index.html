@@ -1663,7 +1663,7 @@ const I18N = {
 "Lagre nytt passord": ["Spara nytt lösenord", "Gem ny adgangskode", "Tallenna uusi salasana", "Vista nýtt lykilorð", "Save new password"],
 "Lag bruker": ["Skapa konto", "Opret bruger", "Luo tili", "Stofna aðgang", "Create account"],
 "Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.": ["Skapa ett gratis konto, så har du dina klubbar och val på mobil och dator.", "Opret en gratis bruger, så har du dine klubber og valg på mobil og computer.", "Luo ilmainen tili, niin seurasi ja valintasi ovat puhelimessa ja tietokoneella.", "Stofnaðu ókeypis aðgang og hafðu félögin þín og val í síma og tölvu.", "Create a free account to keep your clubs and choices on phone and computer."],
-"Fornavn": ["Förnamn", "Fornavn", "Etunimi", "Fornafn", "First name"],
+"Brukernavn": ["Användarnamn", "Brugernavn", "Käyttäjänimi", "Notandanafn", "Username"],
 "Passord (minst 8 tegn)": ["Lösenord (minst 8 tecken)", "Adgangskode (mindst 8 tegn)", "Salasana (vähintään 8 merkkiä)", "Lykilorð (minnst 8 stafir)", "Password (at least 8 characters)"],
 "Passord": ["Lösenord", "Adgangskode", "Salasana", "Lykilorð", "Password"],
 "Send lenke for nytt passord": ["Skicka länk för nytt lösenord", "Send link til ny adgangskode", "Lähetä linkki uuteen salasanaan", "Senda tengil fyrir nýtt lykilorð", "Send new password link"],
@@ -2594,7 +2594,7 @@ try { applyTheme(localStorage.getItem("aurora-tema")); } catch (e) {}
 // Innlogging med Supabase: e-postlenke (og Google senere). Lagrer bare klubber, idretter og hjemsted i tabellen profiles.
 const SUPA = { url: "https://beddkwgxhdyloiewhpll.supabase.co", key: "sb_publishable__K2LpHIMgT5XxGlpCwH5bQ_nJ2Qz3iH" };
 let sb = null, authUser = null, authMsg = "", authMode = "up", openSettings = () => {};
-const authName = () => authUser ? (authUser.user_metadata?.full_name || authUser.user_metadata?.name || "").split(" ")[0] : "";
+const authName = () => { const m = authUser?.user_metadata || {}; return m.username || (m.full_name || m.name || "").split(" ")[0] || ""; };
 function loadSupa() {
   if (sb || !SUPA.key) return Promise.resolve(sb);
   return new Promise(ok => { const s = document.createElement("script");
@@ -2631,7 +2631,7 @@ function accountHtml() {
   const mail = `<input type="email" id="aMail" required autocomplete="email" placeholder="${t("E-post")}" aria-label="${t("E-post")}">`;
   return `<p class="sl">${t("Konto")}</p><div class="seg" role="tablist">${[["up", "Lag bruker"], ["in", "Logg inn"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
     ${m === "up" ? `<small>${t("Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.")}</small>` : ""}
-    <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required autocomplete="given-name" placeholder="${t("Fornavn")}" aria-label="${t("Fornavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
+    <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required minlength="2" maxlength="30" autocomplete="username" placeholder="${t("Brukernavn")}" aria-label="${t("Brukernavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
     <button type="submit" class="abtn">${t(m === "up" ? "Lag bruker" : m === "in" ? "Logg inn" : "Send lenke for nytt passord")}</button></form>
     ${m === "in" ? `<button type="button" class="alink" data-m="reset">${t("Glemt passordet?")}</button>` : m === "reset" ? `<button type="button" class="alink" data-m="in">← ${t("Tilbake")}</button>` : ""}
     ${authMsg ? `<small class="amsg">${esc(authMsg)}</small>` : ""}
@@ -2656,7 +2656,7 @@ function setupSettings() {
       authMsg = t("Vent litt …"); const keep = [v("aName"), v("aMail")]; draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1];
       const c = await loadSupa(); if (!c) { authMsg = t("Fikk ikke kontakt. Prøv igjen senere."); return draw(); }
       let r;
-      if (authMode === "up") { r = await c.auth.signUp({ email: keep[1], password: pw, options: { data: { full_name: keep[0] }, emailRedirectTo: to } });
+      if (authMode === "up") { r = await c.auth.signUp({ email: keep[1], password: pw, options: { data: { username: keep[0] }, emailRedirectTo: to } });
         if (!r.error && !r.data.session) { authMsg = t("Nesten ferdig! Vi har sendt deg en e-post. Trykk på lenken i den for å bekrefte brukeren din."); authMode = "in"; return draw(); } }
       else if (authMode === "in") r = await c.auth.signInWithPassword({ email: keep[1], password: pw });
       else if (authMode === "reset") { r = await c.auth.resetPasswordForEmail(keep[1], { redirectTo: to }); if (!r.error) { authMsg = t("Sjekk e-posten din for en lenke til å lage nytt passord."); return draw(); } }
@@ -4176,19 +4176,23 @@ function renderClubs() {
 }
 // Forsiden: en hilsen og fire veier inn, uten tall og lister
 const HELLO = [["nb", "Velkommen"], ["sv", "Välkommen"], ["fi", "Tervetuloa"], ["is", "Velkomin"]];
-// Forsidebilder som bytter hvert 15. sekund: frie Unsplash-bilder (fri Unsplash-lisens), hentes i full skjermoppløsning opptil 4K
+// Forsidebilder som bytter hvert 15. sekund: 15 frie Unsplash-bilder (fri Unsplash-lisens), alle tatt i Norden (sted står bak hvert bilde), opptil 4K
 const HERO_PHOTOS = [
-  ["local:img/forside-klubber.jpg", "Lars Bo Nielsen", "https://unsplash.com/photos/group-of-people-playing-soccer-on-green-grass-field-during-daytime-zXn5qinCDKg", "center 30%"],
-  ["1505985098938-d1db678d02b3", "Martine Jacobsen", "https://unsplash.com/photos/two-person-snow-skiing-4yc275iIlkY", "center 40%"],
-  ["1584196825674-e6f64590b914", "Kryštof Zajíček", "https://unsplash.com/photos/handball-players-in-action-during-a-game-YN2xypsV_cM", "center 35%"],
-  ["1735509903556-602b4d7d3ae5", "Hannes Knutsson", "https://unsplash.com/photos/a-person-on-skis-jumping-in-the-air-2icXZAriT_E", "center 40%"],
-  ["1762013315117-1c8005ad2b41", "Eduard Delputte", "https://unsplash.com/photos/soccer-match-in-a-packed-stadium-at-night-65yjpk2HSlA", "center 50%"],
-  ["1700957952693-a9028dfa323c", "Matt Busse", "https://unsplash.com/photos/a-group-of-people-riding-skis-across-snow-covered-ground-nhltCS68spc", "center 60%"],
-  ["1545471977-94cac22e71ed", "Markus Spiske", "https://unsplash.com/photos/people-playing-ice-hockey-XHTBZpRBoi0", "center 50%"],
-  ["1681491313239-9d0033095fde", "Greg Rosenke", "https://unsplash.com/photos/a-person-on-skis-in-the-snow-with-mountains-in-the-background-M8ZY87VBMAw", "70% 35%"],
-  ["1530143311094-34d807799e8f", "Alessio Soggetti", "https://unsplash.com/photos/man-running-on-the-mountain-GYr9A2CPMhY", "center 60%"],
-  ["1565992441121-4367c2967103", "Matthieu Pétiard", "https://unsplash.com/photos/skier-jumping-over-snowy-slope-Pf6e3o0GL4M", "center 40%"],
-  ["1673901736252-0bdb2bac74ab", "Patrick Federi", "https://unsplash.com/photos/a-couple-of-people-riding-skis-down-a-snow-covered-slope-h-IX8DUk0pI", "center 50%"]
+  ["1505985098938-d1db678d02b3", "Martine Jacobsen", "https://unsplash.com/photos/two-person-snow-skiing-4yc275iIlkY", "center 40%"], // Lahti, FI
+  ["1561917423-2ce508445fe4", "Anders Krøgh Jørgensen", "https://unsplash.com/photos/people-onside-stadium-lASP347IMvE", "center 50%"], // Herning, DK
+  ["1683118829786-5ec8f4c758be", "Kato Bergli", "https://unsplash.com/photos/a-man-riding-skis-down-a-snow-covered-slope-Hhm9wpAr2V0", "center 55%"], // Rondane, NO
+  ["1710747533248-9153ff289230", "Atte Grönlund", "https://unsplash.com/photos/a-group-of-people-riding-skis-down-a-snow-covered-slope-YKGImVhzBdg", "center 50%"], // Åre, SE
+  ["1650449150503-a80d8a883632", "Freysteinn G. Jonsson", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-stadium-in-a-city-619HHezjQno", "center 50%"], // Reykjavík, IS
+  ["1533589067335-b0114bd0ab00", "Joakim Honkasalo", "https://unsplash.com/photos/man-using-bicycle-on-trail-BT9e-1olEkY", "center 50%"], // Borgå, FI
+  ["1511867511490-17e88600bd8e", "Marcus Löfvenberg", "https://unsplash.com/photos/man-riding-yellow-wakeboard-on-body-of-water-QDrkekkKTFM", "center 60%"], // Stockholm, SE
+  ["1677956718290-e546275b7531", "Stig Husby", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-field-Y9we8r_adGg", "center 50%"], // Røros, NO
+  ["1714423233581-62f2198c21d9", "Marcus Michaelsen", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-field-in-a-city-w1hZ3bF2KL8", "center 50%"], // Aarhus, DK
+  ["1642344497739-f07f66e6d22a", "Jamo Images", "https://unsplash.com/photos/a-group-of-people-riding-skis-down-a-snow-covered-slope-GeuqSpH8FpQ", "center 50%"], // Vuokatti, FI
+  ["1645613056335-cad20a2d5408", "Moa Alexandersson", "https://unsplash.com/photos/a-group-of-people-riding-skis-on-top-of-a-snow-covered-slope-KEY3WB4ou7w", "center 50%"], // Stockholm, SE
+  ["1683044414176-0e0d42b6fddf", "Harri P", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-field-hmzdQfpUqN8", "center 60%"], // Moskángáisi, NO
+  ["1610017128786-4a25f0f7756c", "Elin Tabitha", "https://unsplash.com/photos/man-in-white-long-sleeve-shirt-playing-soccer-in-grayscale-photography-Ob12aa_KLBQ", "center 60%"], // København, DK
+  ["1660227164836-7d3a7cf37e08", "Skellefteå kommun", "https://unsplash.com/photos/a-group-of-people-on-a-ski-slope-UdpcacE7BmQ", "center 50%"], // Skellefteå, SE
+  ["1676932390720-5a3e5ab28015", "Gunnar Ridderström", "https://unsplash.com/photos/a-person-riding-skis-down-a-snow-covered-slope-hrhOH92bqMc", "center 60%"] // Furusjøen, NO
 ];
 const heroUrl = id => { if (id.startsWith("local:")) return id.slice(6);
   const w = Math.min(3840, Math.ceil(innerWidth * (devicePixelRatio || 1) / 640) * 640);
