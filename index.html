@@ -756,11 +756,15 @@ body.dockon .controls { top: calc(env(safe-area-inset-top, 0px) + 66px); }
 .aform input { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); font: inherit; font-size: 14px; }
 .abtn { padding: 10px 14px; border-radius: 999px; border: 0; background: var(--fg); color: var(--bg); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 .abtn.ghost { background: none; color: var(--muted); border: 1px solid var(--line); }
+.alink { justify-self: start; padding: 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
 .arow { display: flex; gap: 8px; flex-wrap: wrap; }
 .acct { display: flex; align-items: center; gap: 10px; }
 .acct > span:last-child { display: grid; }
 .aava { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #1fae7c; color: #fff; font-weight: 800; }
 .setpop .amsg { color: var(--fg); font-weight: 600; }
+.setpop { max-height: calc(100vh - 110px); overflow-y: auto; }
+header:has(.setpop:not([hidden])) { z-index: 60; }
+header:has(.setpop:not([hidden])) .hdr, header:has(.setpop:not([hidden])) .topbar { z-index: 60; }
 .shareopts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
 .shareopts b { font-size: 13px; color: var(--muted); margin-right: 2px; }
 .shareopts button, .shareopts a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; }
@@ -1592,6 +1596,25 @@ const I18N = {
 "Noe gikk galt. Sjekk e-postadressen og prøv igjen.": ["Något gick fel. Kontrollera e-postadressen och försök igen.", "Noget gik galt. Tjek e-mailadressen og prøv igen.", "Jokin meni vikaan. Tarkista sähköpostiosoite ja yritä uudelleen.", "Eitthvað fór úrskeiðis. Athugaðu netfangið og reyndu aftur.", "Something went wrong. Check the email address and try again."],
 "Sjekk e-posten din og trykk på lenken for å logge inn.": ["Kolla din e-post och tryck på länken för att logga in.", "Tjek din e-mail og tryk på linket for at logge ind.", "Tarkista sähköpostisi ja kirjaudu linkistä.", "Athugaðu póstinn þinn og smelltu á tengilinn til að skrá þig inn.", "Check your email and tap the link to sign in."],
 "Slette klubbene og valgene som er lagret på kontoen din?": ["Radera klubbarna och valen som sparats på ditt konto?", "Slette klubberne og valgene, der er gemt på din konto?", "Poistetaanko tilillesi tallennetut seurat ja valinnat?", "Eyða félögum og vali sem vistað er á aðganginum þínum?", "Delete the clubs and choices saved to your account?"],
+"Nytt passord": ["Nytt lösenord", "Ny adgangskode", "Uusi salasana", "Nýtt lykilorð", "New password"],
+"Nytt passord (minst 8 tegn)": ["Nytt lösenord (minst 8 tecken)", "Ny adgangskode (mindst 8 tegn)", "Uusi salasana (vähintään 8 merkkiä)", "Nýtt lykilorð (minnst 8 stafir)", "New password (at least 8 characters)"],
+"Lagre nytt passord": ["Spara nytt lösenord", "Gem ny adgangskode", "Tallenna uusi salasana", "Vista nýtt lykilorð", "Save new password"],
+"Lag bruker": ["Skapa konto", "Opret bruger", "Luo tili", "Stofna aðgang", "Create account"],
+"Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.": ["Skapa ett gratis konto, så har du dina klubbar och val på mobil och dator.", "Opret en gratis bruger, så har du dine klubber og valg på mobil og computer.", "Luo ilmainen tili, niin seurasi ja valintasi ovat puhelimessa ja tietokoneella.", "Stofnaðu ókeypis aðgang og hafðu félögin þín og val í síma og tölvu.", "Create a free account to keep your clubs and choices on phone and computer."],
+"Fornavn": ["Förnamn", "Fornavn", "Etunimi", "Fornafn", "First name"],
+"Passord (minst 8 tegn)": ["Lösenord (minst 8 tecken)", "Adgangskode (mindst 8 tegn)", "Salasana (vähintään 8 merkkiä)", "Lykilorð (minnst 8 stafir)", "Password (at least 8 characters)"],
+"Passord": ["Lösenord", "Adgangskode", "Salasana", "Lykilorð", "Password"],
+"Send lenke for nytt passord": ["Skicka länk för nytt lösenord", "Send link til ny adgangskode", "Lähetä linkki uuteen salasanaan", "Senda tengil fyrir nýtt lykilorð", "Send new password link"],
+"Glemt passordet?": ["Glömt lösenordet?", "Glemt adgangskoden?", "Unohditko salasanan?", "Gleymt lykilorð?", "Forgot password?"],
+"Tilbake": ["Tillbaka", "Tilbage", "Takaisin", "Til baka", "Back"],
+"Vent litt …": ["Vänta lite …", "Vent lidt …", "Hetki …", "Augnablik …", "One moment …"],
+"Nesten ferdig! Vi har sendt deg en e-post. Trykk på lenken i den for å bekrefte brukeren din.": ["Nästan klart! Vi har skickat ett mejl. Tryck på länken för att bekräfta ditt konto.", "Næsten færdig! Vi har sendt dig en e-mail. Tryk på linket for at bekræfte din bruger.", "Melkein valmista! Lähetimme sähköpostin. Vahvista tilisi viestin linkistä.", "Næstum búið! Við sendum þér tölvupóst. Smelltu á tengilinn til að staðfesta aðganginn.", "Almost done! We sent you an email. Tap the link in it to confirm your account."],
+"Sjekk e-posten din for en lenke til å lage nytt passord.": ["Kolla din e-post för en länk till nytt lösenord.", "Tjek din e-mail for et link til ny adgangskode.", "Tarkista sähköpostistasi linkki uuteen salasanaan.", "Athugaðu póstinn þinn fyrir tengil að nýju lykilorði.", "Check your email for a link to set a new password."],
+"Det finnes allerede en bruker med denne e-posten. Logg inn i stedet.": ["Det finns redan ett konto med den här e-posten. Logga in i stället.", "Der findes allerede en bruger med denne e-mail. Log ind i stedet.", "Tällä sähköpostilla on jo tili. Kirjaudu sisään.", "Það er þegar til aðgangur með þessu netfangi. Skráðu þig inn.", "An account with this email already exists. Sign in instead."],
+"Feil e-post eller passord.": ["Fel e-post eller lösenord.", "Forkert e-mail eller adgangskode.", "Väärä sähköposti tai salasana.", "Rangt netfang eða lykilorð.", "Wrong email or password."],
+"Bekreft e-posten din først. Sjekk innboksen (og søppelpost).": ["Bekräfta din e-post först. Kolla inkorgen (och skräpposten).", "Bekræft din e-mail først. Tjek indbakken (og spam).", "Vahvista ensin sähköpostisi. Tarkista saapuneet (ja roskaposti).", "Staðfestu netfangið fyrst. Athugaðu innhólfið (og ruslpóst).", "Confirm your email first. Check your inbox (and spam)."],
+"Passordet må ha minst 8 tegn.": ["Lösenordet måste ha minst 8 tecken.", "Adgangskoden skal have mindst 8 tegn.", "Salasanassa on oltava vähintään 8 merkkiä.", "Lykilorðið þarf minnst 8 stafi.", "The password needs at least 8 characters."],
+"Vent litt før du prøver igjen.": ["Vänta lite innan du försöker igen.", "Vent lidt, før du prøver igen.", "Odota hetki ennen kuin yrität uudelleen.", "Bíddu aðeins áður en þú reynir aftur.", "Wait a little before trying again."],
 "Vis alle steder ✕": ["Visa alla orter ✕","Vis alle steder ✕","Näytä kaikki ✕","Sýna alla staði ✕","Show all places ✕"],
 "{x} og omegn": ["{x} med omnejd","{x} og omegn","{x} ja lähialue","{x} og nágrenni","{x} and around"],
 "jobb": ["jobb","job","työpaikka","starf","job"],
@@ -2497,14 +2520,15 @@ function applyTheme(v) { if (v === "light" || v === "dark") document.documentEle
 try { applyTheme(localStorage.getItem("aurora-tema")); } catch (e) {}
 // Innlogging med Supabase: e-postlenke (og Google senere). Lagrer bare klubber, idretter og hjemsted i tabellen profiles.
 const SUPA = { url: "https://beddkwgxhdyloiewhpll.supabase.co", key: "sb_publishable__K2LpHIMgT5XxGlpCwH5bQ_nJ2Qz3iH" };
-let sb = null, authUser = null, authMsg = "";
+let sb = null, authUser = null, authMsg = "", authMode = "up", openSettings = () => {};
 const authName = () => authUser ? (authUser.user_metadata?.full_name || authUser.user_metadata?.name || "").split(" ")[0] : "";
 function loadSupa() {
   if (sb || !SUPA.key) return Promise.resolve(sb);
   return new Promise(ok => { const s = document.createElement("script");
     s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js";
     s.onload = () => { sb = window.supabase.createClient(SUPA.url, SUPA.key, { auth: { flowType: "pkce", detectSessionInUrl: true, persistSession: true } });
-      sb.auth.onAuthStateChange((ev, ses) => { const was = authUser?.id; authUser = ses?.user || null; if (authUser && authUser.id !== was) cloudLoad(); else redrawAuth(); });
+      sb.auth.onAuthStateChange((ev, ses) => { const was = authUser?.id;
+        if (ev === "PASSWORD_RECOVERY") { authMode = "newpw"; authMsg = ""; setTimeout(openSettings, 300); } authUser = ses?.user || null; if (authUser && authUser.id !== was) cloudLoad(); else redrawAuth(); });
       ok(sb); };
     s.onerror = () => ok(null); document.head.appendChild(s); });
 }
@@ -2526,11 +2550,17 @@ function cloudSave(now) {
 let redrawAuth = () => {};
 function accountHtml() {
   if (!SUPA.key) return `<p class="sl">${t("Konto")}</p><small>${t("Innlogging kommer snart.")}</small>`;
+  if (authUser && authMode === "newpw") return `<p class="sl">${t("Nytt passord")}</p><form class="aform" id="aForm"><input type="password" id="aPw" required minlength="8" autocomplete="new-password" placeholder="${t("Nytt passord (minst 8 tegn)")}"><button type="submit" class="abtn">${t("Lagre nytt passord")}</button></form>${authMsg ? `<small class="amsg">${esc(authMsg)}</small>` : ""}`;
   if (authUser) return `<p class="sl">${t("Konto")}</p><div class="acct"><span class="aava">${esc((authName() || authUser.email || "?")[0].toUpperCase())}</span><span><b>${esc(authName() || t("Innlogget"))}</b><small>${esc(authUser.email || "")}</small></span></div>
     <small>${t("Klubbene, idrettene og hjemstedet ditt lagres på kontoen din, så du har dem på alle enheter.")}</small>
     <div class="arow"><button type="button" class="abtn" data-a="out">${t("Logg ut")}</button><button type="button" class="abtn ghost" data-a="del">${t("Slett mine data")}</button></div>`;
-  return `<p class="sl">${t("Logg inn")}</p><small>${t("Logg inn for å ha klubbene og valgene dine på mobil og PC.")}</small>
-    <form class="aform" id="aForm"><input type="email" id="aMail" required autocomplete="email" placeholder="${t("Din e-post")}" aria-label="${t("Din e-post")}"><button type="submit" class="abtn">${t("Send innloggingslenke")}</button></form>
+  const m = authMode === "newpw" ? "in" : authMode;
+  const mail = `<input type="email" id="aMail" required autocomplete="email" placeholder="${t("E-post")}" aria-label="${t("E-post")}">`;
+  return `<p class="sl">${t("Konto")}</p><div class="seg" role="tablist">${[["up", "Lag bruker"], ["in", "Logg inn"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
+    ${m === "up" ? `<small>${t("Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.")}</small>` : ""}
+    <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required autocomplete="given-name" placeholder="${t("Fornavn")}" aria-label="${t("Fornavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
+    <button type="submit" class="abtn">${t(m === "up" ? "Lag bruker" : m === "in" ? "Logg inn" : "Send lenke for nytt passord")}</button></form>
+    ${m === "in" ? `<button type="button" class="alink" data-m="reset">${t("Glemt passordet?")}</button>` : m === "reset" ? `<button type="button" class="alink" data-m="in">← ${t("Tilbake")}</button>` : ""}
     ${authMsg ? `<small class="amsg">${esc(authMsg)}</small>` : ""}
     <small>${t("Vi lagrer bare e-posten din og valgene dine (klubber, idretter og hjemsted). Ingenting deles eller selges.")}</small>`;
 }
@@ -2547,16 +2577,29 @@ function setupSettings() {
     pop.innerHTML = `<h4>${t("Innstillinger")}</h4><p class="sl">${t("Utseende")}</p>
       <div class="seg" role="radiogroup" aria-label="${t("Utseende")}">${[["auto", "Automatisk"], ["light", "Lys"], ["dark", "Mørk"]].map(([k, l]) => `<button type="button" role="radio" data-v="${k}" aria-checked="${cur() === k}">${t(l)}</button>`).join("")}</div>
       <small>${t("Automatisk følger innstillingen på mobilen eller PC-en din.")}</small><hr>${accountHtml()}`;
-    const f = $("aForm"); if (f) f.onsubmit = async e => { e.preventDefault(); const mail = $("aMail").value.trim(); authMsg = t("Sender …"); draw();
+    pop.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { authMode = b.dataset.m; authMsg = ""; draw(); });
+    const f = $("aForm"); if (f) f.onsubmit = async e => { e.preventDefault();
+      const v = id => ($(id)?.value || "").trim(), pw = $("aPw")?.value || "", to = location.origin + location.pathname;
+      authMsg = t("Vent litt …"); const keep = [v("aName"), v("aMail")]; draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1];
       const c = await loadSupa(); if (!c) { authMsg = t("Fikk ikke kontakt. Prøv igjen senere."); return draw(); }
-      const { error } = await c.auth.signInWithOtp({ email: mail, options: { emailRedirectTo: location.origin + location.pathname } });
-      authMsg = error ? t("Noe gikk galt. Sjekk e-postadressen og prøv igjen.") : t("Sjekk e-posten din og trykk på lenken for å logge inn."); draw(); };
+      let r;
+      if (authMode === "up") { r = await c.auth.signUp({ email: keep[1], password: pw, options: { data: { full_name: keep[0] }, emailRedirectTo: to } });
+        if (!r.error && !r.data.session) { authMsg = t("Nesten ferdig! Vi har sendt deg en e-post. Trykk på lenken i den for å bekrefte brukeren din."); authMode = "in"; return draw(); } }
+      else if (authMode === "in") r = await c.auth.signInWithPassword({ email: keep[1], password: pw });
+      else if (authMode === "reset") { r = await c.auth.resetPasswordForEmail(keep[1], { redirectTo: to }); if (!r.error) { authMsg = t("Sjekk e-posten din for en lenke til å lage nytt passord."); return draw(); } }
+      else if (authMode === "newpw") { r = await c.auth.updateUser({ password: pw }); if (!r.error) { authMode = "up"; authMsg = ""; return draw(); } }
+      const err = r?.error?.message || "";
+      authMsg = !err ? "" : /already registered|already exists/i.test(err) ? t("Det finnes allerede en bruker med denne e-posten. Logg inn i stedet.")
+        : /invalid login/i.test(err) ? t("Feil e-post eller passord.") : /not confirmed/i.test(err) ? t("Bekreft e-posten din først. Sjekk innboksen (og søppelpost).")
+        : /password/i.test(err) ? t("Passordet må ha minst 8 tegn.") : /rate|security purposes/i.test(err) ? t("Vent litt før du prøver igjen.") : t("Noe gikk galt. Sjekk e-postadressen og prøv igjen.");
+      if (err) { draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1]; } };
     pop.querySelectorAll("[data-a]").forEach(b => b.onclick = async () => {
       if (b.dataset.a === "del") { if (!confirm(t("Slette klubbene og valgene som er lagret på kontoen din?"))) return; await sb.from("profiles").delete().eq("id", authUser.id); }
-      await sb.auth.signOut(); authUser = null; authMsg = ""; draw(); if (typeof render === "function") render(); });
+      await sb.auth.signOut(); authUser = null; authMsg = ""; authMode = "in"; draw(); if (typeof render === "function") render(); });
     pop.querySelectorAll("[data-v]").forEach(b => b.onclick = () => { applyTheme(b.dataset.v); try { b.dataset.v === "auto" ? localStorage.removeItem("aurora-tema") : localStorage.setItem("aurora-tema", b.dataset.v); } catch (e) {} draw(); });
   };
   const close = () => { pop.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+  openSettings = () => { draw(); pop.hidden = false; btn.setAttribute("aria-expanded", "true"); };
   redrawAuth = () => { if (!pop.hidden) draw(); if (typeof renderForYou === "function" && $("foryou")) renderForYou(); };
   btn.onclick = () => { if (!pop.hidden) return close(); draw(); pop.hidden = false; btn.setAttribute("aria-expanded", "true"); pop.querySelector("[aria-checked=true]").focus(); };
   document.addEventListener("pointerdown", e => { if (!e.target.closest("#setPop, #setBtn")) close(); });
