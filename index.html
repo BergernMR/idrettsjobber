@@ -1190,6 +1190,10 @@ const LANG = (() => {
 })();
 document.documentElement.lang = LANG === "nb" ? "no" : LANG;
 const I18N = {
+"E-post eller brukernavn": ["E-post eller användarnamn", "E-mail eller brugernavn", "Sähköposti tai käyttäjänimi", "Netfang eða notandanafn", "Email or username"],
+"Feil brukernavn, e-post eller passord.": ["Fel användarnamn, e-post eller lösenord.", "Forkert brugernavn, e-mail eller adgangskode.", "Väärä käyttäjänimi, sähköposti tai salasana.", "Rangt notandanafn, netfang eða lykilorð.", "Wrong username, email or password."],
+"Brukernavnet er tatt. Velg et annet.": ["Användarnamnet är upptaget. Välj ett annat.", "Brugernavnet er taget. Vælg et andet.", "Käyttäjänimi on varattu. Valitse toinen.", "Notandanafnið er frátekið. Veldu annað.", "That username is taken. Choose another."],
+"Brukernavnet kan ikke ha mellomrom eller @": ["Användarnamnet får inte ha mellanslag eller @", "Brugernavnet må ikke have mellemrum eller @", "Käyttäjänimessä ei voi olla välilyöntejä tai @-merkkiä", "Notandanafn má ekki innihalda bil eða @", "The username can't contain spaces or @"],
 "Logg inn eller lag en gratis bruker for å lagre.": ["Logga in eller skapa en gratis användare för att spara.", "Log ind eller opret en gratis bruger for at gemme.", "Kirjaudu sisään tai luo ilmainen käyttäjä tallentaaksesi.", "Skráðu þig inn eða búðu til ókeypis aðgang til að vista.", "Log in or create a free account to save."],
 "Du må logge inn for å lagre jobber og arrangementer. Da finner du dem igjen på mobil og PC.": ["Du måste logga in för att spara jobb och evenemang. Då hittar du dem igen på mobil och dator.", "Du skal logge ind for at gemme job og arrangementer. Så finder du dem igen på mobil og pc.", "Kirjaudu sisään tallentaaksesi työpaikkoja ja tapahtumia. Löydät ne silloin puhelimelta ja tietokoneelta.", "Þú þarft að skrá þig inn til að vista störf og viðburði. Þá finnurðu þau aftur í síma og tölvu.", "Log in to save jobs and events. Then you will find them again on your phone and computer."],
 "Logg inn eller lag bruker": ["Logga in eller skapa användare", "Log ind eller opret bruger", "Kirjaudu tai luo käyttäjä", "Skráðu þig inn eða búðu til aðgang", "Log in or sign up"],
@@ -2661,14 +2665,25 @@ function accountHtml() {
     <small>${t("Klubbene, idrettene og hjemstedet ditt lagres på kontoen din, så du har dem på alle enheter.")}</small>
     <div class="arow"><button type="button" class="abtn" data-a="out">${t("Logg ut")}</button><button type="button" class="abtn ghost" data-a="del">${t("Slett mine data")}</button></div>`;
   const m = authMode === "newpw" ? "in" : authMode;
-  const mail = `<input type="email" id="aMail" required autocomplete="email" placeholder="${t("E-post")}" aria-label="${t("E-post")}">`;
+  // Logg inn godtar både e-post og brukernavn; ellers må det være en e-post
+  const mail = m === "in" ? `<input type="text" id="aMail" required autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="${t("E-post eller brukernavn")}" aria-label="${t("E-post eller brukernavn")}">`
+    : `<input type="email" id="aMail" required autocomplete="email" placeholder="${t("E-post")}" aria-label="${t("E-post")}">`;
   return `<p class="sl">${t("Konto")}</p><div class="seg" role="tablist">${[["up", "Lag bruker"], ["in", "Logg inn"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
     ${m === "up" ? `<small>${t("Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.")}</small>` : ""}
-    <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required minlength="2" maxlength="30" autocomplete="username" placeholder="${t("Brukernavn")}" aria-label="${t("Brukernavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
+    <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required minlength="2" maxlength="30" pattern="[^@ ]+" title="${t("Brukernavnet kan ikke ha mellomrom eller @")}" autocomplete="username" placeholder="${t("Brukernavn")}" aria-label="${t("Brukernavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
     <button type="submit" class="abtn">${t(m === "up" ? "Lag bruker" : m === "in" ? "Logg inn" : "Send lenke for nytt passord")}</button></form>
     ${m === "in" ? `<button type="button" class="alink" data-m="reset">${t("Glemt passordet?")}</button>` : m === "reset" ? `<button type="button" class="alink" data-m="in">← ${t("Tilbake")}</button>` : ""}
     ${authMsg ? `<small class="amsg">${esc(authMsg)}</small>` : ""}
     <small>${t("Vi lagrer bare e-posten din og valgene dine (klubber, idretter og hjemsted). Ingenting deles eller selges.")}</small>`;
+}
+// Brukernavn: en liten tjeneste i Supabase finner e-posten og logger inn, uten å vise e-posten
+async function loginWithUsername(c, name, pw) {
+  try {
+    const res = await fetch(SUPA.url + "/functions/v1/login", { method: "POST", headers: { "Content-Type": "application/json", apikey: SUPA.key }, body: JSON.stringify({ username: name, password: pw }) });
+    const d = await res.json();
+    if (!res.ok) return { error: { message: d.error === "rate_limit" ? "rate limit" : "invalid_login" } };
+    return await c.auth.setSession({ access_token: d.access_token, refresh_token: d.refresh_token });
+  } catch (e) { return { error: { message: "network" } }; }
 }
 function setupAuth() {
   if (!SUPA.key) return;
@@ -2689,14 +2704,19 @@ function setupSettings() {
       authMsg = t("Vent litt …"); const keep = [v("aName"), v("aMail")]; draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1];
       const c = await loadSupa(); if (!c) { authMsg = t("Fikk ikke kontakt. Prøv igjen senere."); return draw(); }
       let r;
-      if (authMode === "up") { r = await c.auth.signUp({ email: keep[1], password: pw, options: { data: { username: keep[0] }, emailRedirectTo: to } });
+      if (authMode === "up") {
+        const taken = await c.rpc("username_taken", { u: keep[0] });
+        if (taken.data === true) { authMsg = t("Brukernavnet er tatt. Velg et annet."); draw(); $("aName").value = keep[0]; $("aMail").value = keep[1]; return; }
+        r = await c.auth.signUp({ email: keep[1], password: pw, options: { data: { username: keep[0] }, emailRedirectTo: to } });
         if (!r.error && !r.data.session) { authMsg = t("Nesten ferdig! Vi har sendt deg en e-post. Trykk på lenken i den for å bekrefte brukeren din."); authMode = "in"; return draw(); } }
-      else if (authMode === "in") r = await c.auth.signInWithPassword({ email: keep[1], password: pw });
+      else if (authMode === "in" && keep[1].includes("@")) r = await c.auth.signInWithPassword({ email: keep[1], password: pw });
+      else if (authMode === "in") r = await loginWithUsername(c, keep[1], pw);
       else if (authMode === "reset") { r = await c.auth.resetPasswordForEmail(keep[1], { redirectTo: to }); if (!r.error) { authMsg = t("Sjekk e-posten din for en lenke til å lage nytt passord."); return draw(); } }
       else if (authMode === "newpw") { r = await c.auth.updateUser({ password: pw }); if (!r.error) { authMode = "up"; authMsg = ""; return draw(); } }
       const err = r?.error?.message || "";
       authMsg = !err ? "" : /already registered|already exists/i.test(err) ? t("Det finnes allerede en bruker med denne e-posten. Logg inn i stedet.")
-        : /invalid login/i.test(err) ? t("Feil e-post eller passord.") : /not confirmed/i.test(err) ? t("Bekreft e-posten din først. Sjekk innboksen (og søppelpost).")
+        : /saving new user/i.test(err) ? t("Brukernavnet er tatt. Velg et annet.")
+        : /invalid login|invalid_login/i.test(err) ? t("Feil brukernavn, e-post eller passord.") : /not confirmed/i.test(err) ? t("Bekreft e-posten din først. Sjekk innboksen (og søppelpost).")
         : /password/i.test(err) ? t("Passordet må ha minst 8 tegn.") : /rate|security purposes/i.test(err) ? t("Vent litt før du prøver igjen.") : t("Noe gikk galt. Sjekk e-postadressen og prøv igjen.");
       if (err) { draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1]; } };
     pop.querySelectorAll("[data-a]").forEach(b => b.onclick = async () => {
