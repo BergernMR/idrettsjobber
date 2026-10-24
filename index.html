@@ -609,6 +609,21 @@ table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-ri
 .acity select { font: inherit; font-weight: 500; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 .mp-prof .aava { grid-row: span 2; display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #7fe0b7; color: #14211d; font-weight: 800; font-size: 22px; }
 .mp-prof b { font-size: 19px; }
+.mp-prof .mp-hi { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.mp-rename { display: inline-grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: rgba(255,255,255,.12); color: #fff; cursor: pointer; }
+.mp-rename:hover { background: rgba(255,255,255,.22); }
+.mp-rename svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.mp-nameform { grid-column: 1 / -1; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; margin-top: 4px; padding: 12px; border-radius: 14px; background: rgba(0,0,0,.18); }
+.mp-nameform[hidden] { display: none; }
+.mp-nameform small { white-space: normal; overflow: visible; text-overflow: clip; }
+.mp-nameform label { font-size: 13px; font-weight: 700; }
+.mp-namerow { display: flex; gap: 6px; }
+.mp-namerow input { flex: 1 1 0; width: 0; min-width: 0; font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1); color: #fff; }
+.mp-namerow input:disabled { opacity: .55; }
+.mp-namerow button { flex: none; font: inherit; font-weight: 700; padding: 8px 12px; border-radius: 10px; border: 0; cursor: pointer; }
+.mp-namesave { background: #7fe0b7; color: #14211d; }
+.mp-namesave:disabled { opacity: .5; cursor: default; }
+.mp-namecancel { background: rgba(255,255,255,.12); color: #fff; }
 .mp-prof small { color: rgba(255,255,255,.8); font-size: 13.5px; }
 .mp-prof .mp-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .mp-prof .mp-tags span { font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.14); }
@@ -1434,6 +1449,7 @@ const I18N = {
 "Logg inn eller lag bruker": ["Logga in eller skapa användare", "Log ind eller opret bruger", "Kirjaudu tai luo käyttäjä", "Skráðu þig inn eða búðu til aðgang", "Log in or sign up"],
 "Lagret": ["Sparat", "Gemt", "Tallennetut", "Vistað", "Saved"],
 "Lagre": ["Spara", "Gem", "Tallenna", "Vista", "Save"],
+"Avbryt": ["Avbryt", "Annuller", "Peruuta", "Hætta við", "Cancel"],
 "Lagret av deg": ["Sparat av dig", "Gemt af dig", "Tallentamasi", "Vistað af þér", "Saved by you"],
 "Lagre arrangementet": ["Spara evenemanget", "Gem arrangementet", "Tallenna tapahtuma", "Vista viðburðinn", "Save event"],
 "Legg i kalender": ["Lägg i kalendern", "Føj til kalender", "Lisää kalenteriin", "Bæta í dagatal", "Add to calendar"],
@@ -2014,6 +2030,10 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Endre brukernavn": ["Ändra användarnamn","Skift brugernavn","Vaihda käyttäjänimi","Breyta notandanafni","Change username"],
+"Nytt brukernavn": ["Nytt användarnamn","Nyt brugernavn","Uusi käyttäjänimi","Nýtt notandanafn","New username"],
+"Du kan endre brukernavnet én gang i måneden.": ["Du kan ändra användarnamnet en gång i månaden.","Du kan skifte brugernavn én gang om måneden.","Voit vaihtaa käyttäjänimen kerran kuukaudessa.","Þú getur breytt notandanafninu einu sinni í mánuði.","You can change your username once a month."],
+"Du kan endre brukernavnet igjen {d}.": ["Du kan ändra användarnamnet igen {d}.","Du kan skifte brugernavn igen {d}.","Voit vaihtaa käyttäjänimen uudelleen {d}.","Þú getur breytt notandanafninu aftur {d}.","You can change your username again on {d}."],
 "Passer deg": ["Passar dig","Passer dig","Sopii sinulle","Hentar þér","For you"],
 "Passer deg best": ["Passar dig bäst","Passer bedst til dig","Sopivimmat ensin","Hentar þér best","Best match for you"],
 "Jobber for deg": ["Jobb för dig","Job til dig","Työpaikkoja sinulle","Störf fyrir þig","Jobs for you"],
@@ -6090,8 +6110,9 @@ function renderMine() {
   $("mpage").innerHTML = `
     <aside class="mp-side">
       <div class="mp-prof"><button type="button" class="mp-ava" id="mpAva" aria-label="${t(avatarUrl ? "Bytt profilbilde" : "Legg til profilbilde")}" title="${t(avatarUrl ? "Bytt profilbilde" : "Legg til profilbilde")}">${avatarHtml()}<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i></button>
-        <b>${greet()}${name ? ", " + esc(name) : ""}</b>
+        <b class="mp-hi">${greet()}${name ? ", " + esc(name) : ""}${authUser ? `<button type="button" class="mp-rename" id="mpRename" aria-label="${t("Endre brukernavn")}" title="${t("Endre brukernavn")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>` : ""}</b>
         <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
+        ${authUser ? `<form class="mp-nameform" id="mpNameForm" hidden><label for="mpNameIn">${t("Nytt brukernavn")}</label><div class="mp-namerow"><input id="mpNameIn" required minlength="2" maxlength="30" pattern="[^@ ]+" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(authName())}"><button type="submit" class="mp-namesave">${t("Lagre")}</button><button type="button" class="mp-namecancel" id="mpNameX">${t("Avbryt")}</button></div><small id="mpNameMsg">${t("Du kan endre brukernavnet én gang i måneden.")}</small></form>` : ""}
         <div class="mp-city"><span>${t("Hjemsted")}</span>${psHtml("mpHome", homeName)}</div>
         ${avatarUrl ? `<div class="mp-avamenu" id="mpAvaMenu" role="menu" hidden><button type="button" role="menuitem" id="mpAvaNew">${t("Bytt profilbilde")}</button><button type="button" role="menuitem" class="del" id="mpAvaDel">${t("Fjern bildet")}</button></div>` : ""}</div>
       ${SUPA.key && !authUser ? `<div class="mp-login"><p>${t("Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.")}</p><div class="btns"><button type="button" class="cta" id="mpLogin">${t("Logg inn eller lag bruker")}</button></div></div>` : ""}
@@ -6129,6 +6150,24 @@ function renderMine() {
     $("mpAvaDel").onclick = () => { closeAva(); removeAvatar(); };
   } else $("mpAva").onclick = pickAvatar;
   placeSearch($("mpHome"), p => { setHomePlace(p); render(); });
+  // Brukernavn kan byttes én gang per 30 dager; grensen sjekkes i databasen (change_username)
+  const nf = $("mpNameForm");
+  if (nf) {
+    const msg = $("mpNameMsg"), inp = $("mpNameIn"), save = nf.querySelector(".mp-namesave");
+    const lock = until => { inp.disabled = save.disabled = true; msg.textContent = t("Du kan endre brukernavnet igjen {d}.", { d: fxDate(until.slice(0, 10), true) }); };
+    $("mpRename").onclick = async () => { nf.hidden = !nf.hidden; if (nf.hidden) return; inp.focus(); inp.select();
+      const r = await sb.rpc("username_next_change"); if (r.data) lock(String(r.data)); };
+    $("mpNameX").onclick = () => { nf.hidden = true; };
+    nf.onsubmit = async e => { e.preventDefault();
+      const nu = inp.value.trim(); if (nu === authName()) { nf.hidden = true; return; }
+      save.disabled = true; msg.textContent = t("Vent litt …");
+      const r = await sb.rpc("change_username", { u: nu }), d = r.data || {};
+      if (d.ok) { await sb.auth.refreshSession(); const u = (await sb.auth.getUser()).data.user; if (u) authUser = u; updMine(); renderMine(); return; }
+      save.disabled = false;
+      if (d.error === "wait") return lock(String(d.next));
+      msg.textContent = d.error === "taken" ? t("Brukernavnet er tatt. Velg et annet.") : d.error === "invalid" ? t("Brukernavnet kan ikke ha mellomrom eller @") : t("Fikk ikke kontakt. Prøv igjen senere.");
+    };
+  }
 }
 $("mineBtn").onclick = openMine;
 function closeJob() {
