@@ -510,6 +510,37 @@ table.league td.team { white-space: normal; }
 .svitem .svb { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 .svitem .svb button { font: inherit; font-size: 13px; font-weight: 600; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
 .svitem .svb button:hover { border-color: var(--accent); color: var(--accent); }
+/* Min side */
+.minebtn .aini { font-weight: 800; font-size: 15px; line-height: 1; }
+.minebtn.in { background: var(--accent); border-color: var(--accent); color: #fff; }
+.minebtn.in svg { display: none; }
+@media (max-width: 560px) { .tbtns #clubsBtn, .tbtns #savedBtn { display: none; } }
+.mp-prof { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #14322a, #1d5a47); color: #fff; }
+.mp-prof .aava { grid-row: span 2; display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #7fe0b7; color: #14211d; font-weight: 800; font-size: 22px; }
+.mp-prof b { font-size: 19px; }
+.mp-prof small { color: rgba(255,255,255,.8); font-size: 13.5px; }
+.mp-prof .mp-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.mp-prof .mp-tags span { font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.14); }
+.mp-prof .mp-edit { grid-column: 1 / -1; justify-self: start; margin-top: 4px; font: inherit; font-size: 13px; font-weight: 700; color: #7fe0b7; background: none; border: 0; padding: 0; cursor: pointer; }
+.mp-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.mp-stats button { font: inherit; color: var(--fg); text-align: left; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }
+.mp-stats button:hover { border-color: var(--accent); }
+.mp-stats b { display: block; font-family: "Barlow Condensed", var(--font-display); font-size: 30px; line-height: 1; }
+.mp-stats small { color: var(--muted); font-size: 12.5px; }
+.mp-sec { display: grid; gap: 8px; }
+.mp-sec > h3 { margin: 4px 0 0; font-family: "Barlow Condensed", var(--font-display); font-size: 22px; text-transform: uppercase; letter-spacing: .01em; }
+.mp-sec > p { margin: 0; color: var(--muted); font-size: 14px; }
+.mp-sec .svlist { margin: 0; }
+.mp-rec { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.mp-card { display: grid; gap: 4px; align-content: start; font: inherit; color: var(--fg); text-align: left; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); border-left: 4px solid var(--kc, var(--accent)); background: var(--surface); cursor: pointer; text-decoration: none; }
+.mp-card:hover { border-color: var(--accent); }
+.mp-card b { font-size: 15px; line-height: 1.25; }
+.mp-card small { color: var(--muted); font-size: 13px; }
+.mp-card .flag { width: 16px; height: 12px; vertical-align: -1px; margin-right: 2px; }
+.mp-card .why { font-size: 12px; font-weight: 700; color: var(--accent); }
+.mp-h4 { margin: 6px 0 0; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.mp-login { display: grid; gap: 10px; padding: 14px; border-radius: 14px; background: var(--accent-soft); }
+.mp-login p { margin: 0; font-size: 14px; }
 .sv-h { margin: 14px 0 4px; font-family: var(--font-display); font-size: 18px; }
 .remind { position: fixed; z-index: 60; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(520px, calc(100% - 32px)); display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 16px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
 .remind .ric { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); }
@@ -1098,7 +1129,7 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 <div class="wrap">
   <header>
     <div class="topline"><div class="eyebrow">Norge · Sverige · Danmark · Finland · Island</div>
-      <div class="langpick" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
+      <div class="langpick" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn minebtn" id="mineBtn" aria-label="Min side" title="Min side"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span class="aini" id="mineIni" hidden></span><span class="n" id="mineN" hidden></span></button><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
     <h1><b class="brand"><svg class="mark" viewBox="1.5 13.5 37 21" aria-hidden="true"><path d="M4 32a16 16 0 0 1 32 0" fill="none" stroke="#2f6fdc" stroke-width="5" stroke-linecap="round"/><path d="M11 32a9 9 0 0 1 18 0" fill="none" stroke="#1fae7c" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="31" r="2.6" fill="currentColor"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
     <div class="heroslides" id="heroslides" aria-hidden="true"><i></i><i></i></div><a class="herocredit" id="herocredit" target="_blank" rel="noopener"></a>
@@ -1839,6 +1870,24 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Min side": ["Min sida", "Min side", "Oma sivu", "Mín síða", "My page"],
+"Ligner på en jobb du har lagret": ["Liknar ett jobb du har sparat", "Ligner et job, du har gemt", "Muistuttaa tallentamaasi työpaikkaa", "Líkist starfi sem þú vistaðir", "Similar to a job you saved"],
+"Fordi du liker {x}": ["För att du gillar {x}", "Fordi du kan lide {x}", "Koska pidät lajista {x}", "Af því að þú hefur gaman af {x}", "Because you like {x}"],
+"Nær {x}": ["Nära {x}", "Tæt på {x}", "Lähellä: {x}", "Nálægt {x}", "Near {x}"],
+"Ny i {x}": ["Ny i {x}", "Ny i {x}", "Uusi: {x}", "Nýtt í {x}", "New in {x}"],
+"I {x}": ["I {x}", "I {x}", "Maa: {x}", "Í {x}", "In {x}"],
+"deg": ["dig", "dig", "sinua", "þig", "you"],
+"Du er ikke logget inn": ["Du är inte inloggad", "Du er ikke logget ind", "Et ole kirjautunut sisään", "Þú ert ekki skráð(ur) inn", "You are not logged in"],
+"Endre interesser og hjemsted": ["Ändra intressen och hemort", "Skift interesser og hjemby", "Muuta kiinnostuksia ja kotipaikkaa", "Breyta áhugamálum og heimabæ", "Change interests and home town"],
+"Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.": ["Logga in för att spara jobb och evenemang och ha Min sida på både mobil och dator.", "Log ind for at gemme job og arrangementer og have Min side på både mobil og computer.", "Kirjaudu sisään tallentaaksesi työpaikkoja ja tapahtumia ja nähdäksesi Oman sivun sekä puhelimella että tietokoneella.", "Skráðu þig inn til að vista störf og viðburði og hafa Mína síðu bæði í síma og tölvu.", "Log in to save jobs and events and have My page on both phone and computer."],
+"Klubber du følger": ["Klubbar du följer", "Klubber du følger", "Seuraamasi seurat", "Félög sem þú fylgist með", "Clubs you follow"],
+"Lagrede jobber": ["Sparade jobb", "Gemte job", "Tallennetut työpaikat", "Vistuð störf", "Saved jobs"],
+"Lagrede arrangementer": ["Sparade evenemang", "Gemte arrangementer", "Tallennetut tapahtumat", "Vistaðir viðburðir", "Saved events"],
+"Anbefalt for deg": ["Rekommenderat för dig", "Anbefalet til dig", "Suositeltua sinulle", "Mælt með fyrir þig", "Recommended for you"],
+"Kurs og utdanning": ["Kurser och utbildning", "Kurser og uddannelse", "Kurssit ja koulutus", "Námskeið og nám", "Courses and education"],
+"Velg hva du er interessert i, så får du forslag her.": ["Välj vad du är intresserad av, så får du förslag här.", "Vælg, hvad du er interesseret i, så får du forslag her.", "Valitse, mistä olet kiinnostunut, niin saat ehdotuksia tähän.", "Veldu hvað þú hefur áhuga á og þá færðu tillögur hér.", "Choose what you are interested in, and you will get suggestions here."],
+"Ingen lagrede jobber ennå. Trykk på hjertet ved en jobb.": ["Inga sparade jobb ännu. Tryck på hjärtat vid ett jobb.", "Ingen gemte job endnu. Tryk på hjertet ved et job.", "Ei vielä tallennettuja työpaikkoja. Paina sydäntä työpaikan kohdalla.", "Engin vistuð störf enn. Ýttu á hjartað við starf.", "No saved jobs yet. Tap the heart on a job."],
+"Ingen lagrede arrangementer ennå. Trykk på hjertet ved et arrangement.": ["Inga sparade evenemang ännu. Tryck på hjärtat vid ett evenemang.", "Ingen gemte arrangementer endnu. Tryk på hjertet ved et arrangement.", "Ei vielä tallennettuja tapahtumia. Paina sydäntä tapahtuman kohdalla.", "Engir vistaðir viðburðir enn. Ýttu á hjartað við viðburð.", "No saved events yet. Tap the heart on an event."],
 "Dommerkurs": ["Domarkurs", "Dommerkursus", "Erotuomarikurssi", "Dómaranámskeið", "Referee courses"],
 "Lederkurs": ["Ledarkurs", "Lederkursus", "Johtajakurssi", "Stjórnendanámskeið", "Leadership courses"],
 "Dommer": ["Domare", "Dommer", "Erotuomari", "Dómari", "Referee"],
@@ -2916,7 +2965,7 @@ function setupSettings() {
   };
   const close = () => { pop.hidden = true; btn.setAttribute("aria-expanded", "false"); };
   openSettings = () => { draw(); pop.hidden = false; btn.setAttribute("aria-expanded", "true"); };
-  redrawAuth = () => { if (!pop.hidden) draw(); if (typeof renderForYou === "function" && $("foryou")) renderForYou(); };
+  redrawAuth = () => { if (!pop.hidden) draw(); if (typeof updMine === "function") updMine(); if (typeof renderForYou === "function" && $("foryou")) renderForYou(); };
   btn.onclick = () => { if (!pop.hidden) return close(); draw(); pop.hidden = false; btn.setAttribute("aria-expanded", "true"); pop.querySelector("[aria-checked=true]").focus(); };
   document.addEventListener("pointerdown", e => { if (!e.target.closest("#setPop, #setBtn")) close(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !pop.hidden) { close(); btn.focus(); } });
@@ -5237,6 +5286,7 @@ function updClubs() {
   const n = follows.size, live = FAN.some(k => follows.has(k.id) && LIVE[k.id] && LIVE[k.id][4] !== "ft");
   $("clubsN").hidden = !n; $("clubsN").textContent = n; b.classList.toggle("live", live);
   b.setAttribute("aria-label", t("Dine klubber") + (n ? ` (${n})` : "")); b.title = t("Dine klubber");
+  if (typeof updMine === "function") updMine();
 }
 function openClubs() {
   curSheet = openClubs;
@@ -5265,6 +5315,111 @@ function openClubs() {
   $("mcAll").onclick = () => { closeJob(); setTab("klubber", true); scrollTo({ top: 0, behavior: "smooth" }); };
 }
 $("clubsBtn").onclick = openClubs;
+
+// ---------- Min side: profil, klubber, lagrede jobber og arrangementer, og anbefalinger ----------
+// Landet du bor i: landet til den nærmeste jobben vi har koordinater for, ellers språket
+function homeCountry() {
+  let best = null, d = 1e9;
+  for (const j of JOBS) { const g = GEO[j.id]; if (!g) continue; const km = kmFrom(g[1], g[2]); if (km < d) { d = km; best = j.c; } }
+  return d < 300 ? best : ({ sv: "SE", da: "DK", fi: "FI", is: "IS" })[LANG] || "NO";
+}
+// Idrettene man liker, som ord vi kan lete etter i jobbannonser
+const likedWords = () => INTERESTS.filter(([k]) => likes.has(k)).flatMap(([, , sps]) => sps).map(x => x.toLowerCase());
+function recJobs() {
+  const hc = homeCountry(), words = likedWords();
+  const sim = {}; [...favs].forEach(id => { const j = JOBS.find(x => x.id === id); if (j) similarJobs(j).forEach(r => { sim[r.x.id] = Math.max(sim[r.x.id] || 0, r.score); }); });
+  return JOBS.filter(j => !favs.has(j.id) && !(daysLeft(j.dl) < 0)).map(j => {
+    const g = GEO[j.id], km = g ? kmFrom(g[1], g[2]) : null, hay = `${j.t} ${j.tr || ""} ${j.emp} ${j.sum || ""}`.toLowerCase();
+    const sp = words.find(w => hay.includes(w));
+    if (j.c !== hc && !sp) delete sim[j.id]; // lignende jobber i andre land bare når idretten passer
+    const why = sim[j.id] ? t("Ligner på en jobb du har lagret") : sp ? t("Fordi du liker {x}", { x: t(sp[0].toUpperCase() + sp.slice(1)).toLowerCase() }) : km !== null && km < 60 ? t("Nær {x}", { x: home.name === "deg" ? t("deg") : home.name }) : j.c === hc ? t("Ny i {x}", { x: COUNTRIES[hc] }) : "";
+    const score = (sim[j.id] || 0) + (sp ? 6 : 0) + (km !== null ? Math.max(0, 6 - km / 40) : 0) + (j.c === hc ? 3 : 0) + (isNew(j) ? 2 : 0);
+    return { j, why, score };
+  }).filter(r => r.why).sort((a, b) => b.score - a.score).slice(0, 4);
+}
+function recEdu() {
+  const hc = homeCountry(), names = INTERESTS.filter(([k]) => likes.has(k)).flatMap(([, , sps]) => sps);
+  return EDU.map(u => { const sp = u.info && u.info.sp, hit = sp && names.includes(sp);
+    const score = (u.c === hc ? 4 : 0) + (hit ? 5 : 0) + (u.info ? 2 : 0) + (sp === "Alle idretter" ? 1 : 0);
+    const why = hit ? t("Fordi du liker {x}", { x: t(sp).toLowerCase() }) : u.c === hc ? t("I {x}", { x: COUNTRIES[hc] }) : "";
+    return { u, score, why }; }).filter(r => r.why).sort((a, b) => b.score - a.score).slice(0, 4);
+}
+function recEvents() {
+  return EVENTS.filter(e => !evSaved.has(e.id)).map(e => { const g = evGeo(e), d = evOrder(e), km = g ? kmFrom(g[1], g[2]) : 1e9, lk = liked(e.sport);
+    return { e, d, km, lk, score: (lk ? 6 : 0) + Math.max(0, 5 - km / 100) - d / 60 }; })
+    .filter(x => x.d >= 0 && x.d < 240 && (x.lk || x.km < 300)).sort((a, b) => b.score - a.score).slice(0, 4);
+}
+function recClubs() {
+  return FAN.filter(k => k.geo && !follows.has(k.id) && (!likes.size || liked(k.sport))).map(k => ({ k, km: kmFrom(k.geo[1], k.geo[2]) })).sort((a, b) => a.km - b.km).slice(0, 4);
+}
+function updMine() {
+  const b = $("mineBtn"); if (!b) return;
+  const name = typeof authName === "function" && authUser ? (authName() || authUser.email || "") : "";
+  b.classList.toggle("in", !!name); $("mineIni").hidden = !name; $("mineIni").textContent = name ? name[0].toUpperCase() : "";
+  const due = savedItems().filter(isDue).length, live = FAN.some(k => follows.has(k.id) && LIVE[k.id] && LIVE[k.id][4] !== "ft");
+  $("mineN").hidden = !due; $("mineN").textContent = due; b.classList.toggle("due", due > 0); b.classList.toggle("live", live);
+  b.setAttribute("aria-label", t("Min side")); b.title = t("Min side");
+}
+function openMine() {
+  curSheet = openMine; updMine();
+  const name = authUser ? (authName() || (authUser.email || "").split("@")[0]) : "";
+  const items = savedItems(), jobs = items.filter(i => i.kind === "job"), evs = items.filter(i => i.kind === "ev");
+  const mine = FAN.filter(k => follows.has(k.id)).sort((a, b) => (nextMatch(a) ? nextMatch(a)[0] : "9") < (nextMatch(b) ? nextMatch(b)[0] : "9") ? -1 : 1);
+  const club = k => { const n = nextMatch(k), L = LIVE[k.id], cd = n && countdown(n);
+    const w = L && L[4] !== "ft" ? `<span class="mcw live">${L[4] === "ht" ? t("Pause") : "LIVE"} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`}</span>`
+      : cd ? `<span class="mcw">${esc(cd.big)}${cd.small ? " " + cd.small : ""}</span>` : "";
+    return `<button type="button" class="mcitem" data-club="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="mcico">${icoOf(k.sport)}</span>
+      <span><b>${esc(k.n)}</b><small>${esc(t(k.sport))}${k.div ? " · " + esc(k.div) : ""}${n ? " · " + vsText(n) : ""}</small></span>${w}</button>`; };
+  const saved = it => { const [w, cls] = savedWhen(it);
+    return `<div class="svitem${it.kind === "job" && it.n !== null && it.n < 0 ? " gone" : ""}"><button type="button" class="svt" data-k="${it.kind}" data-id="${it.id}">${esc(it.title)}</button>
+      <span class="svw ${cls}">${esc(w)}</span><span class="svs">${esc(it.sub)}</span>
+      <div class="svb"><button type="button" data-rm="${it.kind}|${it.id}">${t("Fjern")}</button></div></div>`; };
+  const card = (attrs, title, sub, why, kc) => `<button type="button" class="mp-card" ${attrs}${kc ? ` style="--kc:${kc}"` : ""}><b>${esc(title)}</b><small>${sub}</small>${why ? `<span class="why">${esc(why)}</span>` : ""}</button>`;
+  const rj = recJobs(), ru = recEdu(), re = recEvents(), rc = mine.length >= 3 ? [] : recClubs();
+  const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
+  const sec = (id, title, body, empty) => `<section class="mp-sec" id="${id}"><h3>${title}</h3>${body || `<p>${empty}</p>`}</section>`;
+  $("sheetBody").innerHTML = `
+    <div class="sheet-top">
+      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="s-eyebrow">Aurora</div>
+      <h2 class="s-title" id="s-title">${t("Min side")}</h2>
+      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      <div class="mp-prof"><span class="aava">${esc((name || "?")[0].toUpperCase())}</span>
+        <b>${greet()}${name ? ", " + esc(name) : ""}</b>
+        <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
+        <div class="mp-tags"><span>${t("Hjemsted")}: ${esc(homeName)}</span>${INTERESTS.filter(([k]) => likes.has(k)).map(([, l]) => `<span>${esc(t(l))}</span>`).join("")}</div>
+        <button type="button" class="mp-edit" id="mpEdit">${t("Endre interesser og hjemsted")} →</button></div>
+      ${SUPA.key && !authUser ? `<div class="mp-login"><p>${t("Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.")}</p><div class="btns"><button type="button" class="cta" id="mpLogin">${t("Logg inn eller lag bruker")}</button></div></div>` : ""}
+      <div class="mp-stats">
+        <button type="button" data-go="mpClubs"><b>${mine.length}</b><small>${t("Klubber du følger")}</small></button>
+        <button type="button" data-go="mpJobs"><b>${jobs.length}</b><small>${t("Lagrede jobber")}</small></button>
+        <button type="button" data-go="mpEvs"><b>${evs.length}</b><small>${t("Lagrede arrangementer")}</small></button>
+      </div>
+      ${sec("mpRec", t("Anbefalt for deg"), (rj.length ? `<p class="mp-h4">${t("Jobber")}</p><div class="mp-rec">${rj.map(({ j, why }) => card(`data-job="${j.id}"`, j.t, `${esc(j.emp)} · ${flag(j.c)} ${esc(j.place)}`, why)).join("")}</div>` : "")
+        + (ru.length ? `<p class="mp-h4">${t("Kurs og utdanning")}</p><div class="mp-rec">${ru.map(({ u, why }) => `<a class="mp-card" href="${u.url}" target="_blank" rel="noopener"><b>${esc(u.t)}</b><small>${esc(u.org)} · ${flag(u.c)} ${esc(t(u.place))}</small><span class="why">${esc(why)}</span></a>`).join("")}</div>` : "")
+        + (re.length ? `<p class="mp-h4">${t("Arrangementer")}</p><div class="mp-rec">${re.map(({ e, km, lk }) => card(`data-ev="${e.id}"`, t(e.t), `${esc(evWhen(e))} · ${flag(e.c)} ${esc(e.place)}`, lk ? t("Fordi du liker {x}", { x: t(e.sport).toLowerCase() }) : t("Nær {x}", { x: homeName }), KIND_COLOR[kindOf(e.sport)])).join("")}</div>` : "")
+        + (rc.length ? `<p class="mp-h4">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="mp-rec">${rc.map(({ k, km }) => card(`data-club="${k.id}"`, k.n, `${esc(t(k.sport))} · ${fmtKm(km)}`, "", KIND_COLOR[kindOf(k.sport)])).join("")}</div>` : ""),
+        t("Velg hva du er interessert i, så får du forslag her."))}
+      ${sec("mpClubs", t("Dine klubber"), mine.length ? `<div class="svlist">${mine.map(club).join("")}</div>` : "", t("Du følger ingen klubber ennå. Trykk på stjernen ved en klubb under Klubber, så havner den her."))}
+      ${sec("mpJobs", t("Lagrede jobber"), jobs.length ? `<div class="svlist">${jobs.map(saved).join("")}</div>` : "", t("Ingen lagrede jobber ennå. Trykk på hjertet ved en jobb."))}
+      ${sec("mpEvs", t("Lagrede arrangementer"), evs.length ? `<div class="svlist">${evs.map(saved).join("")}</div>` : "", t("Ingen lagrede arrangementer ennå. Trykk på hjertet ved et arrangement."))}
+    </div>`;
+  const dlg = $("sheet");
+  if (!dlg.open) { lastFocus = document.activeElement; dlg.showModal(); }
+  $("closeBtn").onclick = closeJob; $("closeBtn").focus();
+  const body = $("sheetBody");
+  body.querySelectorAll("[data-club]").forEach(b => b.onclick = () => openClub(b.dataset.club));
+  body.querySelectorAll("[data-job]").forEach(b => b.onclick = () => openJob(b.dataset.job));
+  body.querySelectorAll("[data-ev]").forEach(b => b.onclick = () => openEvent(b.dataset.ev));
+  body.querySelectorAll(".svt").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
+  body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.rm.split("|"); k === "job" ? toggleFav(id) : toggleEvSave(id); if (typeof render === "function") render(); openMine(); });
+  body.querySelectorAll("[data-go]").forEach(b => b.onclick = () => $(b.dataset.go).scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }));
+  $("mpEdit").onclick = () => { closeJob(); fyEdit = true; setTab("forside", true); render(); setTimeout(() => { const f = $("foryou"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150); };
+  if ($("mpLogin")) $("mpLogin").onclick = () => askLogin("");
+}
+$("mineBtn").onclick = openMine;
 function closeJob() {
   const dlg = $("sheet");
   if (dlg.open) dlg.close();
