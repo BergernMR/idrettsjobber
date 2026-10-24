@@ -612,6 +612,27 @@ table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-ri
 .acity select { font: inherit; font-weight: 500; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 .mp-prof .aava { grid-row: span 2; display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #7fe0b7; color: #14211d; font-weight: 800; font-size: 22px; }
 .mp-prof b { font-size: 19px; }
+.ostar { display: inline-grid; place-items: center; margin-left: 4px; vertical-align: -2px; }
+.ostar svg { width: 18px; height: 18px; fill: #f5c542; stroke: #b8860b; stroke-width: 1; filter: drop-shadow(0 1px 2px rgb(0 0 0 / .3)); }
+.lbox { display: grid; place-items: center; padding: 16px; box-sizing: border-box; }
+.lbox:not([open]) { display: none; }
+.lbcard { position: relative; display: grid; justify-items: center; gap: 8px; width: min(100%, 400px); padding: 26px 22px 20px; box-sizing: border-box; border-radius: 26px; background: var(--surface); box-shadow: var(--shadow); animation: lbin .2s ease-out; }
+@keyframes lbin { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lbcard { animation: none; } }
+.lbimg { width: min(70vw, 300px); aspect-ratio: 1; display: grid; place-items: center; }
+.lbimg img { width: 100%; height: 100%; object-fit: contain; }
+.lbimg.round { border-radius: 50%; overflow: hidden; background: var(--surface-2); box-shadow: 0 0 0 4px var(--accent-soft); }
+.lbimg.round img { object-fit: cover; }
+.lbimg span { font-size: 110px; font-weight: 800; color: #14211d; background: #7fe0b7; width: 100%; height: 100%; display: grid; place-items: center; border-radius: 50%; }
+.lbname { margin: 6px 0 0; font-size: 21px; font-weight: 800; text-align: center; }
+.lbsub { margin: 0; color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.lbacts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.lbacts button { font: inherit; font-weight: 700; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); cursor: pointer; }
+.lbacts button.del { color: var(--urgent, #e05252); }
+.lbx { position: absolute; right: 12px; top: 12px; width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--surface-2); color: var(--fg); cursor: pointer; }
+.lbx svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.logozoom { padding: 0; border: 0; background: none; cursor: zoom-in; display: inline-flex; border-radius: 12px; }
+.logozoom:hover .clogo, .logozoom:focus-visible .clogo { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 10px; }
 .mp-prof .mp-hi { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
 .mp-rename { display: inline-grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: rgba(255,255,255,.12); color: #fff; cursor: pointer; }
 .mp-rename:hover { background: rgba(255,255,255,.22); }
@@ -2043,6 +2064,9 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Eier av Aurora": ["Ägare av Aurora","Ejer af Aurora","Auroran omistaja","Eigandi Aurora","Owner of Aurora"],
+"Vis profilbildet": ["Visa profilbilden","Vis profilbilledet","Näytä profiilikuva","Sýna prófílmyndina","Show profile picture"],
+"Vis logoen større": ["Visa logotypen större","Vis logoet større","Näytä logo isompana","Sýna merkið stærra","Show the logo larger"],
 "Endre brukernavn": ["Ändra användarnamn","Skift brugernavn","Vaihda käyttäjänimi","Breyta notandanafni","Change username"],
 "Nytt brukernavn": ["Nytt användarnamn","Nyt brugernavn","Uusi käyttäjänimi","Nýtt notandanafn","New username"],
 "Du kan endre brukernavnet én gang i måneden.": ["Du kan ändra användarnamnet en gång i månaden.","Du kan skifte brugernavn én gang om måneden.","Voit vaihtaa käyttäjänimen kerran kuukaudessa.","Þú getur breytt notandanafninu einu sinni í mánuði.","You can change your username once a month."],
@@ -3230,6 +3254,21 @@ let redrawAuth = () => {};
 // Profilbilde: beskjæres til et kvadrat, gjøres lite (320 px) og lagres i Supabase under brukerens egen mappe
 const avatarHtml = (cls = "aava") => { const n = authUser ? (authName() || authUser.email || "?") : "?";
   return avatarUrl ? `<span class="${cls} img"><img src="${esc(avatarUrl)}" alt=""></span>` : `<span class="${cls}">${esc(n[0].toUpperCase())}</span>`; };
+// Eieren av Aurora (brukeren Noah1) får en gullstjerne ved navnet. Knyttet til bruker-id, så den følger med om navnet endres.
+const OWNER_ID = "f4bbb576-2a18-4484-9a95-217c9a5aa154";
+const ownerStar = id => id === OWNER_ID ? `<span class="ostar" title="${t("Eier av Aurora")}" aria-label="${t("Eier av Aurora")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z"/></svg></span>` : "";
+// Forstørret bilde (profilbilde eller logo) i et lite vindu midt på skjermen, ikke over hele skjermen
+function lightbox({ img, letter, name, sub, round, acts }) {
+  let d = $("lbox");
+  if (!d) { d = document.createElement("dialog"); d.id = "lbox"; d.className = "lbox"; document.body.appendChild(d);
+    d.addEventListener("click", e => { if (e.target === d || e.target.closest(".lbx")) d.close(); }); }
+  d.innerHTML = `<div class="lbcard"><button type="button" class="lbx" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="lbimg${round ? " round" : ""}">${img ? `<img src="${esc(img)}" alt="${esc(name || "")}">` : `<span>${esc((letter || "?").toUpperCase())}</span>`}</div>
+    ${name ? `<p class="lbname">${name}</p>` : ""}${sub ? `<p class="lbsub">${sub}</p>` : ""}
+    ${acts ? `<div class="lbacts">${acts.map((a, i) => `<button type="button" data-i="${i}"${a.del ? ' class="del"' : ""}>${esc(a.label)}</button>`).join("")}</div>` : ""}</div>`;
+  if (acts) d.querySelectorAll(".lbacts button").forEach(b => b.onclick = () => { d.close(); acts[+b.dataset.i].run(); });
+  if (!d.open) d.showModal();
+}
 async function pickAvatar() {
   if (!authUser) return askLogin(t("Logg inn for å legge til profilbilde."));
   const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*";
@@ -3259,7 +3298,7 @@ async function removeAvatar() {
 function accountHtml() {
   if (!SUPA.key) return `<p class="sl">${t("Konto")}</p><small>${t("Innlogging kommer snart.")}</small>`;
   if (authUser && authMode === "newpw") return `<p class="sl">${t("Nytt passord")}</p><form class="aform" id="aForm"><input type="password" id="aPw" required minlength="8" autocomplete="new-password" placeholder="${t("Nytt passord (minst 8 tegn)")}"><button type="submit" class="abtn">${t("Lagre nytt passord")}</button></form>${authMsg ? `<small class="amsg">${esc(authMsg)}</small>` : ""}`;
-  if (authUser) return `<p class="sl">${t("Konto")}</p><div class="acct">${avatarHtml()}<span><b>${esc(authName() || t("Innlogget"))}</b><small>${esc(authUser.email || "")}</small></span></div>
+  if (authUser) return `<p class="sl">${t("Konto")}</p><div class="acct">${avatarHtml()}<span><b>${esc(authName() || t("Innlogget"))}${ownerStar(authUser.id)}</b><small>${esc(authUser.email || "")}</small></span></div>
     <small>${t("Klubbene, idrettene og hjemstedet ditt lagres på kontoen din, så du har dem på alle enheter.")}</small>
     <div class="arow"><button type="button" class="abtn" data-a="out">${t("Logg ut")}</button><button type="button" class="abtn ghost" data-a="del">${t("Slett mine data")}</button></div>`;
   const m = authMode === "newpw" ? "in" : authMode;
@@ -4965,7 +5004,7 @@ function openClub(id) {
     <div class="sheet-top">
       <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="s-eyebrow">${flag(k.c)}${COUNTRIES[k.c]} · ${esc(t(k.sport))}</div>
-      <h2 class="s-title" id="s-title">${clubLogo(k, "clogo big")}${esc(k.n)}</h2>
+      <h2 class="s-title" id="s-title">${LOGO.has(k.id) ? `<button type="button" class="logozoom" id="logoZoom" aria-label="${t("Vis logoen større")}">${clubLogo(k, "clogo big")}</button>` : ""}${esc(k.n)}</h2>
       <p class="s-emp">${esc(k.city || COUNTRIES[k.c])}</p>
       <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
@@ -4995,6 +5034,7 @@ function openClub(id) {
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
   $("sheetFollow").onclick = () => { if (toggleFollow(id) === false) return; render(); openClub(id); };
+  if ($("logoZoom")) $("logoZoom").onclick = () => lightbox({ img: `img/logo/${k.id}.webp`, name: esc(k.n), sub: `${flag(k.c)} ${esc(t(k.sport))}${k.city ? " · " + esc(k.city) : ""}` });
   if (location.hash !== "#klubb-" + id) history.replaceState(history.state, "", "#klubb-" + id);
   if ($("sheetTable")) $("sheetTable").onclick = () => openTable(k.div);
   $("closeBtn").focus();
@@ -6210,12 +6250,11 @@ function renderMine() {
   const sec = (id, title, body, empty) => `<section class="mp-sec" id="${id}"><h3>${title}</h3>${body || `<p>${empty}</p>`}</section>`;
   $("mpage").innerHTML = `
     <aside class="mp-side">
-      <div class="mp-prof"><button type="button" class="mp-ava" id="mpAva" aria-label="${t(avatarUrl ? "Bytt profilbilde" : "Legg til profilbilde")}" title="${t(avatarUrl ? "Bytt profilbilde" : "Legg til profilbilde")}">${avatarHtml()}<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i></button>
-        <b class="mp-hi">${greet()}${name ? ", " + esc(name) : ""}${authUser ? `<button type="button" class="mp-rename" id="mpRename" aria-label="${t("Endre brukernavn")}" title="${t("Endre brukernavn")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>` : ""}</b>
+      <div class="mp-prof"><button type="button" class="mp-ava" id="mpAva" aria-label="${t(avatarUrl ? "Vis profilbildet" : "Legg til profilbilde")}" title="${t(avatarUrl ? "Vis profilbildet" : "Legg til profilbilde")}">${avatarHtml()}<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i></button>
+        <b class="mp-hi">${greet()}${name ? ", " + esc(name) : ""}${authUser ? ownerStar(authUser.id) : ""}${authUser ? `<button type="button" class="mp-rename" id="mpRename" aria-label="${t("Endre brukernavn")}" title="${t("Endre brukernavn")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>` : ""}</b>
         <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
         ${authUser ? `<form class="mp-nameform" id="mpNameForm" hidden><label for="mpNameIn">${t("Nytt brukernavn")}</label><div class="mp-namerow"><input id="mpNameIn" required minlength="2" maxlength="30" pattern="[^@ ]+" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(authName())}"><button type="submit" class="mp-namesave">${t("Lagre")}</button><button type="button" class="mp-namecancel" id="mpNameX">${t("Avbryt")}</button></div><small id="mpNameMsg">${t("Du kan endre brukernavnet én gang i måneden.")}</small></form>` : ""}
-        <div class="mp-city"><span>${t("Hjemsted")}</span>${psHtml("mpHome", homeName)}</div>
-        ${avatarUrl ? `<div class="mp-avamenu" id="mpAvaMenu" role="menu" hidden><button type="button" role="menuitem" id="mpAvaNew">${t("Bytt profilbilde")}</button><button type="button" role="menuitem" class="del" id="mpAvaDel">${t("Fjern bildet")}</button></div>` : ""}</div>
+        <div class="mp-city"><span>${t("Hjemsted")}</span>${psHtml("mpHome", homeName)}</div></div>
       ${SUPA.key && !authUser ? `<div class="mp-login"><p>${t("Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.")}</p><div class="btns"><button type="button" class="cta" id="mpLogin">${t("Logg inn eller lag bruker")}</button></div></div>` : ""}
       <div class="mp-stats">
         <button type="button" data-go="mpClubs"><b>${mine.length}</b><small>${t("Klubber du følger")}</small></button>
@@ -6242,14 +6281,9 @@ function renderMine() {
   const fg = $("mpForget"); if (fg) fg.onclick = () => { seen = []; try { localStorage.removeItem(SEEN_KEY); } catch (e) {} cloudSave(); renderMine(); };
   body.querySelectorAll("[data-go]").forEach(b => b.onclick = () => $(b.dataset.go).scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }));
   if ($("mpLogin")) $("mpLogin").onclick = () => askLogin("");
-  // Med bilde: et trykk på bildet åpner en liten meny med Bytt og Fjern
-  const avaMenu = $("mpAvaMenu");
-  if (avaMenu) {
-    const closeAva = e => { if (!e || !avaMenu.contains(e.target)) { avaMenu.hidden = true; document.removeEventListener("click", closeAva); } };
-    $("mpAva").onclick = e => { e.stopPropagation(); if (avaMenu.hidden) { avaMenu.hidden = false; setTimeout(() => document.addEventListener("click", closeAva)); } else closeAva(); };
-    $("mpAvaNew").onclick = () => { closeAva(); pickAvatar(); };
-    $("mpAvaDel").onclick = () => { closeAva(); removeAvatar(); };
-  } else $("mpAva").onclick = pickAvatar;
+  // Med bilde: et trykk på bildet viser det forstørret, med Bytt og Fjern under
+  $("mpAva").onclick = () => avatarUrl ? lightbox({ img: avatarUrl, round: true, name: esc(name) + ownerStar(authUser.id),
+    acts: [{ label: t("Bytt profilbilde"), run: pickAvatar }, { label: t("Fjern bildet"), del: true, run: removeAvatar }] }) : pickAvatar();
   placeSearch($("mpHome"), p => { setHomePlace(p); render(); });
   // Brukernavn kan byttes én gang per 30 dager; grensen sjekkes i databasen (change_username)
   const nf = $("mpNameForm");
