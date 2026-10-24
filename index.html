@@ -1203,6 +1203,28 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 .foryou .fyvs, .foryou .fynext, .foryou .fyev span { color: rgba(255,255,255,.72); }
 .foryou .fynews { border-top-color: rgba(255,255,255,.12); color: rgba(255,255,255,.9); }
 .fyev { grid-template-columns: auto 1fr; align-items: center; gap: 12px; }
+/* Forsiden for gjester: flagg i stedet for dato på jobbene, og invitasjonen til å lage bruker */
+.foryou .fyjob::before { background: #7fe0b7; }
+.fyevt { min-width: 0; } .fyevt b { overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
+@media (max-width: 560px) { .foryou .fyevs > .fyev:nth-child(n+4) { display: none; } }
+.fybib.fyflag { display: grid; place-items: center; background: rgba(255,255,255,.1) !important; }
+.fybib.fyflag .flag, .fybib.fyflag svg { width: 28px; height: 20px; border-radius: 3px; }
+.fyjoin { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px 26px; align-items: center; padding: 22px; border-radius: 18px; background: linear-gradient(135deg, rgba(127,224,183,.18), rgba(127,224,183,.06)); border: 1px solid rgba(127,224,183,.35); }
+.fyjoin h4 { margin: 0 0 6px; font-family: "Barlow Condensed", var(--font-display); font-weight: 800; font-size: 28px; line-height: 1.05; text-transform: uppercase; color: #fff; }
+.fyjoin p { margin: 0; color: rgba(255,255,255,.82); font-size: 15px; line-height: 1.5; }
+.fyjoin-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.fyjoin-up { font: inherit; font-weight: 800; padding: 11px 22px; border: 0; border-radius: 999px; background: #7fe0b7; color: #14211d; cursor: pointer; }
+.fyjoin-in { font: inherit; font-weight: 700; padding: 11px 18px; border-radius: 999px; border: 1px solid rgba(255,255,255,.35); background: none; color: #fff; cursor: pointer; }
+.fyjoin-up:hover { filter: brightness(1.06); } .fyjoin-in:hover { border-color: #7fe0b7; }
+.fyperks { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fyperks li { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 14px; background: rgba(255,255,255,.06); }
+.fyperks li > span { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 10px; background: rgba(127,224,183,.16); color: #7fe0b7; }
+.fyperks svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.fyperks li > div { min-width: 0; }
+.fyperks b { display: block; font-size: 14.5px; color: #fff; }
+.fyperks small { color: rgba(255,255,255,.7); font-size: 13px; line-height: 1.35; }
+@media (max-width: 760px) { .fyjoin { grid-template-columns: 1fr; padding: 18px; } .fyjoin h4 { font-size: 24px; } }
+@media (max-width: 420px) { .fyperks { grid-template-columns: 1fr; } }
 .fyrange { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 14px; }
 .fyslide { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 700; color: rgba(255,255,255,.85); }
 .fyslide span { min-width: 82px; text-align: right; }
@@ -1980,6 +2002,19 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Utforsk nordisk idrett": ["Utforska nordisk idrott","Udforsk nordisk idræt","Tutustu pohjoismaiseen urheiluun","Kannaðu norrænar íþróttir","Explore Nordic sport"],
+"Nyeste jobber": ["Nyaste jobben","Nyeste job","Uusimmat työpaikat","Nýjustu störfin","Newest jobs"],
+"Snart i Norden": ["Snart i Norden","Snart i Norden","Pian Pohjoismaissa","Bráðum á Norðurlöndum","Coming up in the Nordics"],
+"Få mer ut av Aurora, gratis": ["Få ut mer av Aurora, gratis","Få mere ud af Aurora, gratis","Saa Aurorasta enemmän irti, ilmaiseksi","Fáðu meira út úr Aurora, ókeypis","Get more out of Aurora, for free"],
+"Med en bruker blir forsiden din egen: klubbene du følger, arrangementer der du bor og jobbene du har lagret, på både mobil og PC.": ["Med ett konto blir startsidan din egen: klubbarna du följer, evenemang där du bor och jobben du sparat, på både mobil och dator.","Med en bruger bliver forsiden din egen: klubberne du følger, arrangementer hvor du bor og de job du har gemt, på både mobil og computer.","Tilillä etusivusta tulee omasi: seuraamasi seurat, tapahtumat kotisi lähellä ja tallentamasi työpaikat, sekä puhelimella että tietokoneella.","Með aðgangi verður forsíðan þín eigin: félögin sem þú fylgir, viðburðir þar sem þú býrð og störfin sem þú vistaðir, í síma og tölvu.","With an account the front page becomes yours: the clubs you follow, events where you live and the jobs you saved, on phone and computer."],
+"Jeg har bruker": ["Jag har konto","Jeg har en bruger","Minulla on tili","Ég er með aðgang","I have an account"],
+"Tabell, neste kamp og live-resultater.": ["Tabell, nästa match och liveresultat.","Tabel, næste kamp og liveresultater.","Sarjataulukko, seuraava ottelu ja live-tulokset.","Stöðutafla, næsti leikur og bein úrslit.","Table, next match and live scores."],
+"Arrangementer nær deg": ["Evenemang nära dig","Arrangementer nær dig","Tapahtumia lähelläsi","Viðburðir nálægt þér","Events near you"],
+"Cuper, løp og stevner der du bor.": ["Cuper, lopp och tävlingar där du bor.","Cups, løb og stævner, hvor du bor.","Turnauksia, juoksuja ja kisoja kotisi lähellä.","Mót, hlaup og keppnir þar sem þú býrð.","Cups, races and meets where you live."],
+"Lagre jobber": ["Spara jobb","Gem job","Tallenna työpaikkoja","Vistaðu störf","Save jobs"],
+"Og få påminnelse før fristen går ut.": ["Och få en påminnelse innan sista ansökningsdag.","Og få en påmindelse før fristen udløber.","Ja saat muistutuksen ennen hakuajan päättymistä.","Og fáðu áminningu áður en fresturinn rennur út.","And get a reminder before the deadline."],
+"Din egen side": ["Din egen sida","Din egen side","Oma sivusi","Þín eigin síða","Your own page"],
+"Forslag til jobber, kurs og arrangementer.": ["Förslag på jobb, kurser och evenemang.","Forslag til job, kurser og arrangementer.","Ehdotuksia työpaikoista, kursseista ja tapahtumista.","Tillögur að störfum, námskeiðum og viðburðum.","Suggestions for jobs, courses and events."],
 "Velkommen til Min side": ["Välkommen till Min sida","Velkommen til Min side","Tervetuloa Omalle sivulle","Velkomin á Mína síðu","Welcome to My page"],
 "Her samler du det som betyr noe for deg i nordisk idrett. Logg inn, eller lag en gratis bruker på under ett minutt.": ["Här samlar du det som betyder något för dig i nordisk idrott. Logga in, eller skapa ett gratis konto på under en minut.","Her samler du det, der betyder noget for dig i nordisk idræt. Log ind, eller opret en gratis bruger på under et minut.","Täällä kokoat sen, mikä on sinulle tärkeää pohjoismaisessa urheilussa. Kirjaudu sisään tai luo ilmainen tili alle minuutissa.","Hér safnar þú því sem skiptir þig máli í norrænum íþróttum. Skráðu þig inn eða búðu til ókeypis aðgang á innan við mínútu.","Gather what matters to you in Nordic sport. Log in, or create a free account in under a minute."],
 "Følg klubbene dine": ["Följ dina klubbar","Følg dine klubber","Seuraa seurojasi","Fylgdu félögunum þínum","Follow your clubs"],
@@ -4997,8 +5032,34 @@ const fyEvsHtml = list => { const evs = fyEvAll ? list : list.slice(0, 4); retur
 const paintFyEvs = () => { const el = $("fyEvs"); if (!el) return; el.innerHTML = fyEvsHtml(nearEvents());
   el.querySelectorAll(".fyev").forEach(b => b.onclick = () => openEvent(b.dataset.id));
   const m = el.querySelector(".fymore"); if (m) m.onclick = () => { fyEvAll = true; paintFyEvs(); }; };
+// Forsiden for den som ikke er logget inn: generelt innhold fra hele Norden, og en invitasjon til å lage bruker
+function renderGuestHome(box) {
+  const own = LANG_REGION[LANG];
+  // Den nyeste jobben fra hvert land (lagt til sist), med landet til språket først
+  const newest = JOBS.map((j, i) => ({ j, i })).filter(({ j }) => !(daysLeft(j.dl) < 0))
+    .sort((a, b) => (ADDED_AT[b.j.id] || "").localeCompare(ADDED_AT[a.j.id] || "") || b.i - a.i).map(x => x.j);
+  const jobs = [own, ...Object.keys(COUNTRIES).filter(c => c !== own)].map(c => newest.find(j => j.c === c)).filter(Boolean).slice(0, 4);
+  // Kommende arrangementer i hele Norden de neste tre månedene, med eksakt dato
+  const evs = EVENTS.map(e => ({ e, d: evOrder(e) })).filter(x => x.d >= 0 && x.d < 92 && evDate(x.e)).sort((a, b) => a.d - b.d).slice(0, 4).map(x => x.e);
+  const perks = [["klubber", "Følg klubbene dine", "Tabell, neste kamp og live-resultater."],
+    ["arrangementer", "Arrangementer nær deg", "Cuper, løp og stevner der du bor."],
+    ["jobber", "Lagre jobber", "Og få påminnelse før fristen går ut."],
+    ["minside", "Din egen side", "Forslag til jobber, kurs og arrangementer."]];
+  box.innerHTML = `<div class="fyh"><p class="fyhello">${greet()}</p><h3 id="fyH">${t("Utforsk nordisk idrett")}</h3></div>
+    ${jobs.length ? `<div class="fysec"><p class="fyl">${t("Nyeste jobber")}</p><div class="fyevs">${jobs.map(j => `<button type="button" class="fyev fyjob" data-j="${j.id}"><span class="fybib fyflag">${flag(j.c)}</span><span class="fyevt"><b>${esc(j.t)}</b><span>${esc(j.emp)} · ${esc(j.place)}</span></span></button>`).join("")}</div></div>` : ""}
+    ${evs.length ? `<div class="fysec"><p class="fyl">${t("Snart i Norden")}</p><div class="fyevs">${evs.map(e => { const dt = new Date(evDate(e)[0] + "T12:00:00");
+      return `<button type="button" class="fyev" data-id="${e.id}" style="--kc:${KIND_COLOR[kindOf(e.sport)] || "#7fe0b7"}"><span class="fybib"><b>${dt.getDate()}</b><small>${esc(monthName(dt.getMonth() + 1).slice(0, 3))}</small></span><span class="fyevt"><b>${esc(t(e.t))}</b><span>${esc(t(e.sport))} · ${esc(t(e.place))}</span></span></button>`; }).join("")}</div></div>` : ""}
+    <div class="fyjoin"><div class="fyjoin-tx"><h4>${t("Få mer ut av Aurora, gratis")}</h4><p>${t("Med en bruker blir forsiden din egen: klubbene du følger, arrangementer der du bor og jobbene du har lagret, på både mobil og PC.")}</p>
+      <div class="fyjoin-btns"><button type="button" class="fyjoin-up">${t("Lag gratis bruker")}</button><button type="button" class="fyjoin-in">${t("Jeg har bruker")}</button></div></div>
+      <ul class="fyperks">${perks.map(([ic, h, d]) => `<li><span aria-hidden="true"><svg viewBox="0 0 24 24">${ICON[ic]}</svg></span><div><b>${t(h)}</b><small>${t(d)}</small></div></li>`).join("")}</ul></div>`;
+  box.querySelectorAll(".fyjob").forEach(b => b.onclick = () => openJob(b.dataset.j));
+  box.querySelectorAll(".fyev:not(.fyjob)").forEach(b => b.onclick = () => openEvent(b.dataset.id));
+  box.querySelector(".fyjoin-up").onclick = () => { askLogin(""); authMode = "up"; };
+  box.querySelector(".fyjoin-in").onclick = () => askLogin("");
+}
 function renderForYou() {
   const box = $("foryou"); if (!box) return;
+  if (SUPA.key && !authUser) return renderGuestHome(box);
   const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
   const picker = `<div class="fypick"><p class="fyq">${t("Hva interesserer deg?")}</p>
       <div class="fychips">${INTERESTS.map(([k, l, sps]) => `<button type="button" class="chip fyint" data-k="${k}" aria-pressed="${likes.has(k)}" style="--kc:${KIND_COLOR[kindOf(sps[0])]}">${icoOf(sps[0])}${t(l)}</button>`).join("")}</div>
