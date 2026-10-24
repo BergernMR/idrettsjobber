@@ -927,6 +927,16 @@ dialog .sheet { border-radius: 24px; }
   .tabbtn { flex: none; padding: 9px 14px; }
   body.home header { min-height: 0; padding-top: 24px; }
 }
+/* Søkesirkel ved siden av den faste menyen */
+.dsbtn { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 8px); left: 8px; z-index: 21; width: 52px; height: 52px; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 1px solid var(--line); background: color-mix(in oklab, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 8px 30px rgb(0 0 0 / .18); color: var(--fg); cursor: pointer; transform: translateY(-150%); transition: transform .3s cubic-bezier(.2,.8,.3,1); }
+.dsbtn.on { transform: none; }
+.dsbtn:hover, .dsbtn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.dsbtn svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+body.gfloat > .gsearch { position: fixed; z-index: 40; top: calc(env(safe-area-inset-top, 0px) + 70px); left: var(--dsl, 8px); width: min(calc(100vw - 16px), 440px); margin: 0; }
+body.gfloat > .gsearch input { box-shadow: 0 12px 40px rgb(0 0 0 / .25); }
+body.gfloat .gres { left: 0; right: auto; width: 100%; }
+@media (max-width: 640px) { .dock { left: 66px !important; } body.gfloat > .gsearch { top: calc(env(safe-area-inset-top, 0px) + 74px); } }
+@media (prefers-reduced-motion: reduce) { .dsbtn { transition: none; } }
 /* Fast meny øverst når toppmenyen er ute av syne */
 .dock { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 8px); transform: translate(-50%, -150%); z-index: 20; display: flex; gap: 2px; padding: 5px; border-radius: 999px; background: color-mix(in oklab, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.18); transition: transform .25s ease; max-width: calc(100vw - 16px); box-sizing: border-box; }
 .dock.on { transform: translate(-50%, 0); }
@@ -2306,8 +2316,64 @@ const I18N = {
 "Offentlige stillinger, blant annet svømmehaller og idrettshaller.": ["Offentliga jobb, bland annat simhallar och idrottshallar.","Offentlige stillinger, blandt andet svømmehaller og idrætshaller.","Julkiset työpaikat, myös uima- ja urheiluhallit.","Opinber störf, m.a. í sundlaugum og íþróttahúsum.","Public sector jobs, including pools and sports halls."]
 };
 const LI = { sv: 0, da: 1, fi: 2, is: 3, en: 4 };
+// På norsk heter klubbene «idrettslag» (Noah 2026-10-24); nøklene beholdes, så de andre språkene ikke berøres
+const NB_TEXT = {
+  "Du følger ingen klubber ennå. Trykk på stjernen ved en klubb under Klubber, så havner den her.": "Du følger ingen idrettslag ennå. Trykk på stjernen ved et idrettslag under Idrettslag, så havner det her.",
+  "Finn flere klubber": "Finn flere idrettslag",
+  "Finn klubber": "Finn idrettslag",
+  "Jobber, utdanning, arrangementer og klubber i Norge, Sverige, Danmark, Finland og Island, samlet på ett sted.": "Jobber, utdanning, arrangementer og idrettslag i Norge, Sverige, Danmark, Finland og Island, samlet på ett sted.",
+  "Klubber": "Idrettslag",
+  "Klubber som ansetter, per land": "Idrettslag som ansetter, per land",
+  "Jobber, utdanning, arrangementer og klubber i hele Norden. Velg et land for å se bare det.": "Jobber, utdanning, arrangementer og idrettslag i hele Norden. Velg et land for å se bare det.",
+  "Her finner du lenker til klubbsøk i hvert land, og klubber som ansetter akkurat nå.": "Her finner du lenker til klubbsøk i hvert land, og idrettslag som ansetter akkurat nå.",
+  "Bli med i et fellesskap der du bor, eller jobb for klubbene som bygger idretten.": "Bli med i et fellesskap der du bor, eller jobb for idrettslagene som bygger idretten.",
+  "Kart over klubber som ansetter": "Kart over idrettslag som ansetter",
+  "klubb": "idrettslag",
+  "klubber": "idrettslag",
+  "Ledelse, markedsføring og drift av klubber, forbund og idrettsbedrifter.": "Ledelse, markedsføring og drift av idrettslag, forbund og idrettsbedrifter.",
+  "{n} er en klubb i {sport} fra {place}.": "{n} er et idrettslag i {sport} fra {place}.",
+  "Søk opp klubbens nettside": "Søk opp idrettslagets nettside",
+  "Mine klubber": "Mine idrettslag",
+  "Følg klubbene du heier på, så samles de her.": "Følg idrettslagene du heier på, så samles de her.",
+  "Klubbens nettside": "Idrettslagets nettside",
+  "Søk etter klubb, idrett eller by": "Søk etter idrettslag, idrett eller by",
+  "Søk i klubber": "Søk i idrettslag",
+  "{n} klubber å følge": "{n} idrettslag å følge",
+  "Trykk Følg for å legge klubben til i Mine klubber": "Trykk Følg for å legge idrettslaget til i Mine idrettslag",
+  "Hvert land har egne sider der du kan finne en klubb å trene i der du bor.": "Hvert land har egne sider der du kan finne et idrettslag å trene i der du bor.",
+  "Ingen klubber passer søket ditt.": "Ingen idrettslag passer søket ditt.",
+  "Kart over klubber": "Kart over idrettslag",
+  "Klubber per land": "Idrettslag per land",
+  "Kjente klubber i hele Norden. Følg de du liker, så finner du dem igjen under Mine klubber.": "Kjente idrettslag i hele Norden. Følg de du liker, så finner du dem igjen under Mine idrettslag.",
+  "Følg klubbene dine i hele Norden og samle dem på ett sted.": "Følg idrettslagene dine i hele Norden og samle dem på ett sted.",
+  "Bli med i en klubb": "Bli med i et idrettslag",
+  "klubber ansetter nå": "idrettslag ansetter nå",
+  "Finn en klubb å trene i eller jobbe for.": "Finn et idrettslag å trene i eller jobbe for.",
+  "Søk etter sted, klubb eller idrett (fotball, Oslo, svømming …)": "Søk etter sted, idrettslag eller idrett (fotball, Oslo, svømming …)",
+  "Kampene oppdateres jevnlig, så sjekk klubben for nøyaktig tid.": "Kampene oppdateres jevnlig, så sjekk idrettslaget for nøyaktig tid.",
+  "For klubbene du følger": "For idrettslagene du følger",
+  "Ingen kommende kamper for klubbene du følger ennå.": "Ingen kommende kamper for idrettslagene du følger ennå.",
+  "Jobber, kurs, arrangementer og klubber": "Jobber, kurs, arrangementer og idrettslag",
+  "Dine klubber nå": "Dine idrettslag nå",
+  "Finn en klubb": "Finn et idrettslag",
+  "Dine klubber": "Dine idrettslag",
+  "Klubber nær {x}": "Idrettslag nær {x}",
+  "Klubbene, idrettene og hjemstedet ditt lagres på kontoen din, så du har dem på alle enheter.": "Idrettslagene, idrettene og hjemstedet ditt lagres på kontoen din, så du har dem på alle enheter.",
+  "Logg inn for å ha klubbene og valgene dine på mobil og PC.": "Logg inn for å ha idrettslagene og valgene dine på mobil og PC.",
+  "Vi lagrer bare e-posten din og valgene dine (klubber, idretter og hjemsted). Ingenting deles eller selges.": "Vi lagrer bare e-posten din og valgene dine (idrettslag, idretter og hjemsted). Ingenting deles eller selges.",
+  "Slette klubbene og valgene som er lagret på kontoen din?": "Slette idrettslagene og valgene som er lagret på kontoen din?",
+  "Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.": "Lag en gratis bruker, så har du idrettslagene og valgene dine på mobil og PC.",
+  "Hvert land har egne sider der du kan søke opp klubber etter sted og idrett.": "Hvert land har egne sider der du kan søke opp idrettslag etter sted og idrett.",
+  "{n} klubber og arrangører søker folk nå": "{n} idrettslag og arrangører søker folk nå",
+  "Ingen klubber i dette landet ansetter akkurat nå.": "Ingen idrettslag i dette landet ansetter akkurat nå.",
+  "Med en bruker blir forsiden din egen: klubbene du følger, arrangementer der du bor og jobbene du har lagret, på både mobil og PC.": "Med en bruker blir forsiden din egen: idrettslagene du følger, arrangementer der du bor og jobbene du har lagret, på både mobil og PC.",
+  "Følg klubbene dine": "Følg idrettslagene dine",
+  "Logg inn eller lag en gratis bruker for å følge klubber.": "Logg inn eller lag en gratis bruker for å følge idrettslag.",
+  "For deg som vil delta eller jobbe i idretten. Her samles klubbene, jobbene og arrangementene dine, og forslag som passer akkurat deg.": "For deg som vil delta eller jobbe i idretten. Her samles idrettslagene, jobbene og arrangementene dine, og forslag som passer akkurat deg.",
+  "Klubber du følger": "Idrettslag du følger"
+};
 function t(key, vars) {
-  let s = LANG === "nb" ? key : ((I18N[key] || [])[LI[LANG]] || key);
+  let s = LANG === "nb" ? (NB_TEXT[key] || key) : ((I18N[key] || [])[LI[LANG]] || key);
   if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]);
   return s;
 }
@@ -2318,15 +2384,15 @@ const IS_MONTHS = ["janúar","febrúar","mars","apríl","maí","júní","júlí"
 const monthName = m => LANG === "is" ? IS_MONTHS[m - 1] : new Date(2026, m - 1, 15).toLocaleDateString(LOCALE[LANG], { month: "long" });
 // Oversetter fast tekst i HTML-en (tekst, plassholdere og skjermleser-etiketter)
 function translateStatic() {
-  if (LANG === "nb") return;
-  document.querySelectorAll(".note, .stamp").forEach(el => { const k = el.innerHTML.trim(); if (I18N[k]) el.innerHTML = t(k); });
+  const has = k => LANG === "nb" ? NB_TEXT[k] : I18N[k];
+  document.querySelectorAll(".note, .stamp").forEach(el => { const k = el.innerHTML.trim(); if (has(k)) el.innerHTML = t(k); });
   const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   for (let node; (node = w.nextNode());) {
     const k = node.nodeValue.trim();
-    if (k && I18N[k]) node.nodeValue = node.nodeValue.replace(k, t(k));
+    if (k && has(k)) node.nodeValue = node.nodeValue.replace(k, t(k));
   }
   document.querySelectorAll("[placeholder],[aria-label]").forEach(el => {
-    for (const a of ["placeholder", "aria-label"]) { const v = el.getAttribute(a); if (v && I18N[v]) el.setAttribute(a, t(v)); }
+    for (const a of ["placeholder", "aria-label"]) { const v = el.getAttribute(a); if (v && has(v)) el.setAttribute(a, t(v)); }
   });
   document.title = "Aurora – " + t("Idretten i Norden");
 }
@@ -3922,6 +3988,37 @@ function renderDock() {
   if (oldPill) d.prepend(oldPill);
   d.querySelectorAll("button[data-t]").forEach(b => b.onclick = () => setTab(b.dataset.t));
   d.querySelector(".up").onclick = () => scrollTo({ top: 0, behavior: "smooth" });
+  setupDockSearch();
+}
+// Egen søkesirkel ved siden av menyen (ikke inni den). Den åpner det vanlige søkefeltet som et lite vindu under sirkelen.
+function setupDockSearch() {
+  let b = $("dsBtn");
+  if (!b) {
+    b = document.createElement("button"); b.type = "button"; b.id = "dsBtn"; b.className = "dsbtn";
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>';
+    document.body.appendChild(b);
+    // Søkefeltet flyttes ut av toppen mens det svever, ellers havner det bak resten av siden
+    const gs = document.querySelector("header .gsearch"), home = document.createComment("gsearch");
+    gs.before(home);
+    const close = () => { if (!document.body.classList.contains("gfloat")) return; document.body.classList.remove("gfloat"); home.after(gs); b.setAttribute("aria-expanded", "false"); };
+    b.onclick = e => { e.stopPropagation();
+      if (document.body.classList.contains("gfloat")) return close();
+      document.body.appendChild(gs); document.body.classList.add("gfloat"); b.setAttribute("aria-expanded", "true"); placeDs(); $("gq").focus(); };
+    document.addEventListener("pointerdown", e => { if (!e.target.closest(".gsearch, #dsBtn")) close(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+    // Når menyen forsvinner (man ruller til toppen), lukkes det svevende søket
+    new MutationObserver(() => { const on = $("dock").classList.contains("on"); b.classList.toggle("on", on); if (!on) close(); else placeDs(); }).observe($("dock"), { attributes: true, attributeFilter: ["class"] });
+    addEventListener("resize", placeDs);
+  }
+  b.setAttribute("aria-label", t("Søk i hele Aurora")); b.title = t("Søk i hele Aurora");
+}
+function placeDs() {
+  const b = $("dsBtn"), d = $("dock"); if (!b || !d) return;
+  const r = d.getBoundingClientRect(), mob = innerWidth <= 640;
+  // På mobil går menyen nesten kant i kant, så den gir plass til sirkelen på venstre side
+  const left = mob ? 8 : Math.max(8, r.left - 52 - 10);
+  b.style.left = left + "px";
+  document.body.style.setProperty("--dsl", (mob ? 8 : Math.max(8, Math.min(left, innerWidth - 448))) + "px");
 }
 // Markøren som glir bak den aktive knappen
 function placePill(box, sel) {
@@ -5894,7 +5991,8 @@ $("savedBtn").onclick = openSaved;
 function updClubs() {
   const b = $("clubsBtn"); if (!b) return;
   const n = follows.size, live = FAN.some(k => follows.has(k.id) && LIVE[k.id] && LIVE[k.id][4] !== "ft");
-  $("clubsN").hidden = !n; $("clubsN").textContent = n; b.classList.toggle("live", live);
+  $("clubsN").hidden = true; // Stjernen viser ikke antall (Noah), bare hjertet gjør det
+  b.classList.toggle("live", live);
   b.setAttribute("aria-label", t("Dine klubber") + (n ? ` (${n})` : "")); b.title = t("Dine klubber");
   if (typeof updMine === "function") updMine();
 }
