@@ -981,8 +981,12 @@ body.home .herohead { display: block; font-family: "Barlow Condensed", var(--fon
 body.home header .gsearch input { font-size: 16px; padding-block: 14px; }
 body.home .welcome { padding: 0; }
 body.home header { padding-bottom: 84px; }
-body.home .livestrip:not([hidden]), body.home .livestrip[hidden] + .hub { margin-top: -86px; position: relative; z-index: 3; }
-body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 20px; padding: 14px; box-shadow: 0 10px 30px -12px rgba(0,0,0,.35); }
+body.home .hub { margin-top: -86px; position: relative; z-index: 3; }
+/* Fotokreditten står over kortene som stikker opp i bildet */
+body.home .herocredit { bottom: 96px; }
+/* Live-kampene ligger under snarveiene, så de ikke dekker bildet, kreditten eller menyen */
+body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 12px; gap: 6px; box-shadow: 0 6px 24px -14px rgba(20,33,29,.25); }
+@media (max-width: 560px) { body.home .livestrip:not([hidden]) { padding: 10px; } .livestrip .live { padding: 7px 10px; font-size: 13px; } .livestrip .live .ls b { font-size: 14px; } .livestrip .lbl { font-size: 11px; } }
 /* Fire veier inn som bildekort */
 .pgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .pcard { font: inherit; color: var(--fg); text-align: left; cursor: pointer; padding: 0; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--surface); box-shadow: 0 6px 24px -10px rgba(20,33,29,.25); display: flex; flex-direction: column; transition: transform .2s ease, box-shadow .2s ease; }
@@ -1017,7 +1021,6 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
 .glist li:first-child a.hasimg::before { z-index: 2; }
 /* Seksjonstitler med samme skrift som logoen */
 .sechero h2, .welcome h2 { font-family: "Barlow Condensed", var(--font-display); text-transform: uppercase; letter-spacing: .005em; line-height: .95; }
-.livestrip { margin-top: 0; }
 /* Til deg */
 .foryou { display: grid; gap: 16px; margin-top: 30px; padding: clamp(18px, 3vw, 26px); border-radius: 22px; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 6px 24px -14px rgba(20,33,29,.25); }
 .foryou:empty { display: none; }
@@ -1081,6 +1084,7 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
 @media (max-width: 900px) { .pgrid { grid-template-columns: 1fr 1fr; } .glist { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) {
   body.home header { min-height: 0; padding: 18px 0 26px; }
+  body.home .hub { margin-top: 8px; } body.home .herocredit { bottom: 8px; }
   body.home header .topline { margin-bottom: 40px; }
   .pgrid { gap: 12px; } .pcard .im { height: 96px; } .pcard b { font-size: 21px; } .pcard .tx { padding: 12px 12px 14px; } .pcard small { font-size: 13px; }
   .glist { grid-template-columns: 1fr; } .glist li:first-child a { min-height: 220px; }
@@ -1108,8 +1112,8 @@ body.home .livestrip:not([hidden]) { background: var(--surface); border-radius: 
   <section class="sechero" id="sechero" hidden></section>
 
   <div class="tab" id="tab-forside" hidden>
-    <section class="livestrip" id="liveStrip" hidden></section>
     <section class="hub" id="hub" aria-label="Snarveier"></section>
+    <section class="livestrip" id="liveStrip" hidden></section>
   </div>
 
   <div class="tab" id="tab-jobber" hidden>
@@ -4517,12 +4521,14 @@ function renderHome() {
     ["jobber", "Jobb med idrett", "Gjør hobbyen til jobb, som trener, leder eller instruktør."]
   ];
   const cta = { klubber: "Finn en klubb", arrangementer: "Se kalenderen", utdanning: "Se utdanning", jobber: "Se ledige jobber" };
+  const ls = $("liveStrip"); $("tab-forside").appendChild(ls); // ut før hub tegnes på nytt
   $("hub").innerHTML = `<div class="welcome">
       <div class="pgrid">${paths.map(([tab, title, d], i) => `<button type="button" class="pcard" data-t="${tab}">
         <span class="im"><img src="${PATH_IMG[tab]}" alt="" ${i > 1 ? 'loading="lazy" ' : ""}decoding="async"></span>
         <span class="tx"><b>${t(title)}</b><small>${t(d)}</small><span class="go">${t(cta[tab])} →</span></span></button>`).join("")}</div>
       <section class="foryou" id="foryou" aria-labelledby="fyH"></section>
     </div>`;
+  $("hub").querySelector(".pgrid").after(ls); // live-kampene rett under snarveiene
   $("hub").querySelectorAll(".pcard").forEach(b => b.onclick = () => { setTab(b.dataset.t); scrollTo({ top: 0, behavior: reduceMotion() ? "auto" : "smooth" }); });
   renderForYou();
   renderGnews();
