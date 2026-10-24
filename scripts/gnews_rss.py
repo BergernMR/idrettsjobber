@@ -26,6 +26,45 @@ STORE = {"NO": {"Fotball", "Langrenn", "Skiskyting", "Hopp", "Alpint", "Håndbal
          "IS": {"Fotball", "Håndball", "Basketball"}}
 OSLO = ZoneInfo("Europe/Oslo")
 
+# Siden skal bare ha nyheter om nordisk sport. Saker om utenlandske ligaer, klubber og stjerner tas bort,
+# med mindre tittelen, ingressen eller stikkordene nevner noe nordisk (en nordisk utøver, et landslag osv.).
+UTLAND = re.compile(r"\b(" + "|".join([
+    r"Premier League", r"Championship", r"La ?Liga", r"Serie A", r"Bundesliga", r"Ligue 1", r"MLS", r"NHL", r"NBA", r"NFL", r"MLB",
+    r"Englan\w*", r"Engelsk\w*", r"Spani\w*", r"Spánn?\w*", r"Espanja\w*", r"Itali\w*", r"Ítalí\w*", r"Tyskland\w*", r"Saksa\w*", r"Þýskal\w*",
+    r"Frankrig\w*", r"Frankrike\w*", r"Ranska\w*", r"Frakkl\w*", r"Bandaríkj\w*", r"Infantino\w*",
+    r"Arsenal\w*", r"Chelsea\w*", r"Liverpool\w*", r"Tottenham\w*", r"Manchester\w*", r"Man\.? (?:United|City|Utd)", r"Newcastle\w*",
+    r"Aston Villa\w*", r"Everton\w*", r"Nottingham\w*", r"Forest", r"West Ham\w*", r"Brighton\w*", r"Brentford\w*", r"Fulham\w*",
+    r"Wolves", r"Bournemouth\w*", r"Crystal Palace\w*", r"Leeds\w*", r"Sunderland\w*", r"Burnley\w*", r"Stamford Bridge", r"Anfield", r"Old Trafford",
+    r"Real Madrid\w*", r"Barcelona\w*", r"Barça", r"Atlético\w*", r"Real Sociedad\w*", r"Sevilla\w*", r"Juventus\w*", r"Inter\b", r"Milan\w*",
+    r"Napoli\w*", r"Lazio\w*", r"Roma\b", r"Torino\w*", r"Atalanta\w*", r"Bayern\w*", r"Dortmund\w*", r"Leverkusen\w*", r"Leipzig\w*", r"PSG", r"Paris Saint-Germain\w*",
+    r"Ajax\w*", r"Benfica\w*", r"Porto\b", r"Celtic\w*", r"Rangers\w*",
+    r"LeBron\w*", r"MacKinnon\w*", r"Colorado\w*", r"Tampa\w*", r"Philadelphia\w*", r"Utah\w*", r"Lakers\w*", r"Celtics\w*", r"Ovetškin\w*", r"Ovetjkin\w*", r"Ovechkin\w*",
+    r"ensk[ua]\w*", r"F1", r"Verstappen\w*", r"Leclerc\w*", r"Hamilton\w*", r"Norris\w*", r"Antonelli\w*", r"Piastri\w*", r"Indycar\w*",
+    r"Messi\w*", r"Ronaldo\w*", r"Mbappé\w*", r"Salah\w*", r"Kane\b", r"Bellingham\w*", r"Yamal\w*", r"Kompany\w*", r"Guardiola\w*", r"Slot\b", r"Arteta\w*",
+]) + r")", re.I)
+NORDISK = re.compile(r"\b(" + "|".join([
+    r"norsk\w*", r"nordm[ae]nn\w*", r"Norge\w*", r"Norges", r"Norjan?\w*", r"Noregs?",
+    r"svensk\w*", r"Sverige\w*", r"Ruotsi\w*", r"Svíþjóð\w*", r"Tre Kronor", r"Blågult",
+    r"dansk\w*", r"Danmark\w*", r"Tanska\w*", r"Danmörk\w*",
+    r"finsk\w*", r"Finland\w*", r"suomalai\w*", r"Suome\w*", r"Suomi\w*", r"Leijon\w*", r"Huuhkaj\w*", r"Finnl\w*",
+    r"island\w*", r"Ísland\w*", r"Íslend\w*", r"íslensk\w*",
+    r"landslag\w*", r"landshold\w*", r"landslið\w*", r"maajoukkue\w*", r"nordisk\w*",
+    r"Haaland\w*", r"Ødegaard\w*", r"Sørloth\w*", r"Nusa\w*", r"Bobb\w*", r"Aasgaard\w*", r"Strand Larsen\w*", r"Ryerson\w*", r"Selvik\w*", r"Nyland\w*", r"Hauger\w*", r"Glódís\w*", r"Hellberg\w*", r"Bottas\w*",
+    r"Isak\w*", r"Gyökeres\w*", r"Kulusevski\w*", r"Elanga\w*", r"Højlund\w*", r"Eriksen\w*", r"Hjulmand\w*", r"Schmeichel\w*", r"Wind\b",
+    r"Lehkonen\w*", r"Markka\w*", r"Barkov\w*", r"Rantanen\w*", r"Laine\w*", r"Aho\b", r"Granlund\w*", r"Hintz\w*", r"Pukki\w*", r"Hradecky\w*",
+    r"Nylander\w*", r"Dahlin\w*", r"Hedman\w*", r"Pettersson\w*", r"Forsberg\w*", r"Ekholm\w*", r"Raanta\w*", r"Mikkola\w*",
+    r"Albert Guðmunds\w*", r"Hákon\w*", r"Ísak Bergmann\w*", r"Orri Óskars\w*", r"Glimt\w*", r"Brann\w*", r"Molde\w*", r"Rosenborg\w*", r"Lillestrøm\w*",
+    r"Malmö\w*", r"Djurgård\w*", r"Hammarby\w*", r"AIK\b", r"Häcken\w*", r"FCK\b", r"Brøndby\w*", r"Midtjylland\w*", r"HJK\b", r"KuPS\b",
+]) + r")", re.I)
+
+def nordisk(x, ekstra=""):
+    ute = UTLAND.findall(x["tittel"])
+    if not ute or NORDISK.search(x["tittel"]): return True
+    # Utenlandsk tittel: det nordiske må veie minst halvparten så tungt som det utenlandske i resten av saken.
+    tekst = x["ingress"] + " " + ekstra
+    n = len(NORDISK.findall(tekst))
+    return n > 0 and 2 * n >= len(ute) + len(UTLAND.findall(tekst))
+
 # Idrett (norsk navn, som på siden) og ord som avslører den, på alle språkene. Rekkefølgen teller: det spesifikke først.
 IDRETTER = [
     ("Skiskyting", "skiskyting skidskytte skiskydning ampumahiihto skíðaskotfimi biathlon"),
@@ -107,7 +146,8 @@ def hent(kilde, url, betaling):
         except Exception: dato = None
         kat = [H.unescape(re.sub(r"^<!\[CDATA\[(.*)\]\]>$", r"\1", c.strip())) for c in re.findall(r"<category[^>]*>(.*?)</category>", x, re.S)]
         bilde = re.search(r'<(?:media:content|media:thumbnail|enclosure)[^>]*url="(https://[^"]+)"', x)
-        saker.append({"dato": dato, "idrett": finn_idrett(kat, lenke, tittel, tekst(x, "description")), "tittel": tittel,
+        ingress = tekst(x, "description")
+        saker.append({"dato": dato, "idrett": finn_idrett(kat, lenke, tittel, ingress), "tittel": tittel, "ingress": ingress,
                       "lenke": lenke, "kilde": kilde, "betaling": betaling, "bilde": H.unescape(bilde.group(1)) if bilde else None})
     return saker
 
@@ -153,6 +193,13 @@ for land, kilder in FEEDS.items():
     for kilde, url, betaling in kilder:
         try: saker += hent(kilde, url, betaling)
         except Exception as e: print(land, kilde, "feilet:", e)
+    # Bare nordisk sport: ved tvil (utenlandsk navn i tittelen) leses også stikkordene i selve saken.
+    tvil = [x for x in saker if not nordisk(x)]
+    for x in tvil[:30]:
+        if nordisk(x, metatekst(x["lenke"])): x["ok"] = True
+    bort = [x for x in tvil if not x.get("ok")]
+    saker = [x for x in saker if x not in bort]
+    if bort: print(land, "tok bort", len(bort), "utenlandske:", [x["tittel"][:40] for x in bort])
     # Uten kategori i feeden (f.eks. VG): les ingressen og stikkordene i selve saken for å finne idretten.
     for x in sorted([x for x in saker if x["idrett"] == "Sport"], key=lambda x: x["dato"] or datetime.min.replace(tzinfo=OSLO), reverse=True)[:12]:
         x["idrett"] = finn_idrett([], "", "", metatekst(x["lenke"]))
