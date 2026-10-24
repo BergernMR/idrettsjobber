@@ -1,6 +1,6 @@
 # Henter nye idrettsjobber fra NAV (Norge), Ledigajobb.se (Sverige) og Duunitori (Finland) og legger dem til i JOBS.
 # Kjøres hver time av .github/workflows/oppdater.yml. Bruk: python3 scripts/jobs_fetch.py index.html
-# Jobbene får sammendraget fra annonsen. Den daglige rutinen skriver dem om på enkel norsk og legger til oppgaver og krav.
+# Jobbene får sammendraget fra annonsen. Den daglige rutinen skriver dem om på enkel norsk og legger til oppgaver og detaljerte krav ("+ " foran det som bare er fint å ha).
 import json, re, sys, time, html as H, urllib.request, urllib.parse
 from datetime import datetime
 from zoneinfo import ZoneInfo
