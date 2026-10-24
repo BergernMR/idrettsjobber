@@ -387,7 +387,12 @@ table.league td.team { white-space: normal; }
 .chip:hover { border-color: var(--accent); }
 .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); font-weight: 600; }
 #evList { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
-#evList .month, #evList .empty { grid-column: 1 / -1; }
+#evList .month, #evList .empty, #evList .showmore { grid-column: 1 / -1; }
+/* Jobbene vises som arrangementene: bokser to og to, delt inn etter fristmåned */
+#list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
+#list .month, #list .empty, #list .showmore { grid-column: 1 / -1; }
+.jobtile .bib { min-width: 62px; }
+.jobtile .jtitle { hyphens: auto; -webkit-hyphens: auto; }
 .evtile { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); transition: border-color .15s, transform .15s; min-width: 0; }
 .evtile:hover { border-color: var(--accent); transform: translateY(-2px); }
 .evtile .etop { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
@@ -398,7 +403,7 @@ table.league td.team { white-space: normal; }
 .evtile .meta { margin-top: auto; padding-top: 4px; }
 .evtile .tags { margin-top: 0; }
 @media (max-width: 520px) {
-  #evList { gap: 8px; }
+  #evList, #list { gap: 8px; }
   .evtile { padding: 12px; gap: 4px; border-radius: 14px; }
   .evtile .jtitle { font-size: 15px; overflow-wrap: anywhere; }
   .evtile .trans { font-size: 13px; }
@@ -595,6 +600,8 @@ dialog::backdrop { background: var(--scrim); }
   .sheet-wrap { place-items: end center; padding-bottom: 0; padding-left: 0; padding-right: 0; }
   .sheet { border-radius: 16px 16px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
   .sheet-top { padding-left: max(18px, env(safe-area-inset-left, 0px)); }
+  /* Lukkeknappen følger med når man blar nedover i vinduet (f.eks. etter Sammenlign) */
+  .sheet-top .close { position: fixed; top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 5; width: 42px; height: 42px; box-shadow: 0 2px 10px rgba(0,0,0,.18); }
   .sheet-body { padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); }
 }
 /* Nation stage: flag-coloured field, a faint Nordic cross and a poster collage of the nation's sports stars */
@@ -1828,6 +1835,7 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Frist i {m}": ["Sista ansökningsdag i {m}","Frist i {m}","Haku päättyy: {m}","Frestur í {m}","Deadline in {m}"],
 "Sammenlign": ["Jämför","Sammenlign","Vertaile","Bera saman","Compare"],
 "Lignende jobber": ["Liknande jobb","Lignende job","Samankaltaiset työpaikat","Svipuð störf","Similar jobs"],
 "De tre likeste stillingene vi har nå. Trykk på en jobb for å se den.": ["De tre mest liknande tjänsterna vi har nu. Tryck på ett jobb för att se det.","De tre mest lignende stillinger, vi har nu. Tryk på et job for at se det.","Kolme samankaltaisinta työpaikkaa. Avaa työpaikka napauttamalla.","Þrjú líkustu störfin sem við höfum núna. Ýttu á starf til að skoða það.","The three most similar jobs we have right now. Tap a job to open it."],
@@ -3031,11 +3039,26 @@ function renderJobs() {
   renderSort();
   $("favN").textContent = favs.size;
   $("favOnly").setAttribute("aria-pressed", String(state.favOnly));
-  $("list").innerHTML = rows.length ? cap("list", rows).map(jobCard).join("")
+  // Sortert etter frist: del inn i måneder slik som arrangementene
+  let html = "", cur = null;
+  for (const j of cap("list", rows)) {
+    if (state.sort === "frist") {
+      const key = j.dl ? t("Frist i {m}", { m: monthName(+j.dl.slice(5, 7)) + " " + j.dl.slice(0, 4) }) : t("Løpende frist");
+      if (key !== cur) { html += `<h3 class="month">${key}</h3>`; cur = key; }
+    }
+    html += jobTile(j);
+  }
+  $("list").innerHTML = rows.length ? html
     : `<div class="empty">${state.favOnly && !favs.size ? t("Du har ingen favoritter ennå. Trykk på hjertet ved en jobb for å lagre den.") : t("Ingen stillinger passer søket ditt. Prøv et annet ord, eller bruk lenkene under for å søke direkte hos jobbsidene.")}</div>`;
   bindJobCards($("list"));
   moreBtn("list", rows.length, renderJobs);
 }
+const jobTile = j => `<article class="evtile jobtile"><button type="button" class="job-hit" data-id="${j.id}" aria-label="${esc(j.t)}, ${esc(j.emp)}. ${t("Vis oppsummering")}"></button>
+    <div class="etop">${bib(j)}<span class="eside"><button type="button" class="fav" id="fav-${j.id}" data-id="${j.id}" aria-pressed="${favs.has(j.id)}" aria-label="${t("Lagre som favoritt")}">${HEART}</button></span></div>
+    <div class="jtitle">${esc(j.t)}</div>
+    ${j.tr && LANG === "nb" ? `<div class="trans">${esc(j.tr)}</div>` : ""}
+    <div class="meta"><span class="emp">${esc(j.emp)}</span><span class="where">${flag(j.c)}${esc(j.place)}${state.sort === "naer" && distTo(j) !== null ? `<span class="dist">&nbsp;· ${fmtKm(distTo(j))}</span>` : ""}</span></div>
+    <div class="tags">${isNew(j) ? `<span class="tag new">${t("Ny")}</span>` : ""}<span class="tag">${CATS[j.cat]}</span></div></article>`;
 const jobCard = j => `
     <article class="job">
       <button type="button" class="job-hit" data-id="${j.id}" aria-label="${esc(j.t)}, ${esc(j.emp)}. ${t("Vis oppsummering")}"></button>
