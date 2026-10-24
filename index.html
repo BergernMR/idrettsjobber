@@ -452,7 +452,16 @@ table.league td.team { white-space: normal; }
 .cmp .cmp-open:hover { text-decoration: underline; }
 .cmp .cmp-tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .cmp .cmp-tags span { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-.cmp .better { color: var(--accent); font-weight: 600; }
+.cmp .better, .cmp-card dd.better { color: var(--accent); font-weight: 600; }
+/* På mobil: kort under hverandre i stedet for tabell som må blas sidelengs */
+.cmp-cards { display: none; gap: 10px; }
+.cmp-card { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--surface); display: grid; gap: 8px; }
+.cmp-card .cmp-open { font-size: 16px; }
+.cmp-card .cmp-sub { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.cmp-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
+.cmp-card dt { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; padding-top: 2px; }
+.cmp-card dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .cmp-scroll { display: none; } .cmp-cards { display: grid; } }
 .evmine { margin-bottom: 8px; padding: 16px; border-radius: 16px; background: var(--accent-soft); border: 1px solid var(--line); }
 .evmine .count { margin-top: 0; }
 .evmine .job { background: var(--surface); }
@@ -556,7 +565,7 @@ dialog::backdrop { background: var(--scrim); }
 .s-emp { margin: 0; font-weight: 600; }
 .close { position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; display: grid; place-items: center; }
 .close svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.4; }
-.sheet-body { padding: 18px 22px 22px; display: grid; gap: 18px; }
+.sheet-body { padding: 18px 22px 22px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
 .facts { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .fact { background: var(--surface); padding: 10px 12px; display: grid; gap: 2px; min-width: 0; flex: 1 1 130px; align-content: start; }
 .fact .k { font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
@@ -4864,7 +4873,7 @@ function compareHtml(j) {
   const sims = similarJobs(j);
   if (!sims.length) return `<div class="cmp"><p class="s-note">${t("Fant ingen lignende jobber akkurat nå.")}</p></div>`;
   const cols = [{ x: j, shared: [] }, ...sims];
-  const dl = x => { const n = daysLeft(x.dl); return x.dl ? `${esc(fmtDate(x.dl, true))}${n !== null && n >= 0 ? ` <small>(${n === 0 ? t("I dag") : t("om {n} dager", { n })})</small>` : ""}` : esc(t("Løpende, søk snarest")); };
+  const dl = x => { const n = daysLeft(x.dl); return x.dl ? `${esc(fmtDate(x.dl, true))}${n !== null && n >= 0 ? ` <small>(${n === 0 ? t("I dag") : n === 1 ? t("i morgen") : t("om {n} dager", { n })})</small>` : ""}` : esc(t("Løpende, søk snarest")); };
   const n0 = daysLeft(j.dl);
   const row = (label, f) => `<tr><th scope="row">${label}</th>${cols.map((c, i) => `<td>${f(c.x, c, i)}</td>`).join("")}</tr>`;
   return `<div class="cmp" id="cmpBox">
@@ -4883,6 +4892,17 @@ function compareHtml(j) {
         ${row(t("Likheter"), (x, c, i) => i ? `<span class="cmp-tags">${[...(c.x.cat === j.cat && j.cat !== "annet" ? [CATS[j.cat]] : []), ...c.shared.map(k => t(k))].map(k => `<span>${esc(k)}</span>`).join("") || "–"}</span>` : "")}
       </tbody>
     </table></div>
+    <div class="cmp-cards">${sims.map(c => { const x = c.x, n = daysLeft(x.dl), tags = [...(x.cat === j.cat && j.cat !== "annet" ? [CATS[j.cat]] : []), ...c.shared.map(k => t(k))];
+      return `<div class="cmp-card">
+        <button type="button" class="cmp-open" data-id="${x.id}">${esc(x.t)}</button>
+        <div class="cmp-sub">${flag(x.c)} ${COUNTRIES[x.c]} · ${esc(x.emp)} · ${esc(x.place)}</div>
+        <dl>
+          <dt>${t("Søknadsfrist")}</dt><dd${n !== null && n0 !== null && n > n0 ? ' class="better"' : ""}>${dl(x)}</dd>
+          <dt>${t("Stilling")}</dt><dd>${esc(x.kind || t("Se annonsen"))}</dd>
+          <dt>${t("Krav")}</dt><dd>${esc(reqText(x))}</dd>
+        </dl>
+        ${tags.length ? `<span class="cmp-tags">${tags.map(k => `<span>${esc(k)}</span>`).join("")}</span>` : ""}
+      </div>`; }).join("")}</div>
   </div>`;
 }
 function openJob(id) {
