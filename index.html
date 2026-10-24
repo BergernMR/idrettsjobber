@@ -1244,6 +1244,7 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 .eyebrow { color: var(--accent); }
 .sechero { border-top: 5px solid var(--accent); }
 .sechero.slim { gap: 8px; padding: clamp(18px, 3vw, 28px) clamp(20px, 4vw, 36px); border-top-width: 4px; }
+.mp-wait { grid-column: 1 / -1; margin: 40px 0; text-align: center; color: var(--muted); }
 .sechero.slim h2 { font-size: clamp(26px, 3.6vw, 36px); }
 .sechero.slim p.txt { font-size: clamp(15px, 1.6vw, 16.5px); max-width: 60ch; }
 @media (max-width: 900px) { .glist { grid-template-columns: 1fr 1fr; } }
@@ -2005,6 +2006,7 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Henter Min side …": ["Hämtar Min sida …","Henter Min side …","Haetaan Oma sivu …","Sæki Mína síðu …","Loading My page …"],
 "Utforsk nordisk idrett": ["Utforska nordisk idrott","Udforsk nordisk idræt","Tutustu pohjoismaiseen urheiluun","Kannaðu norrænar íþróttir","Explore Nordic sport"],
 "Nyeste jobber": ["Nyaste jobben","Nyeste job","Uusimmat työpaikat","Nýjustu störfin","Newest jobs"],
 "Snart i Norden": ["Snart i Norden","Snart i Norden","Pian Pohjoismaissa","Bráðum á Norðurlöndum","Coming up in the Nordics"],
@@ -3071,17 +3073,18 @@ function applyTheme(v) { if (v === "light" || v === "dark") document.documentEle
 try { applyTheme(localStorage.getItem("aurora-tema")); } catch (e) {}
 // Innlogging med Supabase: e-postlenke (og Google senere). Lagrer bare klubber, idretter og hjemsted i tabellen profiles.
 const SUPA = { url: "https://beddkwgxhdyloiewhpll.supabase.co", key: "sb_publishable__K2LpHIMgT5XxGlpCwH5bQ_nJ2Qz3iH" };
-let signupPlace = null, sb = null, authUser = null, authMsg = "", authMode = "in", openSettings = () => {};
+// authPending: en lagret innlogging finnes, men Supabase har ikke svart ennå. Da viser vi ikke «logget ut»-visningene.
+let authPending = false, signupPlace = null, sb = null, authUser = null, authMsg = "", authMode = "in", openSettings = () => {};
 const authName = () => { const m = authUser?.user_metadata || {}; return m.username || (m.full_name || m.name || "").split(" ")[0] || ""; };
 function loadSupa() {
   if (sb || !SUPA.key) return Promise.resolve(sb);
   return new Promise(ok => { const s = document.createElement("script");
     s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js";
     s.onload = () => { sb = window.supabase.createClient(SUPA.url, SUPA.key, { auth: { flowType: "pkce", detectSessionInUrl: true, persistSession: true } });
-      sb.auth.onAuthStateChange((ev, ses) => { const was = authUser?.id;
+      sb.auth.onAuthStateChange((ev, ses) => { const was = authUser?.id; authPending = false;
         if (ev === "PASSWORD_RECOVERY") { authMode = "newpw"; authMsg = ""; setTimeout(openSettings, 300); } authUser = ses?.user || null; if (authUser && authUser.id !== was) cloudLoad(); else redrawAuth(); });
       ok(sb); };
-    s.onerror = () => ok(null); document.head.appendChild(s); });
+    s.onerror = () => { if (authPending) { authPending = false; redrawAuth(); } ok(null); }; document.head.appendChild(s); });
 }
 // Slår sammen det som er lagret på kontoen med det som er valgt i denne nettleseren
 // savedCol blir false hvis tabellen ennå mangler kolonnen «saved», så klubbene fortsatt lagres
@@ -3175,7 +3178,7 @@ async function loginWithUsername(c, name, pw) {
 function setupAuth() {
   if (!SUPA.key) return;
   let has = /[?&]code=/.test(location.search); try { has = has || Object.keys(localStorage).some(k => k.startsWith("sb-")); } catch (e) {}
-  if (has) loadSupa();
+  if (has) { authPending = true; loadSupa(); setTimeout(() => { if (authPending) { authPending = false; redrawAuth(); } }, 8000); }
 }
 // Glidende markør i valgknappene (Logg inn / Lag bruker og temaet), slik som i menyen.
 // Popupen tegnes på nytt ved hvert valg, så markøren starter der den sto sist og glir til det nye valget.
@@ -5063,7 +5066,7 @@ function renderGuestHome(box) {
 }
 function renderForYou() {
   const box = $("foryou"); if (!box) return;
-  if (SUPA.key && !authUser) return renderGuestHome(box);
+  if (SUPA.key && !authUser && !authPending) return renderGuestHome(box);
   const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
   const picker = `<div class="fypick"><p class="fyq">${t("Hva interesserer deg?")}</p>
       <div class="fychips">${INTERESTS.map(([k, l, sps]) => `<button type="button" class="chip fyint" data-k="${k}" aria-pressed="${likes.has(k)}" style="--kc:${KIND_COLOR[kindOf(sps[0])]}">${icoOf(sps[0])}${t(l)}</button>`).join("")}</div>
@@ -5921,6 +5924,7 @@ function openMine() { closeJob(); setTab("minside"); scrollTo({ top: 0, behavior
 function renderMine() {
   updMine();
   // Ikke logget inn: en vennlig velkomst i stedet for en tom Min side
+  if (authPending) { $("mpage").innerHTML = `<p class="mp-wait">${t("Henter Min side …")}</p>`; return; }
   if (SUPA.key && !authUser) {
     const pts = [["klubber", "Følg klubbene dine", "Tabell, neste kamp og siste nytt samlet på ett sted."],
       ["jobber", "Lagre jobber og arrangementer", "Ha det du er interessert i klart når du trenger det."],
