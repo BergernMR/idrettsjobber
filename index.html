@@ -542,8 +542,13 @@ table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-ri
 .mp-side, .mp-main { display: grid; gap: 14px; align-content: start; }
 .mpage .mp-sec { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px 20px; box-shadow: var(--shadow); }
 @media (min-width: 900px) { .mp-side .mp-stats { grid-template-columns: 1fr; } .mp-side .mp-stats button { display: flex; align-items: baseline; gap: 10px; } }
-.mp-prof { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #14322a, #1d5a47); color: #fff; }
+.mp-prof { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #14322a, #1d5a47); color: #fff; }
 .mp-ava { grid-row: span 2; position: relative; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+.mp-avamenu { position: absolute; left: 14px; top: 78px; z-index: 5; display: grid; min-width: 170px; padding: 6px; border-radius: 14px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 8px 28px rgb(0 0 0 / .28); }
+.mp-avamenu[hidden] { display: none; }
+.mp-avamenu button { padding: 10px 12px; border: 0; border-radius: 9px; background: none; color: inherit; font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.mp-avamenu button:hover, .mp-avamenu button:focus-visible { background: rgb(127 127 127 / .14); }
+.mp-avamenu .del { color: var(--urgent); }
 .mp-ava i { position: absolute; right: -2px; bottom: -2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 1px 4px rgb(0 0 0 / .25); }
 .mp-ava i svg { width: 13px; height: 13px; fill: none; stroke: #14322a; stroke-width: 2; stroke-linejoin: round; }
 .mp-ava:hover .aava, .mp-ava:focus-visible .aava { outline: 3px solid #7fe0b7; outline-offset: 2px; }
@@ -552,10 +557,6 @@ table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-ri
 .mp-city { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; margin-top: 6px; }
 .mp-city select { font: inherit; font-weight: 600; color: #fff; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 5px 10px; }
 .mp-city select option, .mp-city select optgroup { color: #14211d; }
-.mp-ints { display: flex; flex-wrap: wrap; gap: 8px; }
-.mp-int { display: inline-flex; align-items: center; gap: 7px; }
-.mp-int svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.mp-int[aria-pressed="true"] { background: var(--kc); border-color: var(--kc); color: #fff; }
 .mp-acts { grid-column: 1 / -1; display: flex; gap: 16px; flex-wrap: wrap; }
 .minebtn.pic .aini { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: block; }
 .minebtn.pic .aini img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -4900,7 +4901,7 @@ function renderHome() {
 }
 // «Til deg»: idretter man liker, hjemsted og klubbene man følger. Alt lagres bare i nettleseren (aurora-idretter, idrettsjobber-hjem, aurora-klubber).
 const INTERESTS = [
-  ["fotball", "Fotball", ["Fotball"]], ["ski", "Ski og langrenn", ["Langrenn", "Ski", "Langrenn, hopp og kombinert", "Skiorientering", "Skiskyting", "Hopp"]],
+  ["fotball", "Fotball", ["Fotball", "Futsal"]], ["ski", "Ski og langrenn", ["Langrenn", "Ski", "Langrenn, hopp og kombinert", "Skiorientering", "Skiskyting", "Hopp"]],
   ["alpint", "Alpint", ["Alpint"]], ["hockey", "Ishockey", ["Ishockey"]], ["bandy", "Bandy", ["Bandy"]], ["handball", "Håndball", ["Håndball"]],
   ["lop", "Løping", ["Løping", "Terrengløp"]], ["friidrett", "Friidrett", ["Friidrett"]], ["sykkel", "Sykling", ["Sykling"]],
   ["vann", "Vannsport", ["Svømming", "Swimrun", "Triatlon", "Kano", "Roing", "Seiling"]], ["kompass", "Orientering", ["Orientering", "Skiorientering"]],
@@ -5799,7 +5800,7 @@ function renderMine() {
         <b>${greet()}${name ? ", " + esc(name) : ""}</b>
         <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
         <div class="mp-city"><span>${t("Hjemsted")}</span>${psHtml("mpHome", homeName)}</div>
-        <div class="mp-acts"><button type="button" class="mp-edit" data-go="mpInt">${t("Endre interesser")} ↓</button>${avatarUrl ? `<button type="button" class="mp-edit" id="mpAvaDel">${t("Fjern bildet")}</button>` : ""}</div></div>
+        ${avatarUrl ? `<div class="mp-avamenu" id="mpAvaMenu" role="menu" hidden><button type="button" role="menuitem" id="mpAvaNew">${t("Bytt profilbilde")}</button><button type="button" role="menuitem" class="del" id="mpAvaDel">${t("Fjern bildet")}</button></div>` : ""}</div>
       ${SUPA.key && !authUser ? `<div class="mp-login"><p>${t("Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.")}</p><div class="btns"><button type="button" class="cta" id="mpLogin">${t("Logg inn eller lag bruker")}</button></div></div>` : ""}
       <div class="mp-stats">
         <button type="button" data-go="mpClubs"><b>${mine.length}</b><small>${t("Klubber du følger")}</small></button>
@@ -5808,7 +5809,6 @@ function renderMine() {
       </div>
     </aside>
     <div class="mp-main">
-      ${sec("mpInt", t("Hva interesserer deg?"), `<p>${t("Velg idrettene du liker, så tilpasser vi jobbene, kursene og arrangementene til deg.")}</p><div class="mp-ints">${INTERESTS.map(([k, l, sps]) => `<button type="button" class="chip mp-int" data-k="${k}" aria-pressed="${likes.has(k)}" style="--kc:${KIND_COLOR[kindOf(sps[0])]}">${icoOf(sps[0])}${t(l)}</button>`).join("")}</div>`, "")}
       ${sec("mpRec", t("Anbefalt for deg"), (rj.length ? `<p class="mp-h4">${t("Jobber")}</p><div class="mp-rec">${rj.map(({ j, why }) => card(`data-job="${j.id}"`, j.t, `${esc(j.emp)} · ${flag(j.c)} ${esc(j.place)}`, why)).join("")}</div>` : "")
         + (ru.length ? `<p class="mp-h4">${t("Kurs og utdanning")}</p><div class="mp-rec">${ru.map(({ u, why }) => `<a class="mp-card" href="${u.url}" target="_blank" rel="noopener"><b>${esc(u.t)}</b><small>${esc(u.org)} · ${flag(u.c)} ${esc(t(u.place))}</small><span class="why">${esc(why)}</span></a>`).join("")}</div>` : "")
         + (re.length ? `<p class="mp-h4">${t("Arrangementer")}</p><div class="mp-rec">${re.map(({ e, km, lk }) => card(`data-ev="${e.id}"`, t(e.t), `${esc(evWhen(e))} · ${flag(e.c)} ${esc(e.place)}`, lk ? t("Fordi du liker {x}", { x: t(e.sport).toLowerCase() }) : t("Nær {x}", { x: homeName }), KIND_COLOR[kindOf(e.sport)])).join("")}</div>` : "")
@@ -5825,10 +5825,15 @@ function renderMine() {
   body.querySelectorAll(".svt").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
   body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.rm.split("|"); k === "job" ? toggleFav(id) : toggleEvSave(id); render(); });
   body.querySelectorAll("[data-go]").forEach(b => b.onclick = () => $(b.dataset.go).scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }));
-  body.querySelectorAll(".mp-int").forEach(b => b.onclick = () => { const k = b.dataset.k; likes.has(k) ? likes.delete(k) : likes.add(k); saveLikes(); const y = scrollY; renderMine(); scrollTo(0, y); });
   if ($("mpLogin")) $("mpLogin").onclick = () => askLogin("");
-  $("mpAva").onclick = pickAvatar;
-  if ($("mpAvaDel")) $("mpAvaDel").onclick = removeAvatar;
+  // Med bilde: et trykk på bildet åpner en liten meny med Bytt og Fjern
+  const avaMenu = $("mpAvaMenu");
+  if (avaMenu) {
+    const closeAva = e => { if (!e || !avaMenu.contains(e.target)) { avaMenu.hidden = true; document.removeEventListener("click", closeAva); } };
+    $("mpAva").onclick = e => { e.stopPropagation(); if (avaMenu.hidden) { avaMenu.hidden = false; setTimeout(() => document.addEventListener("click", closeAva)); } else closeAva(); };
+    $("mpAvaNew").onclick = () => { closeAva(); pickAvatar(); };
+    $("mpAvaDel").onclick = () => { closeAva(); removeAvatar(); };
+  } else $("mpAva").onclick = pickAvatar;
   placeSearch($("mpHome"), p => { setHomePlace(p); render(); });
 }
 $("mineBtn").onclick = openMine;
