@@ -1,4 +1,4 @@
-name: Oppdater kamper, tabeller og sportsnyheter
+name: Oppdater kamper, tabeller, nyheter og jobber
 on:
   schedule:
     - cron: "17 * * * *"
@@ -11,7 +11,7 @@ concurrency:
 jobs:
   oppdater:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21,6 +21,8 @@ jobs:
         run: python3 scripts/update_data.py index.html
       - name: Hent ferske sportsnyheter til forsiden
         run: python3 scripts/gnews_rss.py index.html
+      - name: Hent nye idrettsjobber
+        run: python3 scripts/jobs_fetch.py index.html
       - name: Finn bilder til forsidenyhetene
         run: python3 scripts/news_images.py index.html
       - name: Sjekk at siden fortsatt er gyldig
@@ -32,5 +34,5 @@ jobs:
           if git diff --quiet; then echo "Ingen endringer"; exit 0; fi
           git config user.name "aurora-oppdatering"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Oppdater kamper, tabeller og nyheter"
+          git commit -am "Oppdater kamper, tabeller, nyheter og jobber"
           for i in 1 2 3; do git pull --rebase -q && git push && exit 0; sleep 10; done; exit 1
