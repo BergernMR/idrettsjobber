@@ -435,6 +435,24 @@ table.league td.team { white-space: normal; }
 .share svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; }
 .btns { display: flex; flex-wrap: wrap; gap: 8px; }
 .copied { font-size: 13px; color: var(--accent); font-weight: 600; }
+/* Sammenlign: jobben side om side med de tre likeste, helst fra andre land */
+.share.cmpbtn[aria-expanded="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.cmp { margin-top: 16px; }
+.cmp h4 { margin: 0 0 4px; }
+.cmp .cmp-why { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.cmp-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; -webkit-overflow-scrolling: touch; }
+.cmp table { border-collapse: collapse; width: 100%; min-width: 620px; table-layout: fixed; font-size: 14px; }
+.cmp th:first-child { width: 104px; }
+.cmp th, .cmp td { padding: 9px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); background: var(--surface); }
+.cmp tr:last-child th, .cmp tr:last-child td { border-bottom: 0; }
+.cmp tbody th, .cmp thead th:first-child { position: sticky; left: 0; z-index: 1; font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.cmp thead th { font-size: 14px; }
+.cmp thead th:nth-child(2), .cmp td:nth-child(2) { background: var(--accent-soft); }
+.cmp .cmp-open { font: inherit; font-weight: 700; color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+.cmp .cmp-open:hover { text-decoration: underline; }
+.cmp .cmp-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.cmp .cmp-tags span { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.cmp .better { color: var(--accent); font-weight: 600; }
 .evmine { margin-bottom: 8px; padding: 16px; border-radius: 16px; background: var(--accent-soft); border: 1px solid var(--line); }
 .evmine .count { margin-top: 0; }
 .evmine .job { background: var(--surface); }
@@ -1801,6 +1819,22 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Sammenlign": ["Jämför","Sammenlign","Vertaile","Bera saman","Compare"],
+"Lignende jobber": ["Liknande jobb","Lignende job","Samankaltaiset työpaikat","Svipuð störf","Similar jobs"],
+"De tre likeste stillingene vi har nå, helst fra andre land. Trykk på en jobb for å se den.": ["De tre mest liknande tjänsterna vi har nu, helst från andra länder. Tryck på ett jobb för att se det.","De tre mest lignende stillinger, vi har nu, helst fra andre lande. Tryk på et job for at se det.","Kolme samankaltaisinta työpaikkaa, mieluiten muista maista. Avaa työpaikka napauttamalla.","Þrjú líkustu störfin sem við höfum núna, helst frá öðrum löndum. Ýttu á starf til að skoða það.","The three most similar jobs we have right now, preferably from other countries. Tap a job to open it."],
+"Denne jobben": ["Det här jobbet","Dette job","Tämä työpaikka","Þetta starf","This job"],
+"Land": ["Land","Land","Maa","Land","Country"],
+"Arbeidsgiver": ["Arbetsgivare","Arbejdsgiver","Työnantaja","Vinnuveitandi","Employer"],
+"Likheter": ["Likheter","Ligheder","Yhtäläisyydet","Líkindi","In common"],
+"Fant ingen lignende jobber akkurat nå.": ["Hittade inga liknande jobb just nu.","Fandt ingen lignende job lige nu.","Samankaltaisia työpaikkoja ei löytynyt juuri nyt.","Engin svipuð störf fundust í augnablikinu.","No similar jobs right now."],
+"Trener": ["Tränare","Træner","Valmentaja","Þjálfari","Coach"],
+"Instruktør": ["Instruktör","Instruktør","Ohjaaja","Leiðbeinandi","Instructor"],
+"Lærer": ["Lärare","Lærer","Opettaja","Kennari","Teacher"],
+"Badevakt": ["Badvakt","Livredder","Uinninvalvoja","Sundlaugarvörður","Lifeguard"],
+"Drift": ["Drift","Drift","Ylläpito","Rekstur","Operations"],
+"Koordinator": ["Koordinator","Koordinator","Koordinaattori","Umsjón","Coordinator"],
+"Barn og unge": ["Barn och unga","Børn og unge","Lapset ja nuoret","Börn og ungmenni","Children and youth"],
+"Klubb": ["Klubb","Klub","Seura","Félag","Club"],
 "Landets eget idrettsuniversitet. Bachelor i blant annet trening, helse og prestasjon, trenerrollen og idrettspsykologi, og sport management.": ["Norges eget idrottsuniversitet. Kandidatprogram i bland annat träning, hälsa och prestation, tränarrollen och idrottspsykologi samt sport management.", "Norges eget idrætsuniversitet. Bachelor i blandt andet træning, sundhed og præstation, trænerrollen og idrætspsykologi samt sport management.", "Norjan oma urheiluyliopisto. Kandidaattiohjelmia muun muassa harjoittelusta, terveydestä ja suorituskyvystä, valmentajan roolista ja urheilupsykologiasta sekä sport managementista.", "Íþróttaháskóli Noregs. BS-nám meðal annars í þjálfun, heilsu og árangri, þjálfarahlutverkinu og íþróttasálfræði og í sport management.", "Norway's own sports university. Bachelor's degrees in training, health and performance, coaching and sport psychology, and sport management, among others."],
 "Årsstudium i idrett, bachelor med spesialisering i trenerrollen (deltid) og lærerutdanning i kroppsøving og idrettsfag.": ["Ettårig utbildning i idrott, kandidatprogram med inriktning mot tränarrollen (deltid) och lärarutbildning i idrott och hälsa.", "Etårigt studium i idræt, bachelor med speciale i trænerrollen (deltid) og læreruddannelse i idræt.", "Liikunnan vuoden opinnot, valmentajan rooliin erikoistuva kandidaattiohjelma (osa-aikainen) ja liikunnanopettajan koulutus.", "Eins árs nám í íþróttum, BS-nám með áherslu á þjálfarahlutverkið (hlutanám) og kennaranám í íþróttum.", "One-year sports programme, a part-time bachelor's specialising in coaching, and teacher training in physical education."],
 "Bachelor i bevegelsesvitenskap om trening, helse og prestasjon. NTNU har også en bachelor i samfunns- og idrettsvitenskap.": ["Kandidatprogram i rörelsevetenskap om träning, hälsa och prestation. NTNU har också ett program i samhälls- och idrottsvetenskap.", "Bachelor i bevægelsesvidenskab om træning, sundhed og præstation. NTNU har også en bachelor i samfunds- og idrætsvidenskab.", "Liikuntatieteen kandidaattiohjelma harjoittelusta, terveydestä ja suorituskyvystä. NTNU:ssa on myös yhteiskunta- ja urheilutieteen ohjelma.", "BS-nám í hreyfivísindum um þjálfun, heilsu og árangur. NTNU býður einnig BS-nám í samfélags- og íþróttavísindum.", "Bachelor's in human movement science covering training, health and performance. NTNU also offers a bachelor's in social and sport sciences."],
@@ -4796,6 +4830,61 @@ function renderMap() {
 }
 
 let lastFocus = null;
+// Sammenlign: finner de tre likeste jobbene ut fra type, rolle og idrett (på alle språk), helst i andre land
+const JOB_CONCEPTS = [
+  ["Trener", /trener|tränare|træner|valmentaj|þjálfar|coach/i], ["Leder", /leder|ledare|chef|johtaja|päällikkö|stjóri|manager|daglig|sjef|direkt/i],
+  ["Instruktør", /instrukt|ohjaaja|leiðbein|gruppetime/i], ["Lærer", /lærer|lärare|opettaja|kennari|pedagog/i],
+  ["Badevakt", /badevakt|badebetjen|badvakt|badvärd|livredd|livrädd|uinninvalvo|uimavalvo|sundlaug/i],
+  ["Drift", /drift|vaktmest|hallbetjen|vahtimest|huolto|anlegg/i], ["Koordinator", /koordinator|samordnare|koordinaattori|arrangement|event/i],
+  ["Fotball", /fotball|fotboll|fodbold|jalkapallo|knattspyrn|football/i], ["Svømming", /svøm|sim|uinti|uima|sund/i],
+  ["Ishockey", /ishockey|jääkiekko|íshokk/i], ["Håndball", /håndball|handboll|håndbold|käsipallo|handbolt/i],
+  ["Ski", /ski|längd|hiihto|langrenn|alpin/i], ["Friidrett", /friidrett|friidrott|atletik|yleisurheilu|frjáls/i],
+  ["Turn", /turn|gymnasti|voimistel|fimleik/i], ["Treningssenter", /treningssenter|gym|fitness|personlig tr|kuntosali|sats|hälsa/i],
+  ["Barn og unge", /barn|ungdom|unge|lapsi|lasten|nuori|börn|ungmenn|skole|skola|koulu/i], ["Klubb", /klubb|idrettslag|förening|forening|seura|félag|\bil\b|\bif\b/i]
+];
+const jobConcepts = j => { const hay = [j.t, j.tr, j.emp].join(" "), sum = j.sum || "";
+  return { main: new Set(JOB_CONCEPTS.filter(([, re]) => re.test(hay)).map(([k]) => k)), sum: new Set(JOB_CONCEPTS.filter(([, re]) => re.test(sum)).map(([k]) => k)) }; };
+function similarJobs(j) {
+  const a = jobConcepts(j), rq = JSON.stringify(REQ[j.id] || []);
+  const norm = x => x.t.toLowerCase().replace(/\W+/g, " ").trim();
+  // Samme annonse lagt inn to ganger (f.eks. via et rekrutteringsbyrå) tas ikke med
+  const scored = JOBS.filter(x => x.id !== j.id && norm(x) !== norm(j) && !(daysLeft(x.dl) < 0)).map(x => {
+    const b = jobConcepts(x), shared = [...a.main].filter(k => b.main.has(k) || b.sum.has(k));
+    const score = (x.cat === j.cat ? 4 : 0) + 3 * [...a.main].filter(k => b.main.has(k)).length
+      + [...a.sum].filter(k => b.sum.has(k) || b.main.has(k)).length + (x.c !== j.c ? 2 : 0)
+      + (x.kind && x.kind === j.kind ? 1 : 0) + (JSON.stringify(REQ[x.id] || []) === rq ? 1 : 0);
+    return { x, score, shared };
+  }).sort((p, q) => q.score - p.score);
+  // Maks to fra samme land, så sammenligningen faktisk går på tvers av Norden
+  const out = [], per = {};
+  for (const r of scored) { if (out.length === 3) break; if ((per[r.x.c] || 0) >= 2 || out.some(o => norm(o.x) === norm(r.x))) continue; per[r.x.c] = (per[r.x.c] || 0) + 1; out.push(r); }
+  return out.filter(r => r.score > 0);
+}
+function compareHtml(j) {
+  const sims = similarJobs(j);
+  if (!sims.length) return `<div class="cmp"><p class="s-note">${t("Fant ingen lignende jobber akkurat nå.")}</p></div>`;
+  const cols = [{ x: j, shared: [] }, ...sims];
+  const dl = x => { const n = daysLeft(x.dl); return x.dl ? `${esc(fmtDate(x.dl, true))}${n !== null && n >= 0 ? ` <small>(${n === 0 ? t("I dag") : t("om {n} dager", { n })})</small>` : ""}` : esc(t("Løpende, søk snarest")); };
+  const n0 = daysLeft(j.dl);
+  const row = (label, f) => `<tr><th scope="row">${label}</th>${cols.map((c, i) => `<td>${f(c.x, c, i)}</td>`).join("")}</tr>`;
+  return `<div class="cmp" id="cmpBox">
+    <h4>${t("Lignende jobber")}</h4>
+    <p class="cmp-why">${t("De tre likeste stillingene vi har nå, helst fra andre land. Trykk på en jobb for å se den.")}</p>
+    <div class="cmp-scroll"><table>
+      <thead><tr><th scope="col"></th>${cols.map((c, i) => `<th scope="col">${i === 0 ? `${esc(c.x.t)}<br><small>${t("Denne jobben")}</small>` : `<button type="button" class="cmp-open" data-id="${c.x.id}">${esc(c.x.t)}</button>`}</th>`).join("")}</tr></thead>
+      <tbody>
+        ${row(t("Land"), x => `${flag(x.c)} ${COUNTRIES[x.c]}`)}
+        ${row(t("Arbeidsgiver"), x => esc(x.emp))}
+        ${row(t("Sted"), x => esc(x.place))}
+        ${row(t("Type"), x => esc(CATS[x.cat] || ""))}
+        ${row(t("Stilling"), x => esc(x.kind || t("Se annonsen")))}
+        ${row(t("Søknadsfrist"), (x, c, i) => { const n = daysLeft(x.dl); return i && n !== null && n0 !== null && n > n0 ? `<span class="better">${dl(x)}</span>` : dl(x); })}
+        ${row(t("Krav"), x => esc(reqText(x)))}
+        ${row(t("Likheter"), (x, c, i) => i ? `<span class="cmp-tags">${[...(c.x.cat === j.cat && j.cat !== "annet" ? [CATS[j.cat]] : []), ...c.shared.map(k => t(k))].map(k => `<span>${esc(k)}</span>`).join("") || "–"}</span>` : "")}
+      </tbody>
+    </table></div>
+  </div>`;
+}
 function openJob(id) {
   curSheet = () => openJob(id);
   const j = JOBS.find(x => x.id === id);
@@ -4832,21 +4921,32 @@ function openJob(id) {
       <div class="actions">
         <div class="btns">
           <a class="cta" href="${j.url}" target="_blank" rel="noopener">${t("Les hele annonsen og søk")} ${ARROW}</a>
+          <button type="button" class="share cmpbtn" id="cmpBtn" aria-expanded="false" aria-controls="cmpSlot">${CMP_ICON}${t("Sammenlign")}</button>
           <button type="button" class="share" id="shareBtn">${SHARE_ICON}${t("Del")}</button>${sheetSaveBtns("job", j.id)}
         </div>
         <span class="src" id="shareMsg">${t("Annonsen ligger på {x}", { x: esc(src) })}</span>
       </div>
+      <div id="cmpSlot"></div>
     </div>`;
   const dlg = $("sheet");
   lastFocus = document.activeElement;
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
   $("shareBtn").onclick = () => shareThing(j.t, `${SHARE_URL}#${j.id}`);
+  $("cmpBtn").onclick = () => {
+    const open = $("cmpBtn").getAttribute("aria-expanded") === "true";
+    $("cmpBtn").setAttribute("aria-expanded", String(!open));
+    $("cmpSlot").innerHTML = open ? "" : compareHtml(j);
+    if (open) return;
+    $("cmpSlot").querySelectorAll(".cmp-open").forEach(b => b.onclick = () => { openJob(b.dataset.id); $("sheetBody").scrollTop = 0; });
+    $("cmpBox").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
   bindSheetSave("job", j.id);
   $("closeBtn").focus();
   if (location.hash !== "#" + j.id) history.replaceState(history.state, "", "#" + j.id);
 }
 // Del: bruker mobilens egen delemeny når den finnes, ellers knapper for lenke, e-post, WhatsApp og SMS
+const CMP_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h7v12H4zM13 6h7v12h-7z"/></svg>`;
 const SHARE_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 12v7h14v-7"/></svg>`;
 function shareThing(title, link) {
   const msg = $("shareMsg"), text = title + " – Aurora";
