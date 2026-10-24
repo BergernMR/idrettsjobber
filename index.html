@@ -437,6 +437,8 @@ table.league td.team { white-space: normal; }
 .clogo.big { width: 44px; height: 44px; vertical-align: -9px; margin-right: 12px; }
 table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-right: 7px; }
 .mcico.haslogo { background: transparent; }
+.fyico.haslogo { background: transparent; }
+.fyico .clogo { width: 100%; height: 100%; margin: 0; }
 .mcico .clogo { width: 100%; height: 100%; margin: 0; }
 .list { display: grid; gap: 8px; }
 .job { position: relative; display: grid; grid-template-columns: 72px 1fr auto auto; gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; align-items: center; transition: border-color .15s, box-shadow .15s; }
@@ -4884,7 +4886,7 @@ function renderForYou() {
   const clubCard = k => { const n = nextMatch(k), ns = newsOf(k)[0], L = LIVE[k.id], cd = n && countdown(n);
     const top = L && L[4] !== "ft" ? `<span class="fybig live">${L[4] === "ht" ? t("Pause") : "LIVE " + esc(L[5] || "")}</span><span class="fyscore">${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} <small>${t("mot {x}", { x: esc(L[3]) })}</small></span>`
       : cd ? `<span class="fybig">${esc(cd.big)}${cd.small ? `<small> ${cd.small}</small>` : ""}</span><span class="fyvs">${vsText(n)}</span>` : `<span class="fyvs">${t("Ingen kamp satt opp ennå")}</span>`;
-    return `<button type="button" class="fyclub" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="fyhead"><span class="fyico">${icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span>${top}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
+    return `<button type="button" class="fyclub" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span>${top}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
   // Arrangementer nær hjemstedet, i idrettene man liker først
   const evs = EVENTS.map(e => { const g = evGeo(e), d = evOrder(e); return { e, km: g ? kmFrom(g[1], g[2]) : 1e9, d }; })
     .filter(x => x.d >= 0 && x.d < 200 && x.km < 400 && (!likes.size || liked(x.e.sport)))
@@ -4894,7 +4896,7 @@ function renderForYou() {
   box.innerHTML = `<div class="fyh"><p class="fyhello">${greet()}${typeof authName === "function" && authName() ? ", " + esc(authName()) : ""}</p><h3 id="fyH">${t("Til deg")}</h3>${ask ? "" : `<span class="fysum">${likes.size ? INTERESTS.filter(([k]) => likes.has(k)).map(([, l]) => t(l)).join(", ") + " · " : ""}${esc(homeName)}</span><button type="button" class="fyedit">${t("Tilpass")}</button>`}</div>
     ${ask ? picker : ""}
     ${mine.length ? `<div class="fysec"><p class="fyl">${t("Dine klubber")}</p><div class="fyclubs">${mine.slice(0, 6).map(clubCard).join("")}</div></div>` : ""}
-    ${near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyhead"><span class="fyico">${icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""}
+    ${near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""}
     ${evs.length ? `<div class="fysec"><p class="fyl">${t("Arrangementer nær {x}", { x: esc(homeName) })}</p><div class="fyevs">${evs.map(({ e, km }) => { const d = evDate(e), dt = d ? new Date(d[0] + "T12:00:00") : null;
       return `<button type="button" class="fyev" data-id="${e.id}" style="--kc:${KIND_COLOR[kindOf(e.sport)]}"><span class="fybib"><b>${dt ? dt.getDate() : "—"}</b><small>${esc((dt ? monthName(dt.getMonth() + 1) : monthName(e.m)).slice(0, 3))}</small></span><span class="fyevt"><b>${esc(t(e.t))}</b><span>${esc(t(e.sport))} · ${esc(t(e.place))}${km < 1e9 ? " · " + fmtKm(km) : ""}</span></span></button>`; }).join("")}</div></div>` : ""}`;
   box.querySelectorAll(".fychips .chip").forEach(b => b.onclick = () => { const k = b.dataset.k; likes.has(k) ? likes.delete(k) : likes.add(k); saveLikes(); b.setAttribute("aria-pressed", String(likes.has(k))); });
