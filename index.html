@@ -691,6 +691,15 @@ header { text-shadow: 0 0 6px var(--bg); }
 .maphint { color: var(--muted); font-size: 12.5px; margin: 0; }
 .land { fill: var(--surface-2); stroke: var(--line); stroke-width: .8; transition: fill .3s; }
 .land.on { fill: var(--accent-soft); }
+/* Landet man har valgt løftes fram, de andre tones ned */
+.land.lift { fill: var(--surface); stroke: var(--accent); stroke-width: 1.6; filter: drop-shadow(0 4px 6px rgba(20,33,29,.28)); }
+.land.dim { opacity: .35; }
+.mapwrap .tiles image { pointer-events: none; filter: saturate(.55) sepia(.12) brightness(1.04); }
+.mapwrap.tiled .land { fill: transparent; filter: none; stroke: var(--accent); stroke-width: 1.4; }
+.mapwrap.tiled .land.dim { fill: rgba(246,243,236,.55); opacity: 1; stroke: transparent; }
+.mapattr { position: absolute; left: 8px; bottom: 6px; font-size: 10.5px; color: #555; background: rgba(255,255,255,.8); padding: 1px 6px; border-radius: 6px; }
+.mapattr a { color: inherit; }
+.mapjump button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 .dot { fill: var(--accent); fill-opacity: .85; stroke: var(--surface); stroke-width: 1.5; cursor: pointer; transition: r .2s; }
 .dot:hover, .dot.sel { fill: var(--accent); fill-opacity: 1; }
 .dotn { font: 700 9px var(--font-body); fill: var(--surface); pointer-events: none; text-anchor: middle; dominant-baseline: central; }
@@ -4792,7 +4801,8 @@ const MAPBOX = (() => {
   });
   return box;
 })();
-const MAXZ = 8;
+const MAXZ = 300;
+const MAPLIFT = {}; // landet som er løftet fram i hvert kart
 function fitView(v) {
   const w = Math.min(MAP.W, Math.max(MAP.W / MAXZ, v.w)), h = w * MAP.H / MAP.W;
   return { w, x: Math.min(MAP.W - w, Math.max(0, v.x)), y: Math.min(MAP.H - h, Math.max(0, v.y)) };
@@ -4809,7 +4819,7 @@ function drawMap(cfg) {
   const cur = state[cfg.key];
   const label = c => c.places.length > 1 ? t("{x} og omegn", { x: c.places[0] }) : c.places[0];
   let view = MAPVIEW[cfg.id] = fitView(MAPVIEW[cfg.id] || { x: 0, y: 0, w: MAP.W });
-  wrap.innerHTML = `<svg role="img" aria-label="${t("Kart over Norden")}"><g class="lands">${Object.entries(MAP.paths).map(([c, d]) => `<path class="land${state.country === c ? " on" : ""}" d="${d}"></path>`).join("")}</g><g class="dots"></g></svg>
+  wrap.innerHTML = `<svg role="img" aria-label="${t("Kart over Norden")}"><g class="tiles"></g><g class="lands">${Object.entries(MAP.paths).sort(([a], [b]) => (a === MAPLIFT[cfg.id]) - (b === MAPLIFT[cfg.id])).map(([c, d]) => `<path class="land${state.country === c ? " on" : ""}${MAPLIFT[cfg.id] ? (MAPLIFT[cfg.id] === c ? " lift" : " dim") : ""}" data-c="${c}" d="${d}"></path>`).join("")}</g><g class="dots"></g></svg><span class="mapattr" hidden>© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></span>
     <div class="mapzoom">
       <button type="button" data-z="in" aria-label="${t("Zoom inn")}" title="${t("Zoom inn")}">+</button>
       <button type="button" data-z="out" aria-label="${t("Zoom ut")}" title="${t("Zoom ut")}">−</button>
@@ -4851,7 +4861,42 @@ function drawMap(cfg) {
       c.onpointerleave = () => { tip.hidden = true; };
     });
   };
-  let lastZ = 0;
+  // Ekte kartfliser (OpenStreetMap) når man zoomer inn, så man ser byer og veier
+  const tilesG = svg.querySelector(".tiles"), attr = wrap.querySelector(".mapattr"), U = MAP.k * MAP.sx;
+  const unLon = x => x / U + MAP.minLon, unLat = y => MAP.maxLat - y / MAP.sx;
+  const tileLat = (y, n) => Math.atan(Math.sinh(Math.PI * (1 - 2 * y / n))) * 180 / Math.PI;
+  const tileY = (lat, n) => Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * n);
+  let tileZ = 0;
+  const drawTiles = () => {
+    const z = MAP.W / view.w, on = z >= 4;
+    wrap.classList.toggle("tiled", on); attr.hidden = !on;
+    if (!on) { tilesG.innerHTML = ""; tileZ = 0; return; }
+    if (!svg.isConnected) return; const ppd = U / box().s;
+    let Z = Math.max(4, Math.min(17, Math.round(Math.log2(ppd * 360 / 256))));
+    // Ta med de tomme kantene rundt kartet også, så flisene fyller hele ruta
+    const h = view.w * MAP.H / MAP.W, r = svg.getBoundingClientRect(), bs = box().s, ex = Math.max(0, (r.width * bs - view.w) / 2), ey = Math.max(0, (r.height * bs - h) / 2);
+    const lonL = unLon(view.x - ex), lonR = unLon(view.x + view.w + ex), latT = Math.min(85, unLat(view.y - ey)), latB = Math.max(-85, unLat(view.y + h + ey));
+    let n, x0, x1, y0, y1;
+    for (;;) { n = 2 ** Z; x0 = Math.floor((lonL + 180) / 360 * n); x1 = Math.floor((lonR + 180) / 360 * n); y0 = tileY(latT, n); y1 = tileY(latB, n);
+      if ((x1 - x0 + 1) * (y1 - y0 + 1) <= 48 || Z <= 4) break; Z--; }
+    const want = new Set();
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) {
+      const key = `${Z}/${x}/${y}`; want.add(key);
+      if (tilesG.querySelector(`[data-k="${key}"]`)) continue;
+      const lo0 = x / n * 360 - 180, lo1 = (x + 1) / n * 360 - 180, la0 = tileLat(y, n), la1 = tileLat(y + 1, n);
+      const [px0, py0] = proj(la0, lo0), [px1, py1] = proj(la1, lo1);
+      const im = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      im.setAttribute("href", `https://tile.openstreetmap.org/${key}.png`);
+      im.setAttribute("x", px0); im.setAttribute("y", py0); im.setAttribute("width", px1 - px0 + .02); im.setAttribute("height", py1 - py0 + .02);
+      im.setAttribute("preserveAspectRatio", "none"); im.dataset.k = key; im.dataset.z = Z;
+      tilesG.appendChild(im);
+    }
+    // Fliser fra forrige zoomnivå ligger under til de nye har lastet
+    const old = [...tilesG.children].filter(im => !want.has(im.dataset.k));
+    if (Z !== tileZ) { tileZ = Z; setTimeout(() => old.forEach(im => im.dataset.z != tileZ && im.remove()), 900); }
+    else old.forEach(im => im.remove());
+  };
+  let lastZ = 0, tileT = 0;
   const apply = () => {
     view = MAPVIEW[cfg.id] = fitView(view);
     const z = MAP.W / view.w;
@@ -4860,6 +4905,7 @@ function drawMap(cfg) {
     wrap.querySelector('[data-z="in"]').disabled = z >= MAXZ - .01;
     wrap.querySelector('[data-z="out"]').disabled = wrap.querySelector('[data-z="home"]').disabled = z <= 1.01;
     if (Math.abs(z - lastZ) > 1e-6) { lastZ = z; drawDots(); }
+    cancelAnimationFrame(tileT); tileT = requestAnimationFrame(drawTiles);
     tip.hidden = true;
   };
   // Zoomer rundt et punkt (i kartets koordinater), så punktet blir liggende under fingeren eller musepekeren
@@ -4883,18 +4929,25 @@ function drawMap(cfg) {
   const zoomBy = f => { const [cx, cy] = centre(); const w = view.w / f; animateTo({ w, x: cx - w / 2, y: cy - w * MAP.H / MAP.W / 2 }); };
   wrap.querySelector('[data-z="in"]').onclick = () => zoomBy(2);
   wrap.querySelector('[data-z="out"]').onclick = () => zoomBy(.5);
-  wrap.querySelector('[data-z="home"]').onclick = () => animateTo({ x: 0, y: 0, w: MAP.W });
+  wrap.querySelector('[data-z="home"]').onclick = () => { MAPLIFT[cfg.id] = ""; svg.querySelectorAll(".land").forEach(p => p.classList.remove("lift", "dim")); animateTo({ x: 0, y: 0, w: MAP.W }); };
   jump.querySelectorAll("button").forEach(btn => btn.onclick = () => {
     const c = btn.dataset.c;
+    MAPLIFT[cfg.id] = c || "";
+    jump.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.c === c)));
+    svg.querySelectorAll(".land").forEach(p => { p.classList.toggle("lift", !!c && p.dataset.c === c); p.classList.toggle("dim", !!c && p.dataset.c !== c); });
+    const lp = svg.querySelector(".land.lift"); if (lp) lp.parentNode.appendChild(lp);
     if (!c) { animateTo({ x: 0, y: 0, w: MAP.W }); return; }
-    const [x0, y0, x1, y1] = MAPBOX[c], pad = 14, bw = x1 - x0 + pad * 2, bh = y1 - y0 + pad * 2;
+    const [x0, y0, x1, y1] = MAPBOX[c], pad = 4, bw = x1 - x0 + pad * 2, bh = y1 - y0 + pad * 2;
     const w = Math.max(bw, bh * MAP.W / MAP.H), h = w * MAP.H / MAP.W;
     animateTo({ w, x: (x0 + x1) / 2 - w / 2, y: (y0 + y1) / 2 - h / 2 });
     svg.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "nearest" });
   });
 
   // Fra skjermpiksler til kartkoordinater
-  const toMap = (cx, cy) => { const r = svg.getBoundingClientRect(); return [view.x + (cx - r.left) / r.width * view.w, view.y + (cy - r.top) / r.height * view.w * MAP.H / MAP.W]; };
+  // Kartet kan ha tomme kanter (når høyden er begrenset), så vi regner med den faktiske skalaen
+  const box = () => { const r = svg.getBoundingClientRect(), vh = view.w * MAP.H / MAP.W, s = Math.max(view.w / r.width, vh / r.height);
+    return { s, left: r.left + (r.width - view.w / s) / 2, top: r.top + (r.height - vh / s) / 2 }; };
+  const toMap = (cx, cy) => { const b = box(); return [view.x + (cx - b.left) * b.s, view.y + (cy - b.top) * b.s]; };
   const pts = new Map(); let drag = null, moved = false, pinch = null;
   svg.addEventListener("pointerdown", e => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -4908,14 +4961,14 @@ function drawMap(cfg) {
   svg.addEventListener("pointermove", e => {
     if (!pts.has(e.pointerId)) return;
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    const r = svg.getBoundingClientRect(), s = view.w / r.width;
+    const s = box().s;
     if (pinch && pts.size >= 2) {
       const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
       if (!pinch.d) return;
       e.preventDefault(); moved = true; wrap.classList.add("drag");
       const w = Math.min(MAP.W, Math.max(MAP.W / MAXZ, pinch.v.w * pinch.d / d)), mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
       // Punktet mellom fingrene blir liggende under fingrene
-      view = { w, x: pinch.c[0] - (mx - r.left) / r.width * w, y: pinch.c[1] - (my - r.top) / r.height * w * MAP.H / MAP.W }; apply();
+      const bx = box(), k = w / view.w; view = { w, x: pinch.c[0] - (mx - bx.left) * bx.s * k, y: pinch.c[1] - (my - bx.top) * bx.s * k }; apply();
     } else if (drag) {
       const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (!moved && Math.hypot(dx, dy) < 6) return;
@@ -4939,7 +4992,7 @@ function drawMap(cfg) {
     const [px, py] = toMap(e.clientX, e.clientY);
     zoomAt(Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0022)), px, py);
   }, { passive: false });
-  svg.addEventListener("dblclick", e => { e.preventDefault(); const [px, py] = toMap(e.clientX, e.clientY); const w = view.w / 2; animateTo({ w, x: px - w / 2, y: py - w * MAP.H / MAP.W / 2 }); });
+  svg.addEventListener("dblclick", e => { e.preventDefault(); if (!svg.isConnected || e.target.closest(".dot")) return; const [px, py] = toMap(e.clientX, e.clientY); const w = view.w / 2; animateTo({ w, x: px - w / 2, y: py - w * MAP.H / MAP.W / 2 }); });
 
   apply();
   note.textContent = cur ? t("Viser {x}. Trykk et annet sted på kartet for å vise alle.", { x: cur.split("|").join(", ") }) : t("Trykk på en prikk for å se hva som finnes på stedet");
