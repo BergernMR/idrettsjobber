@@ -448,6 +448,8 @@ table.league td.team { white-space: normal; }
 .sortsel .sico { width: 16px; height: 16px; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .sortsel .slbl { color: var(--muted); font-weight: 500; }
 .sortsel select { appearance: none; -webkit-appearance: none; font: inherit; color: var(--fg); background: transparent; border: 0; padding: 8px 20px 8px 0; cursor: pointer; outline: none; }
+.sortsel select option { background: var(--surface); color: var(--fg); font-weight: 600; }
+.sortsel select option:checked { background: var(--accent); color: var(--bg); }
 .sortsel .chev { position: absolute; right: 10px; width: 14px; height: 14px; fill: none; stroke: var(--muted); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 @media (max-width: 480px) { .sortsel .slbl { display: none; } }
 .homerow { margin: -4px 0 12px; }
