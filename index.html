@@ -456,6 +456,18 @@ table.league td.team { white-space: normal; }
 .clogo { width: 22px; height: 22px; object-fit: contain; vertical-align: -5px; margin-right: 8px; flex: none; }
 .clogo.big { width: 44px; height: 44px; vertical-align: -9px; margin-right: 12px; }
 table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-right: 7px; }
+/* Tabellen får mer plass, med form og neste motstander */
+.sheet:has(table.league) { max-width: 940px; }
+@media (min-width: 700px) { .sheet:has(table.league) table.league { font-size: 16px; } .sheet:has(table.league) table.league td { padding: 10px 6px; } .sheet:has(table.league) table.league .clogo { width: 24px; height: 24px; vertical-align: -6px; } }
+table.league th.tform, table.league th.tnext { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+table.league td.tform { padding-left: 10px; }
+.fdots { display: inline-flex; gap: 3px; }
+.fdots .r { width: 20px; height: 20px; border-radius: 6px; font-size: 10.5px; font-style: normal; }
+.nlogo { position: relative; display: inline-grid; place-items: center; width: 30px; height: 30px; }
+.nlogo img { width: 26px; height: 26px; object-fit: contain; }
+.nlogo b { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); font-size: 9.5px; font-weight: 800; color: var(--muted); }
+.nlogo small { position: absolute; right: -4px; bottom: -3px; font-size: 9px; font-weight: 800; color: var(--muted); background: var(--surface); border-radius: 4px; padding: 0 2px; line-height: 1.3; }
+@media (max-width: 520px) { .fdots .r { width: 14px; height: 14px; font-size: 0; border-radius: 4px; } .fdots { gap: 2px; } table.league td.tform { padding-left: 4px; } }
 .mcico.haslogo { background: transparent; }
 .fyico.haslogo { background: transparent; }
 .fyico .clogo { width: 100%; height: 100%; margin: 0; }
@@ -2067,6 +2079,10 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Neste": ["Nästa","Næste","Seuraava","Næst","Next"],
+"Form": ["Form","Form","Vire","Form","Form"],
+"H": ["H","H","K","H","H"],
+"B": ["B","U","V","Ú","A"],
 "Profiler": ["Profiler","Profiler","Profiilit","Prófílar","Profiles"],
 "Bruker på Aurora": ["Användare på Aurora","Bruger på Aurora","Auroran käyttäjä","Notandi á Aurora","Aurora member"],
 "Eier av Aurora": ["Ägare av Aurora","Ejer af Aurora","Auroran omistaja","Eigandi Aurora","Owner of Aurora"],
@@ -4967,7 +4983,13 @@ const GNEWS = {"at":"2026-10-25","r":{"NO":[["2026-10-24","Fotball","Sørloth sa
 const tableRows = (tb, d) => tb.xs.map(({ r: [n, p, w, dr, l, f, a, pts], k, was, L }, i) => { const gd = f - a;
     const mv = L && was !== i ? `<span class="mv ${was > i ? "up" : "dn"}" aria-label="${t(was > i ? "Opp" : "Ned")}">${was > i ? "▲" : "▼"}</span>` : "";
     const lv = L ? `<span class="tlive${L[4] === "ft" ? " ft" : ""}" title="${t("mot {x}", { x: esc(L[3]) })}">${L[4] === "ft" ? t("Slutt") : L[4] === "ht" ? t("Pause") : esc(L[5] || "LIVE")} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`}</span>` : "";
-    return `<tr class="${k && follows.has(k.id) ? "mine" : ""}${L ? " islive" : ""}"><td class="pos${medal(i)}">${i + 1}${mv}</td><td class="team">${k ? `<button type="button" class="clubopen" data-id="${k.id}">${clubLogo(k)}${esc(n)}</button>` : esc(n)}${champMark(tb, d, i)}${lv}</td><td>${p}</td><td class="wide">${w}</td><td class="wide">${dr}</td><td class="wide">${l}</td><td class="wide">${f}–${a}</td><td>${gd > 0 ? "+" + gd : gd}</td><td class="pts">${pts}</td></tr>`; }).join("");
+    return `<tr class="${k && follows.has(k.id) ? "mine" : ""}${L ? " islive" : ""}"><td class="pos${medal(i)}">${i + 1}${mv}</td><td class="team">${k ? `<button type="button" class="clubopen" data-id="${k.id}">${clubLogo(k)}${esc(n)}</button>` : esc(n)}${champMark(tb, d, i)}${lv}</td><td>${p}</td><td class="wide">${w}</td><td class="wide">${dr}</td><td class="wide">${l}</td><td class="wide">${f}–${a}</td><td>${gd > 0 ? "+" + gd : gd}</td><td class="pts">${pts}</td><td class="tform">${formDots(k)}</td><td class="tnext">${nextLogo(k)}</td></tr>`; }).join("");
+// Formen (siste fem, eldst til venstre) og logoen til neste motstander, for tabellen
+const formDots = k => { const f = k && fx(k); if (!f || !f.l) return "";
+  return `<span class="fdots">${f.l.slice(0, 5).reverse().map(m => `<i class="r ${RES[resOf(m)]}" title="${esc(fxDate(m[0]))}: ${esc(m[1])} ${m[3]}–${m[4]}">${t(resOf(m))}</i>`).join("")}</span>`; };
+const nextLogo = k => { const n = k && nextMatch(k); if (!n) return "";
+  const o = FAN.find(x => x.n === n[1] && x.sport === k.sport), tip = `${fxDate(n[0])}: ${n[2] ? t("Hjemme mot {x}", { x: n[1] }) : t("Borte mot {x}", { x: n[1] })}`;
+  return `<span class="nlogo" title="${esc(tip)}" aria-label="${esc(tip)}">${o && LOGO.has(o.id) ? `<img src="img/logo/${o.id}.webp" alt="" width="26" height="26" loading="lazy">` : `<b>${esc(n[1].replace(/^(FK|IF|IK|SK|BK|FC|AIK) /, "").slice(0, 3).toUpperCase())}</b>`}<small>${n[2] ? t("H") : t("B")}</small></span>`; };
 let curTable = null;
 function openTable(d) {
   const tb = liveTB(d);
@@ -4986,7 +5008,7 @@ function openTable(d) {
     </div>
     <div class="sheet-body">
       <div class="tablewrap"><table class="league">
-        <thead><tr><th class="pos">#</th><th class="team">${t("Lag")}</th><th title="${t("Kamper")}">${t("K")}</th><th class="wide" title="${t("Vunnet")}">${t("V")}</th><th class="wide" title="${t("Uavgjort")}">${t("U")}</th><th class="wide" title="${t("Tap")}">${t("T")}</th><th class="wide">${t("Mål")}</th><th>+/−</th><th class="pts">${t("P")}</th></tr></thead>
+        <thead><tr><th class="pos">#</th><th class="team">${t("Lag")}</th><th title="${t("Kamper")}">${t("K")}</th><th class="wide" title="${t("Vunnet")}">${t("V")}</th><th class="wide" title="${t("Uavgjort")}">${t("U")}</th><th class="wide" title="${t("Tap")}">${t("T")}</th><th class="wide">${t("Mål")}</th><th>+/−</th><th class="pts">${t("P")}</th><th class="tform">${t("Form")}</th><th class="tnext">${t("Neste")}</th></tr></thead>
         <tbody id="tblBody">${rows}</tbody>
       </table></div>
       <p class="s-note tlivenote" id="tblLive"${tb.live ? "" : " hidden"}>${t("Tabellen viser stillingen nå, med kampene som pågår regnet med.")}</p>
