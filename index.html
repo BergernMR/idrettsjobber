@@ -4889,7 +4889,7 @@ function renderForYou() {
     return `<button type="button" class="fyclub" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span>${top}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
   // Arrangementer nær hjemstedet, i idrettene man liker først
   const evs = EVENTS.map(e => { const g = evGeo(e), d = evOrder(e); return { e, km: g ? kmFrom(g[1], g[2]) : 1e9, d }; })
-    .filter(x => x.d >= 0 && x.d < 200 && x.km < 400 && (!likes.size || liked(x.e.sport)))
+    .filter(x => x.d >= 0 && x.d < 200 && x.km <= 50 && (!likes.size || liked(x.e.sport)))
     .sort((a, b) => a.d - b.d).slice(0, 4);
   // Forslag til klubber nær deg når man ikke følger noen ennå
   const near = mine.length ? [] : FAN.filter(k => k.geo && (!likes.size || liked(k.sport))).map(k => ({ k, km: kmFrom(k.geo[1], k.geo[2]) })).sort((a, b) => a.km - b.km).slice(0, 4);
