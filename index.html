@@ -897,7 +897,11 @@ body.dockon .controls { top: calc(env(safe-area-inset-top, 0px) + 66px); }
 .setpop .sl { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .setpop .seg { display: flex; padding: 4px; gap: 4px; border-radius: 999px; background: var(--surface-2); }
 .setpop .seg button { flex: 1; padding: 8px 6px; border: 0; border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
-.setpop .seg button[aria-checked="true"] { background: var(--fg); color: var(--bg); }
+.setpop .seg { position: relative; }
+.setpop .seg button { position: relative; z-index: 1; transition: color .3s ease; }
+.setpop .seg button[aria-checked="true"] { color: var(--bg); }
+.segpill { position: absolute; left: 0; top: 0; z-index: 0; border-radius: 999px; background: var(--fg); pointer-events: none; transition: transform .38s cubic-bezier(.3,1.3,.5,1), width .38s cubic-bezier(.3,1.3,.5,1); }
+@media (prefers-reduced-motion: reduce) { .segpill { transition: none; } }
 .setpop small { color: var(--muted); font-size: 12.5px; }
 .setpop hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; width: 100%; }
 .aform { display: grid; gap: 8px; }
@@ -2981,7 +2985,7 @@ function accountHtml() {
   // Logg inn godtar både e-post og brukernavn; ellers må det være en e-post
   const mail = m === "in" ? `<input type="text" id="aMail" required autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="${t("E-post eller brukernavn")}" aria-label="${t("E-post eller brukernavn")}">`
     : `<input type="email" id="aMail" required autocomplete="email" placeholder="${t("E-post")}" aria-label="${t("E-post")}">`;
-  return `<p class="sl">${t("Konto")}</p><div class="seg" role="tablist">${[["in", "Logg inn"], ["up", "Lag bruker"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
+  return `<p class="sl">${t("Konto")}</p><div class="seg" data-seg="konto" role="tablist">${[["in", "Logg inn"], ["up", "Lag bruker"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
     ${m === "up" ? `<small>${t("Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.")}</small>` : ""}
     <form class="aform" id="aForm">${m === "up" ? `<input id="aName" required minlength="2" maxlength="30" pattern="[^@ ]+" title="${t("Brukernavnet kan ikke ha mellomrom eller @")}" autocomplete="username" placeholder="${t("Brukernavn")}" aria-label="${t("Brukernavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
     <button type="submit" class="abtn">${t(m === "up" ? "Lag bruker" : m === "in" ? "Logg inn" : "Send lenke for nytt passord")}</button></form>
@@ -3003,14 +3007,35 @@ function setupAuth() {
   let has = /[?&]code=/.test(location.search); try { has = has || Object.keys(localStorage).some(k => k.startsWith("sb-")); } catch (e) {}
   if (has) loadSupa();
 }
+// Glidende markør i valgknappene (Logg inn / Lag bruker og temaet), slik som i menyen.
+// Popupen tegnes på nytt ved hvert valg, så markøren starter der den sto sist og glir til det nye valget.
+const SEG_AT = {};
+function segPills(root) {
+  root.querySelectorAll(".seg[data-seg]").forEach(seg => {
+    const cur = seg.querySelector('[aria-checked="true"]'), key = seg.dataset.seg;
+    const pill = document.createElement("span"); pill.className = "segpill"; pill.setAttribute("aria-hidden", "true"); seg.prepend(pill);
+    if (!cur) { pill.style.opacity = 0; return; }
+    const put = p => { pill.style.width = p.w + "px"; pill.style.height = p.h + "px"; pill.style.transform = `translate(${p.x}px, ${p.y}px)`; };
+    // Popupen kan være skjult når den tegnes: vent til knappene har en størrelse
+    const go = (n = 0) => {
+      if (!seg.isConnected) return;
+      if (!cur.offsetWidth) { if (n < 60) requestAnimationFrame(() => go(n + 1)); return; }
+      const to = { x: cur.offsetLeft, w: cur.offsetWidth, h: cur.offsetHeight, y: cur.offsetTop }, from = SEG_AT[key] || to;
+      pill.style.transition = "none"; put(from); pill.offsetWidth; pill.style.transition = ""; put(to);
+      SEG_AT[key] = to;
+    };
+    go();
+  });
+}
 function setupSettings() {
   const btn = $("setBtn"), pop = $("setPop"); if (!btn) return;
   btn.setAttribute("aria-label", t("Innstillinger")); btn.title = t("Innstillinger"); pop.setAttribute("aria-label", t("Innstillinger"));
   const cur = () => document.documentElement.dataset.theme || "auto";
   const draw = () => {
     pop.innerHTML = `<h4>${t("Innstillinger")}</h4><p class="sl">${t("Utseende")}</p>
-      <div class="seg" role="radiogroup" aria-label="${t("Utseende")}">${[["auto", "Automatisk"], ["light", "Lys"], ["dark", "Mørk"]].map(([k, l]) => `<button type="button" role="radio" data-v="${k}" aria-checked="${cur() === k}">${t(l)}</button>`).join("")}</div>
+      <div class="seg" data-seg="tema" role="radiogroup" aria-label="${t("Utseende")}">${[["auto", "Automatisk"], ["light", "Lys"], ["dark", "Mørk"]].map(([k, l]) => `<button type="button" role="radio" data-v="${k}" aria-checked="${cur() === k}">${t(l)}</button>`).join("")}</div>
       <small>${t("Automatisk følger innstillingen på mobilen eller PC-en din.")}</small><hr>${accountHtml()}`;
+    segPills(pop);
     pop.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { authMode = b.dataset.m; authMsg = ""; draw(); });
     const f = $("aForm"); if (f) f.onsubmit = async e => { e.preventDefault();
       const v = id => ($(id)?.value || "").trim(), pw = $("aPw")?.value || "", to = location.origin + location.pathname;
