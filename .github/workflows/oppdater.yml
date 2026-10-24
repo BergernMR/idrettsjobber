@@ -1,4 +1,4 @@
-name: Oppdater kamper, tabeller og nyhetsbilder
+name: Oppdater kamper, tabeller og sportsnyheter
 on:
   schedule:
     - cron: "17 * * * *"
@@ -19,6 +19,8 @@ jobs:
           python-version: "3.12"
       - name: Hent nye kamper og tabeller
         run: python3 scripts/update_data.py index.html
+      - name: Hent ferske sportsnyheter til forsiden
+        run: python3 scripts/gnews_rss.py index.html
       - name: Finn bilder til forsidenyhetene
         run: python3 scripts/news_images.py index.html
       - name: Sjekk at siden fortsatt er gyldig
@@ -30,5 +32,5 @@ jobs:
           if git diff --quiet; then echo "Ingen endringer"; exit 0; fi
           git config user.name "aurora-oppdatering"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Oppdater kamper og tabeller"
+          git commit -am "Oppdater kamper, tabeller og nyheter"
           for i in 1 2 3; do git pull --rebase -q && git push && exit 0; sleep 10; done; exit 1
