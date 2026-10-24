@@ -1244,6 +1244,14 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 .eyebrow { color: var(--accent); }
 .sechero { border-top: 5px solid var(--accent); }
 .sechero.slim { gap: 8px; padding: clamp(18px, 3vw, 28px) clamp(20px, 4vw, 36px); border-top-width: 4px; }
+.tag.foryoutag { background: var(--accent-soft); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.fywhy { display: block; font-style: normal; font-size: 12px; font-weight: 600; color: #7fe0b7; margin-top: 3px; }
+.mp-learn { display: grid; gap: 8px; padding: 14px 16px; margin-bottom: 14px; border-radius: 14px; background: var(--accent-soft); }
+.mp-learn p { margin: 0; font-weight: 700; }
+.mp-learnchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mp-learnchips span { padding: 4px 11px; border-radius: 999px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font-size: 13.5px; font-weight: 600; }
+.mp-learn small { color: var(--muted); }
+.mp-forget { border: 0; background: none; padding: 0; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
 .mp-wait { grid-column: 1 / -1; margin: 40px 0; text-align: center; color: var(--muted); }
 .sechero.slim h2 { font-size: clamp(26px, 3.6vw, 36px); }
 .sechero.slim p.txt { font-size: clamp(15px, 1.6vw, 16.5px); max-width: 60ch; }
@@ -2006,6 +2014,16 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Passer deg": ["Passar dig","Passer dig","Sopii sinulle","Hentar þér","For you"],
+"Passer deg best": ["Passar dig bäst","Passer bedst til dig","Sopivimmat ensin","Hentar þér best","Best match for you"],
+"Jobber for deg": ["Jobb för dig","Job til dig","Työpaikkoja sinulle","Störf fyrir þig","Jobs for you"],
+"Hos {x}, som du følger": ["Hos {x}, som du följer","Hos {x}, som du følger","{x}, jota seuraat","Hjá {x}, sem þú fylgir","At {x}, which you follow"],
+"Ligner på jobbene du har lagret": ["Liknar jobben du har sparat","Ligner de job, du har gemt","Muistuttaa tallentamiasi työpaikkoja","Líkist störfunum sem þú vistaðir","Like the jobs you saved"],
+"Samme type jobb som du har lagret": ["Samma typ av jobb som du har sparat","Samme type job, som du har gemt","Samanlainen työ kuin tallentamasi","Sams konar starf og þú vistaðir","Same kind of job as one you saved"],
+"Ligner på arrangementene du har lagret": ["Liknar evenemangen du har sparat","Ligner de arrangementer, du har gemt","Muistuttaa tallentamiasi tapahtumia","Líkist viðburðunum sem þú vistaðir","Like the events you saved"],
+"Aurora har lagt merke til at du liker": ["Aurora har märkt att du gillar","Aurora har bemærket, at du kan lide","Aurora on huomannut, että pidät näistä","Aurora hefur tekið eftir að þér líkar","Aurora has noticed you like"],
+"Basert på det du lagrer, følger og ser på.": ["Baserat på det du sparar, följer och tittar på.","Baseret på det, du gemmer, følger og kigger på.","Perustuu siihen, mitä tallennat, seuraat ja katsot.","Byggt á því sem þú vistar, fylgir og skoðar.","Based on what you save, follow and look at."],
+"Glem det jeg har sett på": ["Glöm det jag har tittat på","Glem det, jeg har kigget på","Unohda katselemani","Gleymdu því sem ég hef skoðað","Forget what I've looked at"],
 "Henter Min side …": ["Hämtar Min sida …","Henter Min side …","Haetaan Oma sivu …","Sæki Mína síðu …","Loading My page …"],
 "Utforsk nordisk idrett": ["Utforska nordisk idrott","Udforsk nordisk idræt","Tutustu pohjoismaiseen urheiluun","Kannaðu norrænar íþróttir","Explore Nordic sport"],
 "Nyeste jobber": ["Nyaste jobben","Nyeste job","Uusimmat työpaikat","Nýjustu störfin","Newest jobs"],
@@ -3097,6 +3115,7 @@ async function cloudLoad() {
   if (data) { (data.clubs || []).forEach(id => follows.add(id)); (data.likes || []).forEach(k => likes.add(k)); splitBall(likes);
     if (data.home && typeof data.home.lat === "number") home = data.home;
     if (data.saved) { (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
+      if (Array.isArray(data.saved.seen)) { seen = [...new Set([...seen, ...data.saved.seen])].slice(0, 40); try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) {} }
       try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {} updSaved(); }
     try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} }
   await cloudSave(true); updClubs(); redrawAuth(); if (typeof render === "function") render();
@@ -3105,7 +3124,7 @@ let cloudTimer;
 function cloudSave(now) {
   if (!sb || !authUser) return;
   clearTimeout(cloudTimer);
-  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved] } } : {});
+  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved], seen } } : {});
   const go = () => sb.from("profiles").upsert(row()).then(r => {
     if (r.error && savedCol && /saved/i.test(r.error.message)) { savedCol = false; return go(); }
     if (r.error) console.warn("Aurora lagring:", r.error.message); });
@@ -3114,8 +3133,8 @@ function cloudSave(now) {
 // Ved utlogging: klubbene, idrettene, hjemstedet og det du har lagret ligger trygt på kontoen, så de fjernes fra denne nettleseren
 function clearLocalPrefs() {
   avatarUrl = "";
-  follows.clear(); likes.clear(); favs.clear(); evSaved.clear(); home = { name: "Oslo", lat: 59.91, lon: 10.75 };
-  try { [FOLLOW_KEY, "aurora-idretter", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  follows.clear(); likes.clear(); favs.clear(); evSaved.clear(); seen = []; home = { name: "Oslo", lat: 59.91, lon: 10.75 };
+  try { [FOLLOW_KEY, "aurora-idretter", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY, SEEN_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
   updSaved(); updClubs();
 }
 let redrawAuth = () => {};
@@ -3401,7 +3420,10 @@ function renderJobs() {
     if (da === null) return 1; if (db === null) return -1;
     return da - db;
   };
-  const order = { ny: j => isNew(j) ? 0 : 1, naer: j => distTo(j) ?? 1e6, heltid: fullTimeScore }[state.sort];
+    // Innlogget med noe å gå på: «Passer deg best» er standard til man velger noe annet selv
+  if (fitOn() && !state.sortSet && state.sort === "frist") state.sort = "fit";
+  if (!fitOn() && state.sort === "fit") state.sort = "frist";
+  const order = { ny: j => isNew(j) ? 0 : 1, naer: j => distTo(j) ?? 1e6, heltid: fullTimeScore, fit: j => -jobFit(j).score }[state.sort];
   const rows = JOBS.filter(j => matches(j)).sort((a, b) => (order ? order(a) - order(b) : 0) || byDeadline(a, b));
   $("count").textContent = rows.length === 1 ? t("1 stilling") : t("{n} stillinger", { n: rows.length });
   renderSort();
@@ -3426,7 +3448,7 @@ const jobTile = j => `<article class="evtile jobtile"><button type="button" clas
     <div class="jtitle">${esc(j.t)}</div>
     ${j.tr && LANG === "nb" ? `<div class="trans">${esc(j.tr)}</div>` : ""}
     <div class="meta"><span class="emp">${esc(j.emp)}</span><span class="where">${flag(j.c)}${esc(j.place)}${state.sort === "naer" && distTo(j) !== null ? `<span class="dist">&nbsp;· ${fmtKm(distTo(j))}</span>` : ""}</span></div>
-    <div class="tags">${isNew(j) ? `<span class="tag new">${t("Ny")}</span>` : ""}<span class="tag">${CATS[j.cat]}</span></div></article>`;
+    <div class="tags">${isNew(j) ? `<span class="tag new">${t("Ny")}</span>` : ""}${fitTag(jobForYou(j))}<span class="tag">${CATS[j.cat]}</span></div></article>`;
 const jobCard = j => `
     <article class="job">
       <button type="button" class="job-hit" data-id="${j.id}" aria-label="${esc(j.t)}, ${esc(j.emp)}. ${t("Vis oppsummering")}"></button>
@@ -3435,7 +3457,7 @@ const jobCard = j => `
         <div class="jtitle">${esc(j.t)}</div>
         ${j.tr && LANG === "nb" ? `<div class="trans">${esc(j.tr)}</div>` : ""}
         <div class="meta"><span class="emp">${esc(j.emp)}</span><span class="where">${flag(j.c)}${esc(j.place)}${state.sort === "naer" && distTo(j) !== null ? `<span class="dist">&nbsp;· ${fmtKm(distTo(j))}</span>` : ""}</span></div>
-        <div class="tags">${isNew(j) ? `<span class="tag new">${t("Ny")}</span>` : ""}<span class="tag">${CATS[j.cat]}</span></div>
+        <div class="tags">${isNew(j) ? `<span class="tag new">${t("Ny")}</span>` : ""}${fitTag(jobForYou(j))}<span class="tag">${CATS[j.cat]}</span></div>
       </div>
       <button type="button" class="fav" id="fav-${j.id}" data-id="${j.id}" aria-pressed="${favs.has(j.id)}" aria-label="${t("Lagre som favoritt")}">${HEART}</button>
       <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
@@ -4036,7 +4058,7 @@ const evTile = e => `<article class="evtile"><button type="button" class="job-hi
     <div class="jtitle">${esc(t(e.t))}</div>
     <div class="trans">${esc(t(e.sum))}</div>
     <div class="meta"><span class="emp">${esc(evWhen(e))}</span><span class="where">${flag(e.c)}${esc(e.place)}</span></div>
-    <div class="tags"><span class="tag">${esc(t(e.sport))}</span></div></article>`;
+    <div class="tags">${fitTag(evForYou(e))}<span class="tag">${esc(t(e.sport))}</span></div></article>`;
 const empty = msg => `<div class="empty">${msg}</div>`;
 
 // Lange lister viser 20 om gangen; tallet nullstilles når søket gir et annet antall treff
@@ -5028,9 +5050,11 @@ let evRange = 50;
 try { const v = +localStorage.getItem("aurora-rekkevidde"); if (v >= 10 && v <= 300) evRange = v; } catch (e) {}
 // Idretter som ingen interesse dekker (f.eks. «Mange idretter») vises for alle
 const evLiked = sp => !likes.size || liked(sp) || !INTERESTS.some(([, , sps]) => sps.includes(sp));
+// Innlogget: de som passer best først (idrett, type og hva du har lagret), ellers etter dato
 const nearEvents = () => EVENTS.map(e => { const g = evGeo(e), d = evOrder(e); return { e, km: g ? kmFrom(g[1], g[2]) : 1e9, d }; })
   .filter(x => x.d >= 0 && x.d < 366 && x.km <= evRange && evLiked(x.e.sport))
-  .sort((a, b) => a.d - b.d);
+  .map(x => (x.f = fitOn() ? evFit(x.e).score : 0, x))
+  .sort((a, b) => fitOn() ? b.f - a.f || a.d - b.d : a.d - b.d);
 let fyEvAll = false;
 const fyEvsHtml = list => { const evs = fyEvAll ? list : list.slice(0, 4); return evs.length ? evs.map(({ e, km }) => { const d = evDate(e), dt = d ? new Date(d[0] + "T12:00:00") : null;
       return `<button type="button" class="fyev" data-id="${e.id}" style="--kc:${KIND_COLOR[kindOf(e.sport)] || "#7fe0b7"}"><span class="fybib"><b>${dt ? dt.getDate() : "—"}</b><small>${esc((dt ? monthName(dt.getMonth() + 1) : monthName(e.m)).slice(0, 3))}</small></span><span class="fyevt"><b>${esc(t(e.t))}</b><span>${esc(t(e.sport))} · ${esc(t(e.place))}${km < 1e9 ? " · " + fmtKm(km) : ""}</span></span></button>`; }).join("") + (list.length > evs.length ? `<button type="button" class="fymore">${t("Vis alle {n}", { n: list.length })}</button>` : "")
@@ -5081,11 +5105,13 @@ function renderForYou() {
     return `<button type="button" class="fyclub" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span>${top}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
   // Arrangementer nær hjemstedet det neste året, innenfor rekkevidden brukeren har valgt med slideren
   // Forslag til klubber nær deg når man ikke følger noen ennå
+  const fyJobs = authUser && taste().any ? recJobs().slice(0, 4) : [];
   const near = mine.length ? [] : FAN.filter(k => k.geo && (!likes.size || liked(k.sport))).map(k => ({ k, km: kmFrom(k.geo[1], k.geo[2]) })).sort((a, b) => a.km - b.km).slice(0, 4);
   box.innerHTML = `<div class="fyh"><p class="fyhello">${greet()}${typeof authName === "function" && authName() ? ", " + esc(authName()) : ""}</p><h3 id="fyH">${t("Til deg")}</h3>${ask ? "" : `<span class="fysum">${likes.size ? INTERESTS.filter(([k]) => likes.has(k)).map(([, l]) => t(l)).join(", ") + " · " : ""}${esc(homeName)}</span><button type="button" class="fyedit">${t("Tilpass")}</button>`}</div>
     ${ask ? picker : ""}
     ${mine.length ? `<div class="fysec"><p class="fyl">${t("Dine klubber")}</p><div class="fyclubs">${mine.slice(0, 6).map(clubCard).join("")}</div></div>` : ""}
     ${near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""}
+    ${fyJobs.length ? `<div class="fysec"><p class="fyl">${t("Jobber for deg")}</p><div class="fyevs">${fyJobs.map(({ j, why }) => `<button type="button" class="fyev fyjob" data-j="${j.id}"><span class="fybib fyflag">${flag(j.c)}</span><span class="fyevt"><b>${esc(j.t)}</b><span>${esc(j.emp)} · ${esc(j.place)}</span><em class="fywhy">${esc(why)}</em></span></button>`).join("")}</div></div>` : ""}
     <div class="fysec fyevsec"><div class="fyrange"><p class="fyl">${t("Arrangementer nær {x}", { x: esc(homeName) })}</p><label class="fyslide"><span id="fyKm">${t("innen {n} km", { n: evRange })}</span><input type="range" id="fyRange" min="10" max="300" step="10" value="${evRange}" aria-label="${t("Rekkevidde i km")}"></label></div>
       <div class="fyevs" id="fyEvs"></div></div>`;
   paintFyEvs();
@@ -5097,6 +5123,7 @@ function renderForYou() {
   const skip = box.querySelector(".fyskip"); if (skip) skip.onclick = () => { fySkip = true; fyEdit = false; try { localStorage.setItem("aurora-idretter-hopp", "1"); } catch (e) {} render(); };
   const ed = box.querySelector(".fyedit"); if (ed) ed.onclick = () => { fyEdit = true; renderForYou(); };
   box.querySelectorAll(".fyclub[data-id], .fyopen").forEach(b => b.onclick = () => openClub(b.dataset.id));
+  box.querySelectorAll(".fyjob").forEach(b => b.onclick = () => openJob(b.dataset.j));
   box.querySelectorAll(".follow").forEach(b => b.onclick = () => { toggleFollow(b.dataset.id); renderForYou(); });
 }
 // Slide for forsidekortene: nærmeste kort til midten er "aktivt"; bytter selv hvert 6. sekund til man rører den
@@ -5259,9 +5286,9 @@ function fullTimeScore(j) {
 }
 // Sorteringen ligger til høyre over listen, ikke inne i filteret
 function renderSort() {
-  const sel = $("sortSel"), labels = { frist: t("Kortest frist øverst"), ny: t("Nyeste øverst"), naer: home.name === "deg" ? t("Nærmest deg øverst") : t("Nærmest {x} øverst", { x: home.name }), heltid: t("Heltid øverst") };
+  const sel = $("sortSel"), labels = { frist: t("Kortest frist øverst"), ny: t("Nyeste øverst"), naer: home.name === "deg" ? t("Nærmest deg øverst") : t("Nærmest {x} øverst", { x: home.name }), heltid: t("Heltid øverst"), ...(fitOn() ? { fit: t("Passer deg best") } : {}) };
   sel.innerHTML = Object.entries(labels).map(([k, l]) => `<option value="${k}"${state.sort === k ? " selected" : ""}>${esc(l)}</option>`).join("");
-  sel.onchange = () => { state.sort = sel.value; render(); };
+  sel.onchange = () => { state.sort = sel.value; state.sortSet = true; render(); };
   $("homeRow").hidden = state.sort !== "naer";
 }
 $("home").innerHTML = cityOptions();
@@ -5580,6 +5607,7 @@ function openJob(id) {
   curSheet = () => openJob(id);
   const j = JOBS.find(x => x.id === id);
   if (!j) return;
+  seenAdd("j", id);
   const n = daysLeft(j.dl);
   const dlText = j.dl ? (n <= 0 ? t("I dag") : fmtDate(j.dl, true)) : t("Løpende, søk snarest");
   const dlCls = n === null ? "" : n <= 3 ? "urgent" : n <= 10 ? "soon" : "";
@@ -5660,6 +5688,7 @@ function openEvent(id) {
   curSheet = () => openEvent(id);
   const e = EVENTS.find(x => x.id === id);
   if (!e) return;
+  seenAdd("e", id);
   const info = EV_INFO[id] || {};
   const list = xs => `<ul lang="no">${xs.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
   $("sheetBody").innerHTML = `
@@ -5874,6 +5903,114 @@ function openClubs() {
 }
 $("clubsBtn").onclick = openClubs;
 
+// ---------- Smak: det du lagrer, følger og åpner blir til en profil som jobber og arrangementer måles mot ----------
+// Bare for innloggede. Lagrede ting teller mest, klubber og idretter du har valgt litt mindre, og det du bare har åpnet minst.
+const SEEN_KEY = "aurora-sett";
+let seen = [];
+try { seen = JSON.parse(localStorage.getItem(SEEN_KEY) || "[]"); } catch (e) {}
+function seenAdd(kind, id) {
+  if (!authUser) return;
+  const k = kind + ":" + id; seen = [k, ...seen.filter(x => x !== k)].slice(0, 40);
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) {} cloudSave();
+}
+// Idrettene en jobbannonse handler om, på alle de nordiske språkene
+const SPORT_RE = {
+  fotball: /fotball|fotboll|fodbold|jalkapallo|knattspyrn|football|futsal/i, ski: /\bski(?:sport|klubb|lag|senter|gymnas)?\b|langrenn|längdåk|langrend|hiihto|skíð|skiskyt|skidskyt|ampumahiiht|skihopp|backhopp/i,
+  alpint: /alpin|slalåm|slalom|laskettel/i, hockey: /ishockey|jääkiekko|íshokk|hockey/i, bandy: /bandy|jääpallo/i, handball: /håndball|handboll|håndbold|käsipallo|handbolt/i,
+  lop: /løping|löpning|løb\b|juoksu|hlaup|maraton|marathon/i, friidrett: /friidrett|friidrott|atletik|yleisurheilu|frjáls/i, sykkel: /sykkel|sykling|cykel|cykling|pyöräil|hjól/i,
+  vann: /svøm|simning|svøm|uinti|uima|sund\b|seil|segling|sejl|purjehd|roing|rodd|kano|kajak|triat/i, kompass: /orienter|suunnistu|ratleik/i,
+  basket: /basket|koripallo|körfu/i, volley: /volleyb|lentopallo|blak/i, innebandy: /innebandy|innebandy|floorball|salibandy|bandy\s*\(inne/i, pesapallo: /pesäpallo/i
+};
+// Idretten i tittel eller arbeidsgiver teller 1, bare nevnt i sammendraget teller 0,5
+const jobSportW = j => { const head = `${j.t} ${j.tr || ""} ${j.emp}`, out = {};
+  for (const k in SPORT_RE) { if (SPORT_RE[k].test(head)) out[k] = 1; else if (SPORT_RE[k].test(j.sum || "")) out[k] = .5; } return out; };
+const jobSports = j => Object.keys(jobSportW(j));
+// Rollen i jobben (ikke idretten, den måles for seg), og «Barn og unge» som et svakere tillegg
+const ROLES = ["Trener", "Leder", "Instruktør", "Lærer", "Badevakt", "Drift", "Koordinator", "Treningssenter"];
+const jobRoles = j => [...jobConcepts(j).main].filter(k => ROLES.includes(k));
+const spKeys = sp => INTERESTS.filter(([, , sps]) => sps.includes(sp)).map(([k]) => k);
+const clubCore = n => n.toLowerCase().replace(/\b(fk|bk|il|if|sk|fc|ik|hk|ff|aik|ifk|bif|hc|ps|kr)\b|[.]/g, "").trim();
+let tasteMemo = null;
+function taste() {
+  const sig = [[...favs], [...evSaved], [...follows], [...likes], seen.slice(0, 20)].map(a => a.join()).join("|");
+  if (tasteMemo && tasteMemo.sig === sig) return tasteMemo;
+  // sp: idretter samlet; jsp og esp: idretter fra jobbene og arrangementene du har lagret eller åpnet
+  const w = { sp: {}, jsp: {}, esp: {}, con: {}, kid: {}, cat: {}, c: {}, ek: {}, et: {} }, add = (m, k, v) => { if (k) m[k] = (m[k] || 0) + v; };
+  const job = (j, v) => { Object.entries(jobSportW(j)).forEach(([k, x]) => { add(w.sp, k, 2 * v * x); add(w.jsp, k, v * x); }); jobRoles(j).forEach(k => add(w.con, k, 2 * v));
+    if (jobConcepts(j).main.has("Barn og unge")) add(w.kid, "y", v); if (j.cat !== "annet") add(w.cat, j.cat, 2 * v); add(w.c, j.c, v); };
+  const ev = (e, v) => { spKeys(e.sport).forEach(k => { add(w.sp, k, 2 * v); add(w.esp, k, v); }); add(w.ek, e.kind, v); add(w.et, (EV_INFO[e.id] || {}).type, v); add(w.c, e.c, v * .6); };
+  likes.forEach(k => add(w.sp, k, 2.5));
+  FAN.filter(k => follows.has(k.id)).forEach(k => { spKeys(k.sport).forEach(s => add(w.sp, s, 1.2)); add(w.c, k.c, .4); });
+  favs.forEach(id => { const j = JOBS.find(x => x.id === id); if (j) job(j, 1); });
+  evSaved.forEach(id => { const e = EVENTS.find(x => x.id === id); if (e) ev(e, 1); });
+  seen.forEach((s, i) => { const [k, id] = s.split(":"), v = .35 * Math.pow(.93, i);
+    if (k === "j") { const j = JOBS.find(x => x.id === id); if (j) job(j, v); } else { const e = EVENTS.find(x => x.id === id); if (e) ev(e, v); } });
+  const norm = m => { const mx = Math.max(0, ...Object.values(m)); if (mx) for (const k in m) m[k] /= mx; return m; };
+  ["sp", "con", "cat", "c", "ek", "et"].forEach(k => norm(w[k]));
+  // Disse deles på det største av alle, så én åpnet annonse ikke veier like mye som tre lagrede
+  const mx = Math.max(1, ...Object.values(w.jsp), ...Object.values(w.esp), ...Object.values(w.kid)); ["jsp", "esp", "kid"].forEach(k => { for (const x in w[k]) w[k][x] /= mx; });
+  const clubs = FAN.filter(k => follows.has(k.id)).map(k => [k, clubCore(k.n)]).filter(([, c]) => c.length >= 4);
+  const jobsSaved = favs.size, evsSaved = evSaved.size;
+  return tasteMemo = { sig, w, clubs, jobsSaved, evsSaved, any: !!(favs.size || evSaved.size || follows.size || likes.size || seen.length) };
+}
+const topOf = m => Object.entries(m).sort((a, b) => b[1] - a[1]);
+const spName = k => t((INTERESTS.find(([x]) => x === k) || [, k])[1]).toLowerCase();
+const nearName = () => home.name === "deg" ? t("deg") : home.name;
+// Hvor godt en jobb passer, og den viktigste grunnen, sagt med vanlige ord
+// Svarene huskes til smaken, hjemstedet eller rekkevidden endrer seg, så lange lister sorteres raskt
+let fitMemo = { sig: "", m: new Map() };
+const fitCache = (key, f) => { const sig = taste().sig + "|" + home.lat + "," + home.lon + "|" + evRange;
+  if (fitMemo.sig !== sig) fitMemo = { sig, m: new Map() };
+  if (!fitMemo.m.has(key)) fitMemo.m.set(key, f()); return fitMemo.m.get(key); };
+const jobFit = j => fitCache("j" + j.id, () => jobFit0(j)), evFit = e => fitCache("e" + e.id, () => evFit0(e));
+function jobFit0(j) {
+  const T = taste(), w = T.w, spw = jobSportW(j), roles = jobRoles(j), g = GEO[j.id], km = g ? kmFrom(g[1], g[2]) : null;
+  let sp = 0, spK = null; for (const k in spw) { const v = (w.sp[k] || 0) * spw[k]; if (v > sp) { sp = v; spK = k; } }
+  const js = spK ? (w.jsp[spK] || 0) * spw[spK] : 0;
+  const role = roles.reduce((a, k) => Math.max(a, w.con[k] || 0), 0), cat = w.cat[j.cat] || 0, kid = jobConcepts(j).main.has("Barn og unge") ? (w.kid.y || 0) : 0;
+  const club = T.clubs.find(([, c]) => j.emp.toLowerCase().includes(c));
+  const near = km === null ? 0 : Math.max(0, 1 - km / 150);
+  const score = 7 * sp + 6 * role + 2 * cat + 1.5 * kid + 2 * (w.c[j.c] || 0) + 4 * near + (club ? 8 : 0) + (isNew(j) ? 1 : 0) - (daysLeft(j.dl) !== null && daysLeft(j.dl) < 2 ? 1 : 0);
+  const why = club ? t("Hos {x}, som du følger", { x: club[0].n })
+    : js >= .5 && role >= .5 ? t("Ligner på jobbene du har lagret")
+    : spK && sp >= .4 ? t("Fordi du liker {x}", { x: spName(spK) })
+    : role >= .6 ? t("Samme type jobb som du har lagret")
+    : near > .6 ? t("Nær {x}", { x: nearName() }) : "";
+  return { score, why };
+}
+function evFit0(e) {
+  const T = taste(), w = T.w, g = evGeo(e), km = g ? kmFrom(g[1], g[2]) : null, d = evOrder(e);
+  const sps = spKeys(e.sport), sp = sps.reduce((a, k) => Math.max(a, w.sp[k] || 0), 0), spK = sps.find(k => (w.sp[k] || 0) === sp && sp > 0);
+  const et = w.et[(EV_INFO[e.id] || {}).type] || 0, ek = w.ek[e.kind] || 0, near = km === null ? 0 : Math.max(0, 1 - km / Math.max(evRange * 2, 100));
+  const score = 7 * sp + 3 * et + 2 * ek + 1.5 * (w.c[e.c] || 0) + 4 * near - Math.max(0, d) / 90;
+  const es = spK ? (w.esp[spK] || 0) : 0;
+  const why = es >= .5 && (et >= .5 || ek >= .7) ? t("Ligner på arrangementene du har lagret")
+    : spK && sp >= .4 ? t("Fordi du liker {x}", { x: spName(spK) })
+    : near > .6 ? t("Nær {x}", { x: nearName() }) : "";
+  return { score, why };
+}
+// Merket «Passer deg» på kortene: bare for innloggede som har gitt oss noe å gå på, og bare de beste treffene
+const fitOn = () => !!authUser && taste().any;
+let fitCut = null;
+function fitCuts() {
+  const sig = taste().sig + home.lat + evRange; if (fitCut && fitCut.sig === sig) return fitCut;
+  const q = arr => { const s = arr.sort((a, b) => b - a); return s[Math.max(0, Math.floor(s.length * .12) - 1)] || 1e9; };
+  return fitCut = { sig, job: q(JOBS.map(j => jobFit(j).score)), ev: q(EVENTS.filter(e => evOrder(e) >= 0).map(e => evFit(e).score)) };
+}
+const jobForYou = j => fitOn() && jobFit(j).score >= fitCuts().job && jobFit(j).score > 6;
+const evForYou = e => fitOn() && evOrder(e) >= 0 && evFit(e).score >= fitCuts().ev && evFit(e).score > 6;
+const fitTag = on => on ? `<span class="tag foryoutag">${t("Passer deg")}</span>` : "";
+// Det Aurora har lært, vist på Min side så brukeren ser hvorfor forslagene ser ut som de gjør
+function tasteSummary() {
+  const w = taste().w, out = [];
+  topOf(w.sp).filter(([, v]) => v >= .35).slice(0, 4).forEach(([k]) => out.push(t((INTERESTS.find(([x]) => x === k) || [, k])[1])));
+  topOf(w.con).filter(([, v]) => v >= .5).slice(0, 2).forEach(([k]) => out.push(t(k)));
+  if (!out.length || !Object.keys(w.con).length) topOf(w.cat).filter(([, v]) => v >= .5).slice(0, 1).forEach(([k]) => out.push(CATS[k]));
+  if ((w.kid.y || 0) >= .4) out.push(t("Barn og unge"));
+  topOf(w.c).filter(([, v]) => v >= .5).slice(0, 2).forEach(([k]) => out.push(COUNTRIES[k]));
+  return [...new Set(out.filter(Boolean))];
+}
+
 // ---------- Min side: profil, klubber, lagrede jobber og arrangementer, og anbefalinger ----------
 // Landet du bor i: landet til den nærmeste jobben vi har koordinater for, ellers språket
 function homeCountry() {
@@ -5884,16 +6021,10 @@ function homeCountry() {
 // Idrettene man liker, som ord vi kan lete etter i jobbannonser
 const likedWords = () => INTERESTS.filter(([k]) => likes.has(k)).flatMap(([, , sps]) => sps).map(x => x.toLowerCase());
 function recJobs() {
-  const hc = homeCountry(), words = likedWords();
-  const sim = {}; [...favs].forEach(id => { const j = JOBS.find(x => x.id === id); if (j) similarJobs(j).forEach(r => { sim[r.x.id] = Math.max(sim[r.x.id] || 0, r.score); }); });
-  return JOBS.filter(j => !favs.has(j.id) && !(daysLeft(j.dl) < 0)).map(j => {
-    const g = GEO[j.id], km = g ? kmFrom(g[1], g[2]) : null, hay = `${j.t} ${j.tr || ""} ${j.emp} ${j.sum || ""}`.toLowerCase();
-    const sp = words.find(w => hay.includes(w));
-    if (j.c !== hc && !sp) delete sim[j.id]; // lignende jobber i andre land bare når idretten passer
-    const why = sim[j.id] ? t("Ligner på en jobb du har lagret") : sp ? t("Fordi du liker {x}", { x: t(sp[0].toUpperCase() + sp.slice(1)).toLowerCase() }) : km !== null && km < 60 ? t("Nær {x}", { x: home.name === "deg" ? t("deg") : home.name }) : j.c === hc ? t("Ny i {x}", { x: COUNTRIES[hc] }) : "";
-    const score = (sim[j.id] || 0) + (sp ? 6 : 0) + (km !== null ? Math.max(0, 6 - km / 40) : 0) + (j.c === hc ? 3 : 0) + (isNew(j) ? 2 : 0);
-    return { j, why, score };
-  }).filter(r => r.why).sort((a, b) => b.score - a.score).slice(0, 4);
+  // Maks to fra samme arbeidsgiver, så forslagene ikke blir seks like annonser
+  const per = {};
+  return JOBS.filter(j => !favs.has(j.id) && !(daysLeft(j.dl) < 0)).map(j => ({ j, ...jobFit(j) })).filter(r => r.why)
+    .sort((a, b) => b.score - a.score).filter(r => (per[r.j.emp] = (per[r.j.emp] || 0) + 1) <= 2).slice(0, 6);
 }
 function recEdu() {
   const hc = homeCountry(), names = INTERESTS.filter(([k]) => likes.has(k)).flatMap(([, , sps]) => sps);
@@ -5903,9 +6034,8 @@ function recEdu() {
     return { u, score, why }; }).filter(r => r.why).sort((a, b) => b.score - a.score).slice(0, 4);
 }
 function recEvents() {
-  return EVENTS.filter(e => !evSaved.has(e.id)).map(e => { const g = evGeo(e), d = evOrder(e), km = g ? kmFrom(g[1], g[2]) : 1e9, lk = liked(e.sport);
-    return { e, d, km, lk, score: (lk ? 6 : 0) + Math.max(0, 5 - km / 100) - d / 60 }; })
-    .filter(x => x.d >= 0 && x.d < 240 && (x.lk || x.km < 300)).sort((a, b) => b.score - a.score).slice(0, 4);
+  return EVENTS.filter(e => !evSaved.has(e.id) && evOrder(e) >= 0 && evOrder(e) < 366).map(e => ({ e, ...evFit(e) })).filter(r => r.why)
+    .sort((a, b) => b.score - a.score).slice(0, 6);
 }
 function recClubs() {
   return FAN.filter(k => k.geo && !follows.has(k.id) && (!likes.size || liked(k.sport))).map(k => ({ k, km: kmFrom(k.geo[1], k.geo[2]) })).sort((a, b) => a.km - b.km).slice(0, 4);
@@ -5954,7 +6084,7 @@ function renderMine() {
       <span class="svw ${cls}">${esc(w)}</span><span class="svs">${esc(it.sub)}</span>
       <div class="svb"><button type="button" data-rm="${it.kind}|${it.id}">${t("Fjern")}</button></div></div>`; };
   const card = (attrs, title, sub, why, kc) => `<button type="button" class="mp-card" ${attrs}${kc ? ` style="--kc:${kc}"` : ""}><b>${esc(title)}</b><small>${sub}</small>${why ? `<span class="why">${esc(why)}</span>` : ""}</button>`;
-  const rj = recJobs(), ru = recEdu(), re = recEvents(), rc = mine.length >= 3 ? [] : recClubs();
+  const rj = recJobs(), ru = recEdu(), re = recEvents(), learned = tasteSummary(), rc = mine.length >= 3 ? [] : recClubs();
   const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
   const sec = (id, title, body, empty) => `<section class="mp-sec" id="${id}"><h3>${title}</h3>${body || `<p>${empty}</p>`}</section>`;
   $("mpage").innerHTML = `
@@ -5975,9 +6105,9 @@ function renderMine() {
       ${sec("mpClubs", t("Dine klubber"), mine.length ? `<div class="svlist">${mine.map(club).join("")}</div>` : "", t("Du følger ingen klubber ennå. Trykk på stjernen ved en klubb under Klubber, så havner den her."))}
       ${sec("mpEvs", t("Lagrede arrangementer"), evs.length ? `<div class="svlist">${evs.map(saved).join("")}</div>` : "", t("Ingen lagrede arrangementer ennå. Trykk på hjertet ved et arrangement."))}
       ${sec("mpJobs", t("Lagrede jobber"), jobs.length ? `<div class="svlist">${jobs.map(saved).join("")}</div>` : "", t("Ingen lagrede jobber ennå. Trykk på hjertet ved en jobb."))}
-      ${sec("mpRec", t("Anbefalt for deg"), (rj.length ? `<p class="mp-h4">${t("Jobber")}</p><div class="mp-rec">${rj.map(({ j, why }) => card(`data-job="${j.id}"`, j.t, `${esc(j.emp)} · ${flag(j.c)} ${esc(j.place)}`, why)).join("")}</div>` : "")
+      ${sec("mpRec", t("Anbefalt for deg"), (learned.length ? `<div class="mp-learn"><p>${t("Aurora har lagt merke til at du liker")}</p><div class="mp-learnchips">${learned.map(x => `<span>${esc(x)}</span>`).join("")}</div><small>${t("Basert på det du lagrer, følger og ser på.")}${seen.length ? ` <button type="button" class="mp-forget" id="mpForget">${t("Glem det jeg har sett på")}</button>` : ""}</small></div>` : "") + (rj.length ? `<p class="mp-h4">${t("Jobber")}</p><div class="mp-rec">${rj.map(({ j, why }) => card(`data-job="${j.id}"`, j.t, `${esc(j.emp)} · ${flag(j.c)} ${esc(j.place)}`, why)).join("")}</div>` : "")
         + (ru.length ? `<p class="mp-h4">${t("Kurs og utdanning")}</p><div class="mp-rec">${ru.map(({ u, why }) => `<a class="mp-card" href="${u.url}" target="_blank" rel="noopener"><b>${esc(u.t)}</b><small>${esc(u.org)} · ${flag(u.c)} ${esc(t(u.place))}</small><span class="why">${esc(why)}</span></a>`).join("")}</div>` : "")
-        + (re.length ? `<p class="mp-h4">${t("Arrangementer")}</p><div class="mp-rec">${re.map(({ e, km, lk }) => card(`data-ev="${e.id}"`, t(e.t), `${esc(evWhen(e))} · ${flag(e.c)} ${esc(e.place)}`, lk ? t("Fordi du liker {x}", { x: t(e.sport).toLowerCase() }) : t("Nær {x}", { x: homeName }), KIND_COLOR[kindOf(e.sport)])).join("")}</div>` : "")
+        + (re.length ? `<p class="mp-h4">${t("Arrangementer")}</p><div class="mp-rec">${re.map(({ e, why }) => card(`data-ev="${e.id}"`, t(e.t), `${esc(evWhen(e))} · ${flag(e.c)} ${esc(e.place)}`, why, KIND_COLOR[kindOf(e.sport)])).join("")}</div>` : "")
         + (rc.length ? `<p class="mp-h4">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="mp-rec">${rc.map(({ k, km }) => card(`data-club="${k.id}"`, k.n, `${esc(t(k.sport))} · ${fmtKm(km)}`, "", KIND_COLOR[kindOf(k.sport)])).join("")}</div>` : ""),
         t("Velg hva du er interessert i, så får du forslag her."))}
     </div>`;
@@ -5987,6 +6117,7 @@ function renderMine() {
   body.querySelectorAll("[data-ev]").forEach(b => b.onclick = () => openEvent(b.dataset.ev));
   body.querySelectorAll(".svt").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
   body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.rm.split("|"); k === "job" ? toggleFav(id) : toggleEvSave(id); render(); });
+  const fg = $("mpForget"); if (fg) fg.onclick = () => { seen = []; try { localStorage.removeItem(SEEN_KEY); } catch (e) {} cloudSave(); renderMine(); };
   body.querySelectorAll("[data-go]").forEach(b => b.onclick = () => $(b.dataset.go).scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }));
   if ($("mpLogin")) $("mpLogin").onclick = () => askLogin("");
   // Med bilde: et trykk på bildet åpner en liten meny med Bytt og Fjern
