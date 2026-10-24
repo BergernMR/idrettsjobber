@@ -158,6 +158,11 @@ body.home .paths-h { font-size: clamp(20px, 3vw, 28px); color: var(--fg); margin
 .gnews .regions .chip { display: inline-flex; align-items: center; gap: 6px; }
 .gnews .regions .flag { width: 18px; height: 13px; }
 .gnews .gsports { margin-top: -4px; }
+/* Glidende markør i land- og idrettsknappene, som i menyen og innstillingene */
+.gnews .seg { position: relative; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.gnews .seg .chip { position: relative; z-index: 1; transition: color .3s ease, border-color .3s ease; }
+.gnews .seg .chip[aria-pressed="true"] { background: transparent; border-color: transparent; }
+.gnews .seg .segpill { background: var(--accent); }
 .gnews .gsports .chip svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .gnews .gsports .chip small { opacity: .6; font-weight: 600; }
 .glist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 10px; }
@@ -543,6 +548,25 @@ table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-ri
 .mpage { display: grid; gap: 18px; align-items: start; }
 @media (min-width: 900px) { .mpage { grid-template-columns: 320px minmax(0, 1fr); } .mp-side { position: sticky; top: 84px; } }
 .mp-side, .mp-main { display: grid; gap: 14px; align-content: start; }
+/* Velkomst på Min side for den som ikke er logget inn */
+.mp-welcome { grid-column: 1 / -1; justify-self: center; width: min(560px, 100%); display: grid; gap: 14px; justify-items: center; text-align: center; padding: 36px 28px 30px; border-radius: 24px; background: linear-gradient(160deg, #14322a, #1d5a47); color: #fff; box-shadow: var(--shadow); }
+.mpw-ico { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: #7fe0b7; color: #14211d; }
+.mpw-ico svg, .mpw-list svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mp-welcome h2 { margin: 4px 0 0; font-family: "Barlow Condensed", var(--font-display); font-weight: 800; font-size: 38px; line-height: 1; text-transform: uppercase; }
+.mpw-lead { margin: 0; max-width: 42ch; color: rgba(255,255,255,.85); font-size: 16px; line-height: 1.5; }
+.mpw-list { list-style: none; margin: 6px 0 4px; padding: 0; display: grid; gap: 10px; width: 100%; text-align: left; }
+.mpw-list li { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); }
+.mpw-list li > span { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 12px; background: rgba(127,224,183,.16); color: #7fe0b7; }
+.mpw-list li svg { width: 22px; height: 22px; }
+.mpw-list b { display: block; font-size: 15.5px; }
+.mpw-list small { color: rgba(255,255,255,.72); font-size: 13.5px; }
+.mpw-btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.mpw-btns .cta { font: inherit; font-weight: 800; padding: 12px 26px; border: 0; border-radius: 999px; background: #7fe0b7; color: #14211d; cursor: pointer; }
+.mpw-up { font: inherit; font-weight: 700; padding: 12px 22px; border-radius: 999px; border: 1px solid rgba(255,255,255,.35); background: none; color: #fff; cursor: pointer; }
+.mpw-btns .cta:hover { filter: brightness(1.06); } .mpw-up:hover { border-color: #7fe0b7; }
+.mpw-note { color: rgba(255,255,255,.6); font-size: 13px; }
+.mp-welcome, .mpw-list li > div { min-width: 0; box-sizing: border-box; }
+@media (max-width: 560px) { .mp-welcome { padding: 28px 16px 24px; } .mp-welcome h2 { font-size: 31px; } }
 .mpage .mp-sec { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px 20px; box-shadow: var(--shadow); }
 @media (min-width: 900px) { .mp-side .mp-stats { grid-template-columns: 1fr; } .mp-side .mp-stats button { display: flex; align-items: baseline; gap: 10px; } }
 .mp-prof { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #14322a, #1d5a47); color: #fff; }
@@ -769,7 +793,9 @@ header { text-shadow: 0 0 6px var(--bg); }
 .dot:hover, .dot.sel { fill: var(--accent); fill-opacity: 1; }
 .dotn { font: 700 9px var(--font-body); fill: var(--surface); pointer-events: none; text-anchor: middle; dominant-baseline: central; }
 .maptip { position: absolute; transform: translate(-50%, -130%); background: var(--fg); color: var(--bg); font-size: 13px; font-weight: 600; padding: 4px 9px; border-radius: 6px; white-space: nowrap; pointer-events: none; }
-.placechip { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
+/* «Vis alle steder» må synes godt i begge temaer, så den overstyrer de vanlige chip-fargene */
+.chip.placechip, .chip.placechip:hover { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 700; box-shadow: 0 4px 14px -4px var(--accent); opacity: 1; }
+.chip.placechip:hover { filter: brightness(1.1); }
 
 /* Photo credits */
 .credits { display: grid; gap: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
@@ -1949,6 +1975,17 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Velkommen til Min side": ["Välkommen till Min sida","Velkommen til Min side","Tervetuloa Omalle sivulle","Velkomin á Mína síðu","Welcome to My page"],
+"Her samler du det som betyr noe for deg i nordisk idrett. Logg inn, eller lag en gratis bruker på under ett minutt.": ["Här samlar du det som betyder något för dig i nordisk idrott. Logga in, eller skapa ett gratis konto på under en minut.","Her samler du det, der betyder noget for dig i nordisk idræt. Log ind, eller opret en gratis bruger på under et minut.","Täällä kokoat sen, mikä on sinulle tärkeää pohjoismaisessa urheilussa. Kirjaudu sisään tai luo ilmainen tili alle minuutissa.","Hér safnar þú því sem skiptir þig máli í norrænum íþróttum. Skráðu þig inn eða búðu til ókeypis aðgang á innan við mínútu.","Gather what matters to you in Nordic sport. Log in, or create a free account in under a minute."],
+"Følg klubbene dine": ["Följ dina klubbar","Følg dine klubber","Seuraa seurojasi","Fylgdu félögunum þínum","Follow your clubs"],
+"Tabell, neste kamp og siste nytt samlet på ett sted.": ["Tabell, nästa match och senaste nytt på ett ställe.","Tabel, næste kamp og seneste nyt samlet ét sted.","Sarjataulukko, seuraava ottelu ja uusimmat uutiset yhdessä paikassa.","Stöðutafla, næsti leikur og nýjustu fréttir á einum stað.","Table, next match and latest news in one place."],
+"Lagre jobber og arrangementer": ["Spara jobb och evenemang","Gem job og arrangementer","Tallenna työpaikkoja ja tapahtumia","Vistaðu störf og viðburði","Save jobs and events"],
+"Ha det du er interessert i klart når du trenger det.": ["Ha det du är intresserad av redo när du behöver det.","Hav det, du er interesseret i, klar, når du har brug for det.","Pidä kiinnostavat asiat tallessa, kun tarvitset niitä.","Hafðu það sem þú hefur áhuga á tilbúið þegar þú þarft það.","Keep what interests you ready when you need it."],
+"Forslag laget for deg": ["Förslag gjorda för dig","Forslag lavet til dig","Sinulle tehdyt ehdotukset","Tillögur fyrir þig","Suggestions made for you"],
+"Jobber, kurs og arrangementer nær der du bor.": ["Jobb, kurser och evenemang nära där du bor.","Job, kurser og arrangementer tæt på, hvor du bor.","Työpaikkoja, kursseja ja tapahtumia lähellä kotiasi.","Störf, námskeið og viðburðir nálægt þér.","Jobs, courses and events near where you live."],
+"Lag gratis bruker": ["Skapa gratis konto","Opret gratis bruger","Luo ilmainen tili","Búa til ókeypis aðgang","Create free account"],
+"Det er helt gratis.": ["Det är helt gratis.","Det er helt gratis.","Se on täysin ilmaista.","Það er alveg ókeypis.","It's completely free."],
+"Logg inn eller lag en gratis bruker for å følge klubber.": ["Logga in eller skapa ett gratis konto för att följa klubbar.","Log ind eller opret en gratis bruger for at følge klubber.","Kirjaudu sisään tai luo ilmainen tili seurataksesi seuroja.","Skráðu þig inn eða búðu til ókeypis aðgang til að fylgja félögum.","Log in or create a free account to follow clubs."],
 "Velg idrett": ["Välj idrott","Vælg idræt","Valitse laji","Veldu íþrótt","Choose sport"],
 "innen {n} km": ["inom {n} km","inden for {n} km","{n} km:n sisällä","innan {n} km","within {n} km"],
 "Rekkevidde i km": ["Räckvidd i km","Rækkevidde i km","Etäisyys km","Fjarlægð í km","Range in km"],
@@ -2827,9 +2864,9 @@ const FAV_KEY = "idrettsjobber-favoritter";
 let favs = new Set();
 try { favs = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); } catch (e) {}
 // Du må være logget inn for å lagre, så det du lagrer følger kontoen din
-function needLogin() {
+function needLogin(msg) {
   if (!SUPA.key || authUser) return false;
-  askLogin(t("Logg inn eller lag en gratis bruker for å lagre."));
+  askLogin(t(msg || "Logg inn eller lag en gratis bruker for å lagre."));
   return true;
 }
 // Innloggingen ligger under tannhjulet øverst, så siden ruller opp dit
@@ -3102,7 +3139,7 @@ function setupAuth() {
 const SEG_AT = {};
 function segPills(root) {
   root.querySelectorAll(".seg[data-seg]").forEach(seg => {
-    const cur = seg.querySelector('[aria-checked="true"]'), key = seg.dataset.seg;
+    const cur = seg.querySelector('[aria-checked="true"], [aria-pressed="true"]'), key = seg.dataset.seg;
     const pill = document.createElement("span"); pill.className = "segpill"; pill.setAttribute("aria-hidden", "true"); seg.prepend(pill);
     if (!cur) { pill.style.opacity = 0; return; }
     const put = p => { pill.style.width = p.w + "px"; pill.style.height = p.h + "px"; pill.style.transform = `translate(${p.x}px, ${p.y}px)`; };
@@ -3118,7 +3155,7 @@ function segPills(root) {
     // Dra markøren med fingeren eller musen; slipper du over et annet valg, velges det
     let d = null, swallow = false;
     seg.addEventListener("click", ev => { if (swallow) { ev.stopPropagation(); ev.preventDefault(); } }, true);
-    seg.addEventListener("pointerdown", e => { if (e.button > 0) return; d = { x: e.clientX, id: e.pointerId, moved: false, left: seg.getBoundingClientRect().left }; });
+    seg.addEventListener("pointerdown", e => { if (e.button > 0) return; const rc = seg.getBoundingClientRect(); d = { x: e.clientX, id: e.pointerId, moved: false, left: rc.left, top: rc.top }; });
     seg.addEventListener("pointermove", e => {
       if (!d || e.pointerId !== d.id) return;
       if (!d.moved && Math.abs(e.clientX - d.x) > 6) { d.moved = true; pill.style.transition = "none"; try { seg.setPointerCapture(e.pointerId); } catch (x) {} }
@@ -3129,8 +3166,9 @@ function segPills(root) {
     const end = e => {
       if (!d || e.pointerId !== d.id) return; const was = d; d = null; pill.style.transition = "";
       if (!was.moved) return;
-      const x = e.clientX - was.left, btns = [...seg.querySelectorAll("button")];
-      const hit = btns.find(b => x >= b.offsetLeft && x < b.offsetLeft + b.offsetWidth) || (x < 0 ? btns[0] : btns[btns.length - 1]);
+      // Raden kan gå over flere linjer (nyhetsknappene), så bare knappene på linjen til markøren teller
+      const x = e.clientX - was.left, btns = [...seg.querySelectorAll("button")].filter(b => b.offsetTop === cur.offsetTop);
+      const hit = btns.find(b => x >= b.offsetLeft && x < b.offsetLeft + b.offsetWidth) || (x < btns[0].offsetLeft ? btns[0] : btns[btns.length - 1]);
       swallow = true;
       setTimeout(() => { swallow = false; if (hit !== cur) hit.click(); else go(); }, 0);
     };
@@ -4516,6 +4554,8 @@ const FOLLOW_KEY = "aurora-klubber";
 let follows = new Set();
 try { follows = new Set(JSON.parse(localStorage.getItem(FOLLOW_KEY) || "[]")); } catch (e) {}
 function toggleFollow(id) {
+  // Å følge klubber krever innlogging, så klubbene følger kontoen
+  if (needLogin("Logg inn eller lag en gratis bruker for å følge klubber.")) return false;
   if (follows.has(id)) { const k = FAN.find(x => x.id === id); undoToast(t("Du følger ikke lenger {x}", { x: k ? k.n : id }), () => toggleFollow(id)); }
   follows.has(id) ? follows.delete(id) : follows.add(id);
   try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); } catch (e) {}
@@ -4765,7 +4805,7 @@ function openClub(id) {
   lastFocus = document.activeElement;
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
-  $("sheetFollow").onclick = () => { toggleFollow(id); render(); openClub(id); };
+  $("sheetFollow").onclick = () => { if (toggleFollow(id) === false) return; render(); openClub(id); };
   if (location.hash !== "#klubb-" + id) history.replaceState(history.state, "", "#klubb-" + id);
   if ($("sheetTable")) $("sheetTable").onclick = () => openTable(k.div);
   $("closeBtn").focus();
@@ -4823,49 +4863,70 @@ function renderClubs() {
 // Forsiden: en hilsen og fire veier inn, uten tall og lister
 const HELLO = [["nb", "Velkommen"], ["sv", "Välkommen"], ["fi", "Tervetuloa"], ["is", "Velkomin"]];
 // Forsidebilder som bytter hvert 15. sekund: 15 frie Unsplash-bilder (fri Unsplash-lisens), alle tatt i Norden (sted står bak hvert bilde), opptil 4K
+// Bildene i toppen byttes hver mandag kl. 06 norsk tid. Hver rad har uka den hører til (mandagens dato);
+// siden viser den nyeste uka som har startet. Den ukentlige oppgaven legger til en ny uke med bilder (se scripts/RUTINE-bilder.md).
 const HERO_PHOTOS = [
-  ["1505985098938-d1db678d02b3", "Martine Jacobsen", "https://unsplash.com/photos/two-person-snow-skiing-4yc275iIlkY", "center 40%"], // Lahti, FI
-  ["1561917423-2ce508445fe4", "Anders Krøgh Jørgensen", "https://unsplash.com/photos/people-onside-stadium-lASP347IMvE", "center 50%"], // Herning, DK
-  ["1683118829786-5ec8f4c758be", "Kato Bergli", "https://unsplash.com/photos/a-man-riding-skis-down-a-snow-covered-slope-Hhm9wpAr2V0", "center 55%"], // Rondane, NO
-  ["1710747533248-9153ff289230", "Atte Grönlund", "https://unsplash.com/photos/a-group-of-people-riding-skis-down-a-snow-covered-slope-YKGImVhzBdg", "center 50%"], // Åre, SE
-  ["1650449150503-a80d8a883632", "Freysteinn G. Jonsson", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-stadium-in-a-city-619HHezjQno", "center 50%"], // Reykjavík, IS
-  ["1533589067335-b0114bd0ab00", "Joakim Honkasalo", "https://unsplash.com/photos/man-using-bicycle-on-trail-BT9e-1olEkY", "center 50%"], // Borgå, FI
-  ["1511867511490-17e88600bd8e", "Marcus Löfvenberg", "https://unsplash.com/photos/man-riding-yellow-wakeboard-on-body-of-water-QDrkekkKTFM", "center 60%"], // Stockholm, SE
-  ["1677956718290-e546275b7531", "Stig Husby", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-field-Y9we8r_adGg", "center 50%"], // Røros, NO
-  ["1714423233581-62f2198c21d9", "Marcus Michaelsen", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-field-in-a-city-w1hZ3bF2KL8", "center 50%"], // Aarhus, DK
-  ["1642344497739-f07f66e6d22a", "Jamo Images", "https://unsplash.com/photos/a-group-of-people-riding-skis-down-a-snow-covered-slope-GeuqSpH8FpQ", "center 50%"], // Vuokatti, FI
-  ["1645613056335-cad20a2d5408", "Moa Alexandersson", "https://unsplash.com/photos/a-group-of-people-riding-skis-on-top-of-a-snow-covered-slope-KEY3WB4ou7w", "center 50%"], // Stockholm, SE
-  ["1683044414176-0e0d42b6fddf", "Harri P", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-field-hmzdQfpUqN8", "center 60%"], // Moskángáisi, NO
-  ["1610017128786-4a25f0f7756c", "Elin Tabitha", "https://unsplash.com/photos/man-in-white-long-sleeve-shirt-playing-soccer-in-grayscale-photography-Ob12aa_KLBQ", "center 60%"], // København, DK
-  ["1660227164836-7d3a7cf37e08", "Skellefteå kommun", "https://unsplash.com/photos/a-group-of-people-on-a-ski-slope-UdpcacE7BmQ", "center 50%"], // Skellefteå, SE
-  ["1676932390720-5a3e5ab28015", "Gunnar Ridderström", "https://unsplash.com/photos/a-person-riding-skis-down-a-snow-covered-slope-hrhOH92bqMc", "center 60%"] // Furusjøen, NO
+  ["1505985098938-d1db678d02b3", "Martine Jacobsen", "https://unsplash.com/photos/two-person-snow-skiing-4yc275iIlkY", "center 40%", "2026-10-19"], // Lahti, FI
+  ["1561917423-2ce508445fe4", "Anders Krøgh Jørgensen", "https://unsplash.com/photos/people-onside-stadium-lASP347IMvE", "center 50%", "2026-10-19"], // Herning, DK
+  ["1683118829786-5ec8f4c758be", "Kato Bergli", "https://unsplash.com/photos/a-man-riding-skis-down-a-snow-covered-slope-Hhm9wpAr2V0", "center 55%", "2026-10-19"], // Rondane, NO
+  ["1710747533248-9153ff289230", "Atte Grönlund", "https://unsplash.com/photos/a-group-of-people-riding-skis-down-a-snow-covered-slope-YKGImVhzBdg", "center 50%", "2026-10-19"], // Åre, SE
+  ["1650449150503-a80d8a883632", "Freysteinn G. Jonsson", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-stadium-in-a-city-619HHezjQno", "center 50%", "2026-10-19"], // Reykjavík, IS
+  ["1533589067335-b0114bd0ab00", "Joakim Honkasalo", "https://unsplash.com/photos/man-using-bicycle-on-trail-BT9e-1olEkY", "center 50%", "2026-10-19"], // Borgå, FI
+  ["1511867511490-17e88600bd8e", "Marcus Löfvenberg", "https://unsplash.com/photos/man-riding-yellow-wakeboard-on-body-of-water-QDrkekkKTFM", "center 60%", "2026-10-19"], // Stockholm, SE
+  ["1677956718290-e546275b7531", "Stig Husby", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-field-Y9we8r_adGg", "center 50%", "2026-10-19"], // Røros, NO
+  ["1714423233581-62f2198c21d9", "Marcus Michaelsen", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-field-in-a-city-w1hZ3bF2KL8", "center 50%", "2026-10-19"], // Aarhus, DK
+  ["1642344497739-f07f66e6d22a", "Jamo Images", "https://unsplash.com/photos/a-group-of-people-riding-skis-down-a-snow-covered-slope-GeuqSpH8FpQ", "center 50%", "2026-10-19"], // Vuokatti, FI
+  ["1645613056335-cad20a2d5408", "Moa Alexandersson", "https://unsplash.com/photos/a-group-of-people-riding-skis-on-top-of-a-snow-covered-slope-KEY3WB4ou7w", "center 50%", "2026-10-19"], // Stockholm, SE
+  ["1683044414176-0e0d42b6fddf", "Harri P", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-field-hmzdQfpUqN8", "center 60%", "2026-10-19"], // Moskángáisi, NO
+  ["1610017128786-4a25f0f7756c", "Elin Tabitha", "https://unsplash.com/photos/man-in-white-long-sleeve-shirt-playing-soccer-in-grayscale-photography-Ob12aa_KLBQ", "center 60%", "2026-10-19"], // København, DK
+  ["1660227164836-7d3a7cf37e08", "Skellefteå kommun", "https://unsplash.com/photos/a-group-of-people-on-a-ski-slope-UdpcacE7BmQ", "center 50%", "2026-10-19"], // Skellefteå, SE
+  ["1676932390720-5a3e5ab28015", "Gunnar Ridderström", "https://unsplash.com/photos/a-person-riding-skis-down-a-snow-covered-slope-hrhOH92bqMc", "center 60%", "2026-10-19"], // Furusjøen, NO
+  ["1623428454608-d262cf6b1403", "Mads Eneqvist", "https://unsplash.com/photos/a-man-riding-a-bike-through-a-forest-filled-with-trees-cRpDS-zBsx0", "center 35%", "2026-10-19"], // København, DK
+  ["1636730740074-67ae6e3324de", "Daniel Stenholm", "https://unsplash.com/photos/a-man-riding-a-sailboat-on-top-of-a-body-of-water-Um-8U2vN6OA", "center 45%", "2026-10-19"], // Halmstad, SE
+  ["1641369022944-ff17797243c7", "Hendrik Morkel", "https://unsplash.com/photos/a-group-of-people-walking-across-a-snow-covered-slope-LrHwwYXnR6Y", "center 50%", "2026-10-19"], // Kåfjord, NO
+  ["1660227164843-b1dcc78a4c18", "Skellefteå kommun", "https://unsplash.com/photos/a-group-of-people-on-a-snowy-field-Hu75JLUZs-s", "center 60%", "2026-10-19"], // Skellefteå, SE
+  ["1673433107266-e11be1613490", "Nico Knaack", "https://unsplash.com/photos/a-person-cross-country-skiing-down-a-snowy-road-PvkQ66msj74", "center 60%", "2026-10-19"], // Norge
+  ["1678343753405-4e584ddcb0f6", "Harri P", "https://unsplash.com/photos/AKzp3KffAtw", "center 55%", "2026-10-19"], // Inari, FI
+  ["1707735050347-c44f7e7858b6", "Atte Grönlund", "https://unsplash.com/photos/9T9a38_74Eo", "center 60%", "2026-10-19"], // Naantali, FI
+  ["1711375514758-d599a0593753", "Atte Grönlund", "https://unsplash.com/photos/M2WhL3VG-3E", "center 50%", "2026-10-19"], // Naantali, FI
+  ["1723804273906-b93b36dcd923", "Aliaksei Lepik", "https://unsplash.com/photos/an-aerial-view-of-a-soccer-field-and-stadium-OKNlW9XECqg", "center 75%", "2026-10-19"], // Helsinki, FI
+  ["1761767111015-7c49b7141516", "Eirik Skarstein", "https://unsplash.com/photos/man-running-along-waterfront-with-city-buildings-kE9QkkMyqMM", "center 55%", "2026-10-19"] // Oslo, NO
 ];
+// Mandagen i inneværende bildeuke: uka skifter mandag kl. 06 i Norge
+const heroWeek = () => {
+  let o = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Oslo" })); if (isNaN(o)) o = new Date();
+  o.setHours(o.getHours() - 6); o.setDate(o.getDate() - (o.getDay() + 6) % 7);
+  return `${o.getFullYear()}-${String(o.getMonth() + 1).padStart(2, "0")}-${String(o.getDate()).padStart(2, "0")}`;
+};
+// Ukas bilder; finnes ingen ny uke ennå, står forrige ukes bilder til den kommer
+const HERO = (() => { const now = heroWeek(), weeks = [...new Set(HERO_PHOTOS.map(p => p[4]))].filter(w => w <= now).sort();
+  const cur = weeks[weeks.length - 1] || HERO_PHOTOS[0][4]; return HERO_PHOTOS.filter(p => p[4] === cur); })();
 const heroUrl = id => { if (id.startsWith("local:")) return id.slice(6);
   const w = Math.min(3840, Math.ceil(innerWidth * (devicePixelRatio || 1) / 640) * 640);
   return `https://images.unsplash.com/photo-${id}?w=${w}&q=78&auto=format&fit=crop`; };
 // Nytt tilfeldig bilde hver gang siden åpnes, aldri det samme som sist (huskes i aurora-hero)
 let heroIdx = 0, heroTimer = null, heroLayer = 0, heroFails = 0;
-try { const last = +localStorage.getItem("aurora-hero"); heroIdx = Math.floor(Math.random() * HERO_PHOTOS.length);
-  if (HERO_PHOTOS.length > 1 && heroIdx === last) heroIdx = (heroIdx + 1 + Math.floor(Math.random() * (HERO_PHOTOS.length - 1))) % HERO_PHOTOS.length;
-  localStorage.setItem("aurora-hero", heroIdx); } catch (e) { heroIdx = Math.floor(Math.random() * HERO_PHOTOS.length); }
+try { const last = +localStorage.getItem("aurora-hero"); heroIdx = Math.floor(Math.random() * HERO.length);
+  if (HERO.length > 1 && heroIdx === last) heroIdx = (heroIdx + 1 + Math.floor(Math.random() * (HERO.length - 1))) % HERO.length;
+  localStorage.setItem("aurora-hero", heroIdx); } catch (e) { heroIdx = Math.floor(Math.random() * HERO.length); }
 function showHero(i) {
   const box = $("heroslides"); if (!box) return;
-  const [id, who, page, pos] = HERO_PHOTOS[i], url = heroUrl(id), img = new Image();
+  const [id, who, page, pos] = HERO[i], url = heroUrl(id), img = new Image();
   img.onload = () => {
     heroLayer = 1 - heroLayer; const L = box.children[heroLayer], O = box.children[1 - heroLayer];
     L.style.backgroundImage = `url("${url}")`; L.style.backgroundPosition = pos; L.classList.add("on"); O.classList.remove("on"); heroFails = 0;
     const c = $("herocredit"); c.href = page; c.textContent = `${t("Foto")}: ${who} / Unsplash`;
     // Last neste bilde i forveien, så byttet går rett
-    const n = HERO_PHOTOS[(i + 1) % HERO_PHOTOS.length]; new Image().src = heroUrl(n[0]);
+    const n = HERO[(i + 1) % HERO.length]; new Image().src = heroUrl(n[0]);
   };
   // Får siden ikke hente bildet (f.eks. blokkert), hopper vi videre til neste
-  img.onerror = () => { if (heroIdx === i && ++heroFails < HERO_PHOTOS.length) { heroIdx = (i + 1) % HERO_PHOTOS.length; setTimeout(() => showHero(heroIdx), 500); } };
+  img.onerror = () => { if (heroIdx === i && ++heroFails < HERO.length) { heroIdx = (i + 1) % HERO.length; setTimeout(() => showHero(heroIdx), 500); } };
   img.src = url;
 }
 function startHero() {
   if (heroTimer) return;
   showHero(heroIdx);
-  heroTimer = setInterval(() => { if (document.hidden || state.tab !== "forside") return; heroIdx = (heroIdx + 1) % HERO_PHOTOS.length; showHero(heroIdx); }, 15000);
+  heroTimer = setInterval(() => { if (document.hidden || state.tab !== "forside") return; heroIdx = (heroIdx + 1) % HERO.length; showHero(heroIdx); }, 15000);
 }
 const ICON = {
   minside: '<circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4 4-6.5 8-6.5s7.2 2.5 8 6.5"/>',
@@ -5030,12 +5091,13 @@ function renderGnews() {
   // Toppsaken tar to ruter, så antallet tilpasses et fullt rutenett med tre kolonner
   if (gSport === "all") while (items.length > 2 && (items.length + 1) % 3) items.pop();
   $("gnews").innerHTML = `<div class="gh"><h3 id="gnewsH">${t("Sportsnyheter")}</h3><small>${t("Hentet {d}", { d: esc(fxDate(GNEWS.at, "d")) })}</small></div>
-    ${`<div class="regions" role="group" aria-label="${t("Velg region")}">${["all", ...Object.keys(COUNTRIES)].map(c => `<button type="button" class="chip" data-r="${c}" aria-pressed="${c === region}">${c === "all" ? t("Hele Norden") : flag(c) + COUNTRIES[c]}</button>`).join("")}</div>`}
-    ${sports.length > 1 ? `<div class="regions gsports" role="group" aria-label="${t("Velg idrett")}"><button type="button" class="chip" data-g="all" aria-pressed="${gSport === "all"}">${t("Alle idretter")}</button>${sports.map(sp => `<button type="button" class="chip" data-g="${esc(sp)}" aria-pressed="${sp === gSport}">${sp === "Sport" ? t("Annet") : icoOf(sp) + esc(t(sp))} <small>${cnt[sp]}</small></button>`).join("")}</div>` : ""}
+    ${`<div class="regions seg" data-seg="nyregion" role="group" aria-label="${t("Velg region")}">${["all", ...Object.keys(COUNTRIES)].map(c => `<button type="button" class="chip" data-r="${c}" aria-pressed="${c === region}">${c === "all" ? t("Hele Norden") : flag(c) + COUNTRIES[c]}</button>`).join("")}</div>`}
+    ${sports.length > 1 ? `<div class="regions gsports seg" data-seg="nyidrett" role="group" aria-label="${t("Velg idrett")}"><button type="button" class="chip" data-g="all" aria-pressed="${gSport === "all"}">${t("Alle idretter")}</button>${sports.map(sp => `<button type="button" class="chip" data-g="${esc(sp)}" aria-pressed="${sp === gSport}">${sp === "Sport" ? t("Annet") : icoOf(sp) + esc(t(sp))} <small>${cnt[sp]}</small></button>`).join("")}</div>` : ""}
     <ul class="glist">${items.map(n => `<li><a href="${esc(n[3])}" target="_blank" rel="noopener" data-s="${SPORT_KIND[n[1]] || "annet"}"${(GNEWS.img || {})[n[3]] ? ' class="hasimg"' : ""}>${(GNEWS.img || {})[n[3]] ? `<img class="gimg" src="${esc(GNEWS.img[n[3]])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('hasimg');this.remove()">` : ""}${sportIcon(n[1])}<span class="gs">${esc(t(n[1]))}</span><span class="gt"${n[6] !== own ? ` lang="${{ NO: "no", SE: "sv", DK: "da", FI: "fi", IS: "is" }[n[6]]}"` : ""}>${esc(n[2])}</span><span class="nm">${region === "all" ? flag(n[6]) : ""}<span>${esc(n[4])}${n[0] ? " · " + esc(fxDate(n[0])) : ""}</span>${pwBadge(n[5])}</span></a></li>`).join("")}</ul>
     ${en ? `<p class="s-note">${t("Overskriftene står på språket til avisen de kommer fra.")}</p>` : ""}`;
   $("gnews").querySelectorAll(".regions:not(.gsports) .chip").forEach(b => b.onclick = () => { gRegion = b.dataset.r; gPicked = true; try { localStorage.setItem("aurora-nyregion", gRegion); } catch (e) {} renderGnews(); syncFlag(); });
   $("gnews").querySelectorAll(".gsports .chip").forEach(b => b.onclick = () => { gSport = b.dataset.g; renderGnews(); });
+  segPills($("gnews"));
 }
 
 $("eq").addEventListener("input", e => { state.eq = e.target.value.trim(); render(); });
@@ -5169,6 +5231,7 @@ function fitView(v) {
   const w = Math.min(MAP.W, Math.max(MAP.W / MAXZ, v.w)), h = w * MAP.H / MAP.W;
   return { w, x: Math.min(MAP.W - w, Math.max(0, v.x)), y: Math.min(MAP.H - h, Math.max(0, v.y)) };
 }
+const MAP_TILES = false;
 function drawMap(cfg) {
   const wrap = $(cfg.id + "wrap"), note = $(cfg.id + "Note");
   const proj = (lat, lon) => [(lon - MAP.minLon) * MAP.k * MAP.sx, (MAP.maxLat - lat) * MAP.sx];
@@ -5233,7 +5296,8 @@ function drawMap(cfg) {
   const tileY = (lat, n) => Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * n);
   let tileZ = 0;
   const drawTiles = () => {
-    const z = MAP.W / view.w, on = z >= 4;
+    // Noah ville ikke ha kartbildene (2026-10-24), så flisene er slått av. Sett MAP_TILES = true for å få dem tilbake
+    const z = MAP.W / view.w, on = MAP_TILES && z >= 4;
     wrap.classList.toggle("tiled", on); attr.hidden = !on;
     if (!on) { tilesG.innerHTML = ""; tileZ = 0; return; }
     if (!svg.isConnected) return; const ppd = U / box().s;
@@ -5786,6 +5850,23 @@ function openMine() { closeJob(); setTab("minside"); scrollTo({ top: 0, behavior
 // Min side er en egen del av siden, ikke et vindu
 function renderMine() {
   updMine();
+  // Ikke logget inn: en vennlig velkomst i stedet for en tom Min side
+  if (SUPA.key && !authUser) {
+    const pts = [["klubber", "Følg klubbene dine", "Tabell, neste kamp og siste nytt samlet på ett sted."],
+      ["jobber", "Lagre jobber og arrangementer", "Ha det du er interessert i klart når du trenger det."],
+      ["minside", "Forslag laget for deg", "Jobber, kurs og arrangementer nær der du bor."]];
+    $("mpage").innerHTML = `<section class="mp-welcome" aria-labelledby="mpwH">
+      <span class="mpw-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${ICON.minside}</svg></span>
+      <h2 id="mpwH">${t("Velkommen til Min side")}</h2>
+      <p class="mpw-lead">${t("Her samler du det som betyr noe for deg i nordisk idrett. Logg inn, eller lag en gratis bruker på under ett minutt.")}</p>
+      <ul class="mpw-list">${pts.map(([ic, h, d]) => `<li><span aria-hidden="true"><svg viewBox="0 0 24 24">${ICON[ic]}</svg></span><div><b>${t(h)}</b><small>${t(d)}</small></div></li>`).join("")}</ul>
+      <div class="mpw-btns"><button type="button" class="cta" id="mpwIn">${t("Logg inn")}</button><button type="button" class="mpw-up" id="mpwUp">${t("Lag gratis bruker")}</button></div>
+      <small class="mpw-note">${t("Det er helt gratis.")}</small>
+    </section>`;
+    $("mpwIn").onclick = () => askLogin("");
+    $("mpwUp").onclick = () => { askLogin(""); authMode = "up"; };
+    return;
+  }
   const name = authUser ? (authName() || (authUser.email || "").split("@")[0]) : "";
   const items = savedItems(), jobs = items.filter(i => i.kind === "job"), evs = items.filter(i => i.kind === "ev");
   const mine = FAN.filter(k => follows.has(k.id)).sort((a, b) => (nextMatch(a) ? nextMatch(a)[0] : "9") < (nextMatch(b) ? nextMatch(b)[0] : "9") ? -1 : 1);
