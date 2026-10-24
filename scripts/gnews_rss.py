@@ -78,7 +78,7 @@ NORDISK = re.compile(r"\b(" + "|".join([
 ]) + r")", re.I)
 
 # Nordiske idrettslag fra siden selv (FAN), ligaer og serier. Korte eller tvetydige navn står utenfor.
-TVETYDIG = {"Start", "Odd", "Lyn", "Moss", "Fram", "Inter", "Sparta", "Ilves", "Jaro", "Honka", "Union", "Lahti", "Skövde", "Vestri",
+TVETYDIG = {"Sport", "Rangers", "Oilers", "Hawks", "Blue Hawks", "White Hawks", "Indians", "Hercules", "Atlantis", "Puma", "Classic", "Ready", "Comet", "Hunters", "Copenhagen", "Falcon", "Sisu", "Atlas", "Hermes", "Kings", "Lions", "Jets", "Stars", "Tigers", "Eagles", "Wolves", "Sharks", "Bears", "Dolphins", "Miners", "Towers", "Spirit", "Fera", "Loisto", "Koll", "Start", "Odd", "Lyn", "Moss", "Fram", "Inter", "Sparta", "Ilves", "Jaro", "Honka", "Union", "Lahti", "Skövde", "Vestri",
             "Valur", "Víkingur", "Þór", "Haukar", "Fylkir", "Stjarnan", "Grótta", "Leiknir", "Völsungur", "Real", "City", "United"}
 LIGAER = ["Eliteserien", "OBOS-ligaen", "Toppserien", "Allsvenskan", "Superettan", "Damallsvenskan", "Superligaen", "Superliga", "1. division",
           "Veikkausliiga", "Ykkösliiga", "Besta deild", "Lengjudeild", "SHL", "HockeyAllsvenskan", "Liiga", "Metal Ligaen", "Fjordkraft-ligaen",
