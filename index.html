@@ -428,6 +428,11 @@ table.league td.team { white-space: normal; }
 .sortsel select:hover, .sortsel select:focus-visible { color: var(--fg); background: color-mix(in oklab, var(--muted) 12%, transparent); }
 .sortsel svg { position: absolute; right: 4px; width: 14px; height: 14px; fill: none; stroke: var(--muted); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .homerow { margin: -4px 0 12px; }
+.clogo { width: 22px; height: 22px; object-fit: contain; vertical-align: -5px; margin-right: 8px; flex: none; }
+.clogo.big { width: 44px; height: 44px; vertical-align: -9px; margin-right: 12px; }
+table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-right: 7px; }
+.mcico.haslogo { background: transparent; }
+.mcico .clogo { width: 100%; height: 100%; margin: 0; }
 .list { display: grid; gap: 8px; }
 .job { position: relative; display: grid; grid-template-columns: 72px 1fr auto auto; gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; align-items: center; transition: border-color .15s, box-shadow .15s; }
 .job:hover { border-color: var(--accent); box-shadow: var(--shadow); }
@@ -4242,6 +4247,9 @@ const FAN = [
   ["x-fi-orientering-tampereen-pyrinto-suunnistus", "FI", "Tampereen Pyrintö Suunnistus", "Orientering", "Tammerfors", 61.5, 23.76, ""],
   ["x-dk-orientering-ok-pan-arhus", "DK", "OK Pan Århus", "Orientering", "Aarhus", 56.16, 10.2, ""]
 ].map(([id, c, n, sport, city, lat, lon, url, div]) => ({ id, c, n, sport, city, geo: lat === null ? null : [city, lat, lon], url, div }));
+// Klubblogoer for de to øverste fotballdivisjonene i hvert land (hentet fra FotMob, lagret i img/logo)
+const LOGO = new Set(["aab","agf","aik","bajen","bif","brann","breidablik","dif","dkfb-aarhus-fremad","dkfb-ab","dkfb-ac-horsens","dkfb-esbjerg-fb","dkfb-fc-fredericia","dkfb-hb-koge","dkfb-hillerod-fodbold","dkfb-hobro-ik","dkfb-hvidovre-if","dkfb-kolding-if","dkfb-lyngby-bk","dkfb-sonderjyske","dkfb-vejle-boldklub","dkfb-vendsyssel-ff","dkfb-viborg-ff","elfsborg","fck","fcm","fcn","ffk","fh","fifb-ac-oulu","fifb-eif","fifb-fc-haka","fifb-fc-ktp","fifb-ff-jaro","fifb-if-gnistan","fifb-japs","fifb-jippo","fifb-kapa","fifb-klubi-04","fifb-mp","fifb-pk-35","fifb-sjk-akatemia","fifb-tps","glimt","godset","hacken","hamkam","hjk","ia","ifkg","ifkm","ifkn","ilvesf","inter","isfb-aegir","isfb-afturelding","isfb-fram","isfb-fylkir","isfb-grindavik","isfb-grotta","isfb-hk","isfb-ibv","isfb-ir","isfb-keflavik","isfb-leiknir-reykjavik","isfb-njardvik","isfb-thor-akureyri","isfb-throttur-reykjavik","isfb-vestri","isfb-volsungur","ka","kbk","kr","kups","lsk","mff","mfk","nofb-aalesund","nofb-asane","nofb-bryne","nofb-egersund","nofb-haugesund","nofb-hodd","nofb-ik-start","nofb-kfum-oslo","nofb-kongsvinger","nofb-lyn","nofb-moss","nofb-ranheim","nofb-raufoss","nofb-sandefjord","nofb-sandnes-ulf","nofb-sogndal","nofb-stabaek","nofb-strommen","ob","odd","randers","rbk","s08","sefb-brommapojkarna","sefb-degerfors","sefb-falkenbergs-ff","sefb-gais","sefb-gif-sundsvall","sefb-halmstads-bk","sefb-helsingborgs-if","sefb-ifk-varnamo","sefb-ik-brage","sefb-ik-oddevold","sefb-kalmar-ff","sefb-landskrona-bois","sefb-ljungskile-sk","sefb-mjallby","sefb-nordic-united-fc","sefb-norrby-if","sefb-orebro-sk","sefb-orgryte","sefb-osters-if","sefb-ostersunds-fk","sefb-sandvikens-if","sefb-sirius","sefb-varbergs-bois","sefb-vasteras-sk","sif","sjk","stjarnan","til","valur","vif","viking","vikingur","vps"]);
+const clubLogo = (k, cls = "clogo") => k && LOGO.has(k.id) ? `<img class="${cls}" src="img/logo/${k.id}.webp" alt="" width="64" height="64" loading="lazy" decoding="async">` : "";
 // Rekkefølgen på divisjonene, øverst først
 const DIV_ORDER = [...new Set(FAN.filter(k => k.div).map(k => k.div))];
 // Fakta om klubbene: [hjemmebane, plasser, kort tekst]. Banene er hentet fra Wikipedia sine sesongsider for 2026.
@@ -4392,7 +4400,7 @@ function openTable(d) {
   const c = tb.c || "NO";
   const byName = n => FAN.find(k => k.c === c && k.sport === "Fotball" && k.n === n);
   const rows = tb.rows.map(([n, p, w, dr, l, f, a, pts], i) => { const k = byName(n), gd = f - a;
-    return `<tr class="${k && follows.has(k.id) ? "mine" : ""}"><td class="pos${medal(i)}">${i + 1}</td><td class="team">${k ? `<button type="button" class="clubopen" data-id="${k.id}">${esc(n)}</button>` : esc(n)}${champMark(tb, d, i)}</td><td>${p}</td><td class="wide">${w}</td><td class="wide">${dr}</td><td class="wide">${l}</td><td class="wide">${f}–${a}</td><td>${gd > 0 ? "+" + gd : gd}</td><td class="pts">${pts}</td></tr>`; }).join("");
+    return `<tr class="${k && follows.has(k.id) ? "mine" : ""}"><td class="pos${medal(i)}">${i + 1}</td><td class="team">${k ? `<button type="button" class="clubopen" data-id="${k.id}">${clubLogo(k)}${esc(n)}</button>` : esc(n)}${champMark(tb, d, i)}</td><td>${p}</td><td class="wide">${w}</td><td class="wide">${dr}</td><td class="wide">${l}</td><td class="wide">${f}–${a}</td><td>${gd > 0 ? "+" + gd : gd}</td><td class="pts">${pts}</td></tr>`; }).join("");
   $("sheetBody").innerHTML = `
     <div class="sheet-top">
       <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -4429,7 +4437,7 @@ function openClub(id) {
     <div class="sheet-top">
       <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="s-eyebrow">${flag(k.c)}${COUNTRIES[k.c]} · ${esc(t(k.sport))}</div>
-      <h2 class="s-title" id="s-title">${esc(k.n)}</h2>
+      <h2 class="s-title" id="s-title">${clubLogo(k, "clogo big")}${esc(k.n)}</h2>
       <p class="s-emp">${esc(k.city || COUNTRIES[k.c])}</p>
       <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
@@ -4471,7 +4479,7 @@ function renderClubs() {
   const mine = FAN.filter(k => follows.has(k.id));
   $("myClubsN").textContent = mine.length ? (mine.length === 1 ? "1 " + t("klubb") : mine.length + " " + t("klubber")) : "";
   $("myClubs").innerHTML = mine.length ? `<div class="mygrid">${mine.map(k => `<article class="mycard">
-      <p class="sp">${esc(t(k.sport))}${k.div ? " · " + esc(t(k.div.split(", ")[0])) : ""}</p><h3><button type="button" class="clubopen" data-id="${k.id}">${esc(k.n)}</button></h3><p class="at">${flag(k.c)}${k.city ? esc(k.city) + ", " : ""}${COUNTRIES[k.c]}</p>
+      <p class="sp">${esc(t(k.sport))}${k.div ? " · " + esc(t(k.div.split(", ")[0])) : ""}</p><h3><button type="button" class="clubopen" data-id="${k.id}">${clubLogo(k)}${esc(k.n)}</button></h3><p class="at">${flag(k.c)}${k.city ? esc(k.city) + ", " : ""}${COUNTRIES[k.c]}</p>
       ${standing(k) ? standBox(k, standing(k)) : ""}
       ${matchBox(k)}
       ${newsBox(k)}
@@ -4483,7 +4491,7 @@ function renderClubs() {
   const list = FAN.filter(k => clubMatch(k));
   $("clubCount").textContent = t("{n} klubber å følge", { n: list.length });
   // Land først, så idrett, så klubbene
-  const row = k => `<div class="hire"><button type="button" class="emp clubopen" data-id="${k.id}">${esc(k.n)}</button><span class="where">${esc(k.city || t(k.div.split(", ")[0]))}${k.url ? ` · <a href="${k.url}" target="_blank" rel="noopener">${t("Nettside")} ↗</a>` : ""}</span>${followBtn(k)}</div>`;
+  const row = k => `<div class="hire"><button type="button" class="emp clubopen" data-id="${k.id}">${clubLogo(k)}${esc(k.n)}</button><span class="where">${esc(k.city || t(k.div.split(", ")[0]))}${k.url ? ` · <a href="${k.url}" target="_blank" rel="noopener">${t("Nettside")} ↗</a>` : ""}</span>${followBtn(k)}</div>`;
   const countries = Object.keys(COUNTRIES).filter(c => list.some(k => k.c === c));
   const openAll = !!state.cplace || !!state.kq;
   const openNation = state.country !== "all" || state.csport !== "all" || countries.length === 1;
@@ -5343,7 +5351,7 @@ function openClubs() {
   const row = k => { const n = nextMatch(k), L = LIVE[k.id], cd = n && countdown(n);
     const w = L && L[4] !== "ft" ? `<span class="mcw live">${L[4] === "ht" ? t("Pause") : "LIVE"} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`}</span>`
       : cd ? `<span class="mcw">${esc(cd.big)}${cd.small ? " " + cd.small : ""}</span>` : "";
-    return `<button type="button" class="mcitem" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="mcico">${icoOf(k.sport)}</span>
+    return `<button type="button" class="mcitem" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="mcico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k) || icoOf(k.sport)}</span>
       <span><b>${esc(k.n)}</b><small>${esc(t(k.sport))}${k.div ? " · " + esc(k.div) : ""}${n ? " · " + vsText(n) : ""}</small></span>${w}</button>`; };
   $("sheetBody").innerHTML = `
     <div class="sheet-top">
@@ -5417,7 +5425,7 @@ function openMine() {
   const club = k => { const n = nextMatch(k), L = LIVE[k.id], cd = n && countdown(n);
     const w = L && L[4] !== "ft" ? `<span class="mcw live">${L[4] === "ht" ? t("Pause") : "LIVE"} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`}</span>`
       : cd ? `<span class="mcw">${esc(cd.big)}${cd.small ? " " + cd.small : ""}</span>` : "";
-    return `<button type="button" class="mcitem" data-club="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="mcico">${icoOf(k.sport)}</span>
+    return `<button type="button" class="mcitem" data-club="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="mcico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k) || icoOf(k.sport)}</span>
       <span><b>${esc(k.n)}</b><small>${esc(t(k.sport))}${k.div ? " · " + esc(k.div) : ""}${n ? " · " + vsText(n) : ""}</small></span>${w}</button>`; };
   const saved = it => { const [w, cls] = savedWhen(it);
     return `<div class="svitem${it.kind === "job" && it.n !== null && it.n < 0 ? " gone" : ""}"><button type="button" class="svt" data-k="${it.kind}" data-id="${it.id}">${esc(it.title)}</button>
