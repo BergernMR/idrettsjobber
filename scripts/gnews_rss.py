@@ -8,18 +8,26 @@ from zoneinfo import ZoneInfo
 
 # Kilder per land: (navn, feed, betalingsmur 0 = gratis, 1 = kan kreve abonnement). Gratis kilder får litt forrang.
 FEEDS = {
-    "NO": [("NRK", "https://www.nrk.no/sport/toppsaker.rss", 0), ("TV 2", "https://www.tv2.no/rss/sport", 0),
-           ("VG", "https://www.vg.no/rss/feed/?categories=1072", 1)],
-    "SE": [("SVT", "https://www.svt.se/sport/rss.xml", 0), ("Aftonbladet", "https://www.aftonbladet.se/sportbladet/rss.xml", 1),
-           ("Expressen", "https://www.expressen.se/rss/sport", 1)],
-    "DK": [("DR", "https://www.dr.dk/nyheder/service/feeds/sporten", 0), ("TV 2 Sport", "https://feeds.services.tv2.dk/api/feeds/sport/rss", 0)],
-    "FI": [("Yle", "https://yle.fi/rss/urheilu", 0), ("MTV", "https://www.mtvuutiset.fi/api/feed/rss/urheilu", 0),
-           ("Iltalehti", "https://www.iltalehti.fi/rss/urheilu.xml", 1), ("Ilta-Sanomat", "https://www.is.fi/rss/urheilu.xml", 1)],
+    "NO": [("NRK", "https://www.nrk.no/sport/toppsaker.rss", 0), ("NRK", "https://www.nrk.no/sport/siste.rss", 0),
+           ("NRK", "https://www.nrk.no/sport/handball/toppsaker.rss", 0), ("TV 2", "https://www.tv2.no/rss/sport", 0),
+           ("TV 2", "https://www.tv2.no/rss/sport/fotball", 0), ("TV 2", "https://www.tv2.no/rss/sport/vintersport", 0),
+           ("TV 2", "https://www.tv2.no/rss/sport/handball", 0), ("VG", "https://www.vg.no/rss/feed/?categories=1072", 1),
+           ("Aftenposten", "https://www.aftenposten.no/rss/sport", 1)],
+    "SE": [("SVT", "https://www.svt.se/sport/rss.xml", 0), ("SVT", "https://www.svt.se/sport/fotboll/rss.xml", 0),
+           ("SVT", "https://www.svt.se/sport/ishockey/rss.xml", 0), ("SVT", "https://www.svt.se/sport/vintersport/rss.xml", 0),
+           ("Aftonbladet", "https://www.aftonbladet.se/sportbladet/rss.xml", 1), ("Expressen", "https://www.expressen.se/rss/sport", 1),
+           ("DN", "https://www.dn.se/rss/sport/", 1)],  # Sydsvenskan sin «sport»-feed ga alle slags nyheter, derfor ute
+    "DK": [("DR", "https://www.dr.dk/nyheder/service/feeds/sporten", 0), ("TV 2 Sport", "https://feeds.services.tv2.dk/api/feeds/sport/rss", 0),
+           ("Politiken", "https://politiken.dk/rss/sport.rss", 1)],
+    "FI": [("Yle", "https://yle.fi/rss/urheilu", 0), ("Yle", "https://feeds.yle.fi/uutiset/v1/majorHeadlines/YLE_URHEILU.rss", 0),
+           ("MTV", "https://www.mtvuutiset.fi/api/feed/rss/urheilu", 0), ("Iltalehti", "https://www.iltalehti.fi/rss/urheilu.xml", 1),
+           ("Ilta-Sanomat", "https://www.is.fi/rss/urheilu.xml", 1), ("HS", "https://www.hs.fi/rss/urheilu.xml", 1)],
     "IS": [("RÚV", "https://www.ruv.is/rss/ithrottir", 0), ("mbl.is", "https://www.mbl.is/feeds/sport/", 1),
+           ("mbl.is", "https://www.mbl.is/feeds/fotbolti/", 1), ("mbl.is", "https://www.mbl.is/feeds/handbolti/", 1),
            ("Fótbolti.net", "https://fotbolti.net/rss.php", 0)],
 }
-# Siden viser 8 saker; resten er reserver slik at de som har valgt en favorittidrett får saker om den.
-PER_LAND, MAKS_PER_IDRETT = 16, 6
+# Siden viser 8 saker først og flere med «Vis flere»; resten er reserver slik at de som har valgt en favorittidrett får saker om den.
+PER_LAND, MAKS_PER_IDRETT = 36, 12
 # Idretter folk flest i hvert land bryr seg mest om, gir litt høyere relevans.
 STORE = {"NO": {"Fotball", "Langrenn", "Skiskyting", "Hopp", "Alpint", "Håndball"}, "SE": {"Fotball", "Ishockey", "Langrenn", "Skiskyting"},
          "DK": {"Fotball", "Håndball", "Sykling", "Badminton"}, "FI": {"Ishockey", "Fotball", "Formel 1", "Langrenn"},
@@ -37,7 +45,12 @@ UTLAND = re.compile(r"\b(" + "|".join([
     r"Wolves", r"Bournemouth\w*", r"Crystal Palace\w*", r"Leeds\w*", r"Sunderland\w*", r"Burnley\w*", r"Stamford Bridge", r"Anfield", r"Old Trafford",
     r"Real Madrid\w*", r"Barcelona\w*", r"Barça", r"Atlético\w*", r"Real Sociedad\w*", r"Sevilla\w*", r"Juventus\w*", r"Inter\b", r"Milan\w*",
     r"Napoli\w*", r"Lazio\w*", r"Roma\b", r"Torino\w*", r"Atalanta\w*", r"Bayern\w*", r"Dortmund\w*", r"Leverkusen\w*", r"Leipzig\w*", r"PSG", r"Paris Saint-Germain\w*",
-    r"Ajax\w*", r"Benfica\w*", r"Porto\b", r"Celtic\w*", r"Rangers\w*",
+    r"Ajax\w*", r"Benfica\w*", r"Porto\b", r"Celtic\w*", r"Rangers\w*", r"Parma\w*", r"Fiorentina\w*", r"Bologna\w*", r"Genoa\w*", r"Udinese\w*", r"Como\b",
+    r"Sassuolo\w*", r"Cagliari\w*", r"Lecce\w*", r"Verona\w*", r"Pisa\b", r"Cremonese\w*", r"Villarreal\w*", r"Betis\w*", r"Valencia\w*", r"Athletic Bilbao", r"Girona\w*",
+    r"Osasuna\w*", r"Celta\w*", r"Mallorca\w*", r"Getafe\w*", r"Espanyol\w*", r"Gil Vicente", r"Sporting\w*", r"Braga\w*", r"PSV\b", r"Feyenoord\w*", r"AZ Alkmaar",
+    r"Frankfurt\w*", r"Stuttgart\w*", r"Wolfsburg\w*", r"Freiburg\w*", r"Hoffenheim\w*", r"Mainz\w*", r"Gladbach\w*", r"Union Berlin", r"Werder\w*", r"Hamburg\w*",
+    r"Marseille\w*", r"Lyon\w*", r"Monaco\w*", r"Lille\b", r"Lens\b", r"Nice\b", r"Rennes\w*", r"Galatasaray\w*", r"Fenerbahçe\w*", r"Besiktas\w*",
+    r"Ballon d'Or", r"El Clásico", r"El Clasico", r"Serie B", r"Bundesliga\w*", r"Eredivisie\w*", r"Liga Portugal", r"Süper Lig", r"Saudi\w*", r"Wimbledon\w*", r"US Open", r"Roland-Garros",
     r"LeBron\w*", r"MacKinnon\w*", r"Colorado\w*", r"Tampa\w*", r"Philadelphia\w*", r"Utah\w*", r"Lakers\w*", r"Celtics\w*", r"Ovetškin\w*", r"Ovetjkin\w*", r"Ovechkin\w*",
     r"ensk[ua]\w*", r"F1", r"Verstappen\w*", r"Leclerc\w*", r"Hamilton\w*", r"Norris\w*", r"Antonelli\w*", r"Piastri\w*", r"Indycar\w*",
     r"Messi\w*", r"Ronaldo\w*", r"Mbappé\w*", r"Salah\w*", r"Kane\b", r"Bellingham\w*", r"Yamal\w*", r"Kompany\w*", r"Guardiola\w*", r"Slot\b", r"Arteta\w*",
@@ -49,21 +62,51 @@ NORDISK = re.compile(r"\b(" + "|".join([
     r"finsk\w*", r"Finland\w*", r"suomalai\w*", r"Suome\w*", r"Suomi\w*", r"Leijon\w*", r"Huuhkaj\w*", r"Finnl\w*",
     r"island\w*", r"Ísland\w*", r"Íslend\w*", r"íslensk\w*",
     r"landslag\w*", r"landshold\w*", r"landslið\w*", r"maajoukkue\w*", r"nordisk\w*",
-    r"Haaland\w*", r"Ødegaard\w*", r"Sørloth\w*", r"Nusa\w*", r"Bobb\w*", r"Aasgaard\w*", r"Strand Larsen\w*", r"Ryerson\w*", r"Selvik\w*", r"Nyland\w*", r"Hauger\w*", r"Glódís\w*", r"Hellberg\w*", r"Bottas\w*",
+    r"Haaland\w*", r"Ødegaard\w*", r"Sørloth\w*", r"Nusa\w*", r"Bobb\w*", r"Aasgaard\w*", r"Strand Larsen\w*", r"Ryerson\w*", r"Selvik\w*", r"Nyland\w*", r"Hauger\w*", r"Glódís\w*", r"Hellberg\w*", r"Bottas\w*", r"Bottak\w*", r"Zuccarello\w*", r"Leo Carlsson\w*", r"Albert\b", r"Benoný\w*", r"Andri Lucas\w*", r"Hákon\w*", r"Orri\b", r"Ísak\w*", r"Sverrir\w*",
+    r"(?:suomalais|ruotsalais|norjalais|tanskalais|islantilais)\w*", r"\w+(?:sson|ssonar|dóttir|dóttur)",
     r"Isak\w*", r"Gyökeres\w*", r"Kulusevski\w*", r"Elanga\w*", r"Højlund\w*", r"Eriksen\w*", r"Hjulmand\w*", r"Schmeichel\w*", r"Wind\b",
     r"Lehkonen\w*", r"Markka\w*", r"Barkov\w*", r"Rantanen\w*", r"Laine\w*", r"Aho\b", r"Granlund\w*", r"Hintz\w*", r"Pukki\w*", r"Hradecky\w*",
     r"Nylander\w*", r"Dahlin\w*", r"Hedman\w*", r"Pettersson\w*", r"Forsberg\w*", r"Ekholm\w*", r"Raanta\w*", r"Mikkola\w*",
     r"Albert Guðmunds\w*", r"Hákon\w*", r"Ísak Bergmann\w*", r"Orri Óskars\w*", r"Glimt\w*", r"Brann\w*", r"Molde\w*", r"Rosenborg\w*", r"Lillestrøm\w*",
+    r"Solskjær\w*", r"Solbakken\w*", r"Klæbo\w*", r"Johaug\w*", r"Lægreid\w*", r"Bøs?\b", r"Warholm\w*", r"Ingebrigtsen\w*", r"Kristoffersen\w*",
+    r"Kilde\b", r"Braathen\w*", r"Ruud\b", r"Hovland\w*", r"Østigård\w*", r"Ajer\b", r"Thorstvedt\w*", r"Berge\b", r"Graabak\w*", r"Riiber\w*", r"Grøvdal\w*",
+    r"Jakob Ingebrigtsen", r"Duplantis\w*", r"Sjöström\w*", r"Ibrahimović\w*", r"Ibrahimovic\w*", r"Andreas Stjernen", r"Lindvik\w*", r"Granerud\w*",
+    r"Vingegaard\w*", r"Axelsen\w*", r"Antonsen\w*", r"Rune\b", r"Mads Pedersen", r"Wozniacki\w*", r"Magnussen\w*", r"Hjulmand\w*", r"Damsgaard\w*", r"Dorgu\w*",
+    r"Räikkönen\w*", r"Rovanperä\w*", r"Selänne\w*", r"Niskanen\w*", r"Pärmäkoski\w*", r"Gylfi\w*", r"Sigurðsson\w*", r"Guðmundsson\w*", r"Hlynsson\w*",
+    r"Dahlqvist\w*", r"Sundling\w*", r"Andersson\w*", r"Karlsson\w*", r"Johansson\w*", r"Larsson\w*", r"Hansen\b", r"Johansen\b", r"Nilsen\b", r"Olsen\b", r"Pedersen\b", r"Jensen\b",
     r"Malmö\w*", r"Djurgård\w*", r"Hammarby\w*", r"AIK\b", r"Häcken\w*", r"FCK\b", r"Brøndby\w*", r"Midtjylland\w*", r"HJK\b", r"KuPS\b",
 ]) + r")", re.I)
 
+# Nordiske idrettslag fra siden selv (FAN), ligaer og serier. Korte eller tvetydige navn står utenfor.
+TVETYDIG = {"Start", "Odd", "Lyn", "Moss", "Fram", "Inter", "Sparta", "Ilves", "Jaro", "Honka", "Union", "Lahti", "Skövde", "Vestri",
+            "Valur", "Víkingur", "Þór", "Haukar", "Fylkir", "Stjarnan", "Grótta", "Leiknir", "Völsungur", "Real", "City", "United"}
+LIGAER = ["Eliteserien", "OBOS-ligaen", "Toppserien", "Allsvenskan", "Superettan", "Damallsvenskan", "Superligaen", "Superliga", "1. division",
+          "Veikkausliiga", "Ykkösliiga", "Besta deild", "Lengjudeild", "SHL", "HockeyAllsvenskan", "Liiga", "Metal Ligaen", "Fjordkraft-ligaen",
+          "REMA 1000-ligaen", "Handbollsligan", "Håndboldligaen", "Herreligaen", "Kvindeligaen", "Olís-deild", "BLNO", "Basketligaen", "Korisliiga",
+          "Elitserien", "Pesäpallo", "Superpesis", "NM", "SM", "DM", "Norway Cup", "Gothia Cup", "Birken", "Vasaloppet", "Holmenkollen", "Lahti"]
+def lag_regex(navn):
+    navn = sorted({n for n in navn if len(n) >= 4 and n not in TVETYDIG}, key=len, reverse=True)
+    return re.compile(r"(?<![\wÀ-ÿ])(" + "|".join(re.escape(n) for n in navn) + r")(?![\wÀ-ÿ])")
+def nordiske_navn(sidekilde):
+    i = sidekilde.index("const FAN = ["); j = sidekilde.index("].map(", i)
+    return re.findall(r'\["[^"]+",\s*"(?:NO|SE|DK|FI|IS)",\s*"([^"]+)"', sidekilde[i:j])
+LAGNAVN = None  # settes når index.html er lest
+
+# Lagidretter der utenlandske ligaer fyller feedene. Her må saken ha noe nordisk i seg for å bli med.
+LAGIDRETT = {"Fotball", "Ishockey", "Basketball", "Håndball", "Volleyball", "Formel 1", "Motorsport", "Tennis", "Golf", "Boksing", "Kampsport", "Sport"}
+# Korte live-oppdateringer fra utenlandske kamper, f.eks. «2-1: Lontani, Parma»
+LIVETICKER = re.compile(r"^\s*\d+\s*[-–]\s*\d+\s*[:!]|setter \d+\s*[-–]\s*\d+|med rødt kort$|^Se (høydepunktene|målene|scoringene)|^Här (gör|är|ser)|^Katso", re.I)
+
+def nordisk_signal(tekst):
+    return bool(NORDISK.search(tekst) or LAGNAVN.search(tekst))
+
 def nordisk(x, ekstra=""):
-    ute = UTLAND.findall(x["tittel"])
-    if not ute or NORDISK.search(x["tittel"]): return True
-    # Utenlandsk tittel: det nordiske må veie minst halvparten så tungt som det utenlandske i resten av saken.
-    tekst = x["ingress"] + " " + ekstra
-    n = len(NORDISK.findall(tekst))
-    return n > 0 and 2 * n >= len(ute) + len(UTLAND.findall(tekst))
+    # Utenlandsk sport er lov bare når nordiske utøvere eller lag er med i saken (Noah 2026-10-24).
+    # «Med» betyr nevnt i tittel, ingress eller sakens egen beskrivelse, ikke bare i en lang liste med stikkord.
+    if nordisk_signal(x["tittel"]): return True
+    alt = x["ingress"] + " " + ekstra
+    utland = UTLAND.search(x["tittel"]) or UTLAND.search(x["ingress"]) or LIVETICKER.search(x["tittel"])
+    return nordisk_signal(alt) if utland else True
 
 # Idrett (norsk navn, som på siden) og ord som avslører den, på alle språkene. Rekkefølgen teller: det spesifikke først.
 IDRETTER = [
@@ -151,12 +194,13 @@ def hent(kilde, url, betaling):
                       "lenke": lenke, "kilde": kilde, "betaling": betaling, "bilde": H.unescape(bilde.group(1)) if bilde else None})
     return saker
 
-def metatekst(url):
+def metatekst(url, bare_beskrivelse=False):
     try:
         side = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; AuroraBot/1.0)"}),
                                       timeout=10).read(300000).decode("utf-8", "replace")
     except Exception: return ""
-    m = re.findall(r'<meta[^>]+(?:name|property)=["\'](?:keywords|news_keywords|description|og:description|article:section|article:tag)["\'][^>]*content=["\']([^"\']*)', side)
+    felt = "description|og:description" if bare_beskrivelse else "keywords|news_keywords|description|og:description|article:section|article:tag"
+    m = re.findall(r'<meta[^>]+(?:name|property)=["\'](?:' + felt + r')["\'][^>]*content=["\']([^"\']*)', side)
     return H.unescape(" ".join(m))
 
 # Navn og andre tunge ord i tittelen, brukt til å se når flere kilder skriver om samme sak.
@@ -186,6 +230,7 @@ def velg(land, saker):
     return sorted(valgt, key=lambda s: -s["poeng"])
 
 p = sys.argv[1]; s = open(p, encoding="utf-8").read()
+LAGNAVN = lag_regex(nordiske_navn(s) + LIGAER)
 i = s.index("const GNEWS = "); j = s.index(";\n", i); G = json.loads(s[i + 14:j])
 img = G.get("img", {})
 for land, kilder in FEEDS.items():
@@ -195,8 +240,8 @@ for land, kilder in FEEDS.items():
         except Exception as e: print(land, kilde, "feilet:", e)
     # Bare nordisk sport: ved tvil (utenlandsk navn i tittelen) leses også stikkordene i selve saken.
     tvil = [x for x in saker if not nordisk(x)]
-    for x in tvil[:30]:
-        if nordisk(x, metatekst(x["lenke"])): x["ok"] = True
+    for x in tvil[:60]:
+        if nordisk(x, metatekst(x["lenke"], True)): x["ok"] = True
     bort = [x for x in tvil if not x.get("ok")]
     saker = [x for x in saker if x not in bort]
     if bort: print(land, "tok bort", len(bort), "utenlandske:", [x["tittel"][:40] for x in bort])
