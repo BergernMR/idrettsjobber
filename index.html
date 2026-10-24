@@ -3007,7 +3007,7 @@ async function cloudLoad() {
   let r = await sb.from("profiles").select("clubs,likes,home,saved").eq("id", authUser.id).maybeSingle();
   if (r.error && /saved/i.test(r.error.message)) { savedCol = false; r = await sb.from("profiles").select("clubs,likes,home").eq("id", authUser.id).maybeSingle(); }
   const data = r.data;
-  if (data) { (data.clubs || []).forEach(id => follows.add(id)); (data.likes || []).forEach(k => likes.add(k));
+  if (data) { (data.clubs || []).forEach(id => follows.add(id)); (data.likes || []).forEach(k => likes.add(k)); splitBall(likes);
     if (data.home && typeof data.home.lat === "number") home = data.home;
     if (data.saved) { (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
       try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {} updSaved(); }
@@ -4518,7 +4518,7 @@ function toggleFollow(id) {
   cloudSave(); updClubs();
 }
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
-const clubMatch = (k, skip) => inCountry(k) && (skip === "place" || inPlace("cplace", k.geo)) && (skip === "sport" || state.csport === "all" || k.sport === state.csport) &&
+const clubMatch = (k, skip) => inCountry(k) && (skip === "place" || skip === "map" || inPlace("cplace", k.geo)) && (skip === "sport" || skip === "map" || state.csport === "all" || k.sport === state.csport) &&
   (!state.kq || hay(k.n, k.sport, t(k.sport), k.city, k.div || "", COUNTRIES[k.c]).includes(state.kq.toLowerCase()));
 const followBtn = k => `<button type="button" class="follow" data-id="${k.id}" aria-pressed="${follows.has(k.id)}">${STAR}<span>${follows.has(k.id) ? t("Følger") : t("Følg")}</span></button>`;
 // Antall seriekamper per lag i hele sesongen. Delte ligaer regnes med full sluttspillrunde, så trofeet aldri kommer for tidlig.
@@ -4782,7 +4782,7 @@ function renderClubs() {
       <div class="acts">${siteLink(k)}${followBtn(k)}</div></article>`).join("")}</div>`
     : `<div class="empty">${t("Følg klubbene du heier på, så samles de her.")}</div>`;
   simpleChips("clubSportRow", tmap({ ...FAN_SPORTS }), "csport", s => FAN.filter(k => clubMatch(k, "sport") && (s === "all" || k.sport === s)).length);
-  drawMap({ id: "mapClub", key: "cplace", items: FAN.filter(k => clubMatch(k, "place")), geo: k => k.geo, one: "klubb", many: "klubber", list: "clubCount" });
+  drawMap({ id: "mapClub", key: "cplace", items: FAN.filter(k => clubMatch(k, "map")), geo: k => k.geo, one: "klubb", many: "klubber", list: "clubCount" });
   const list = FAN.filter(k => clubMatch(k));
   $("clubCount").textContent = t("{n} klubber å følge", { n: list.length });
   // Land først, så idrett, så klubbene
@@ -4904,10 +4904,12 @@ const INTERESTS = [
   ["alpint", "Alpint", ["Alpint"]], ["hockey", "Ishockey", ["Ishockey"]], ["bandy", "Bandy", ["Bandy"]], ["handball", "Håndball", ["Håndball"]],
   ["lop", "Løping", ["Løping", "Terrengløp"]], ["friidrett", "Friidrett", ["Friidrett"]], ["sykkel", "Sykling", ["Sykling"]],
   ["vann", "Vannsport", ["Svømming", "Swimrun", "Triatlon", "Kano", "Roing", "Seiling"]], ["kompass", "Orientering", ["Orientering", "Skiorientering"]],
-  ["ball", "Basket, volleyball og innebandy", ["Basketball", "Volleyball", "Innebandy", "Pesäpallo"]]
+  ["basket", "Basketball", ["Basketball"]], ["volley", "Volleyball", ["Volleyball"]], ["innebandy", "Innebandy", ["Innebandy"]], ["pesapallo", "Pesäpallo", ["Pesäpallo"]]
 ];
+// Den gamle samlekategorien "ball" er delt i fire
+const splitBall = set => { if (set.delete("ball")) ["basket", "volley", "innebandy", "pesapallo"].forEach(k => set.add(k)); };
 let likes = new Set(), fySkip = false;
-try { likes = new Set(JSON.parse(localStorage.getItem("aurora-idretter") || "[]")); fySkip = localStorage.getItem("aurora-idretter-hopp") === "1"; } catch (e) {}
+try { likes = new Set(JSON.parse(localStorage.getItem("aurora-idretter") || "[]")); splitBall(likes); fySkip = localStorage.getItem("aurora-idretter-hopp") === "1"; } catch (e) {}
 const saveLikes = () => { try { localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); } catch (e) {} cloudSave(); };
 const liked = sp => likes.size > 0 && INTERESTS.some(([k, , sps]) => likes.has(k) && sps.includes(sp));
 const kmFrom = (lat, lon) => { const R = 6371, r = Math.PI / 180, dLat = (lat - home.lat) * r, dLon = (lon - home.lon) * r;
@@ -5200,7 +5202,10 @@ function drawMap(cfg) {
       return `<g><circle class="dot${sel ? " sel" : ""}" cx="${c.x.toFixed(2)}" cy="${c.y.toFixed(2)}" r="${r.toFixed(2)}" data-place="${esc(key)}" data-label="${esc(title)}" data-n="${c.n}" tabindex="0" role="button" aria-label="${esc(title)}, ${c.n} ${unit(c.n)}"></circle>${c.n > 1 ? `<text class="dotn" x="${c.x.toFixed(2)}" y="${c.y.toFixed(2)}" style="font-size:${((c.n > 99 ? 6.5 : 7.5) / z).toFixed(3)}px">${c.n}</text>` : ""}</g>`;
     }).join("");
     dotsG.querySelectorAll(".dot").forEach(c => {
-      const pick = e => { if (e) e.stopPropagation(); if (moved) return; state[cfg.key] = state[cfg.key] === c.dataset.place ? "" : c.dataset.place; render(); $(cfg.list).scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }); };
+      const pick = e => { if (e) e.stopPropagation(); if (moved) return; state[cfg.key] = state[cfg.key] === c.dataset.place ? "" : c.dataset.place;
+        // Et trykk på kartet under Klubber viser alle klubbtyper i området
+        if (cfg.key === "cplace" && state.cplace) state.csport = "all";
+        render(); $(cfg.list).scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }); };
       c.onclick = pick;
       c.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } };
       c.onpointerenter = () => {
