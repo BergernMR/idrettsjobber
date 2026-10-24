@@ -423,6 +423,11 @@ table.league td.team { white-space: normal; }
 /* List */
 .count { font-family: var(--font-display); font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
 .count small { font-family: var(--font-body); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--muted); }
+.sortsel { position: relative; display: inline-flex; align-items: center; font-family: var(--font-body); font-weight: 400; text-transform: none; letter-spacing: 0; }
+.sortsel select { appearance: none; -webkit-appearance: none; font: inherit; font-size: 14px; color: var(--muted); background: transparent; border: 0; padding: 4px 22px 4px 6px; border-radius: 8px; cursor: pointer; text-align: right; }
+.sortsel select:hover, .sortsel select:focus-visible { color: var(--fg); background: color-mix(in oklab, var(--muted) 12%, transparent); }
+.sortsel svg { position: absolute; right: 4px; width: 14px; height: 14px; fill: none; stroke: var(--muted); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.homerow { margin: -4px 0 12px; }
 .list { display: grid; gap: 8px; }
 .job { position: relative; display: grid; grid-template-columns: 72px 1fr auto auto; gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; align-items: center; transition: border-color .15s, box-shadow .15s; }
 .job:hover { border-color: var(--accent); box-shadow: var(--shadow); }
@@ -1171,13 +1176,6 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
     </div>
     <div class="row" id="catRow"><span class="row-label">Type</span></div>
     <div class="row" id="reqRow"><span class="row-label">Krav</span></div>
-    <div class="row" id="sortRow"><span class="row-label">Sorter</span></div>
-    <div class="row" id="homeRow" hidden>
-      <span class="row-label">Jeg bor i</span>
-      <select id="home" class="home-select" aria-label="Velg hvor du bor"></select>
-      <button type="button" class="chip" id="locate">Bruk posisjonen min</button>
-      <small id="locNote" class="loc-note"></small>
-    </div>
     <div class="row">
       <span class="row-label">Vis</span>
       <button type="button" class="chip favchip" id="favOnly" aria-pressed="false">Bare favoritter<span class="n" id="favN">0</span></button>
@@ -1185,7 +1183,13 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
   </section>
 
   <section aria-live="polite">
-    <div class="count"><span id="count"></span><small id="sortNote">Kortest frist øverst</small></div>
+    <div class="count"><span id="count"></span><label class="sortsel"><select id="sortSel" aria-label="Sorter"></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></label></div>
+    <div class="row homerow" id="homeRow" hidden>
+      <span class="row-label">Jeg bor i</span>
+      <select id="home" class="home-select" aria-label="Velg hvor du bor"></select>
+      <button type="button" class="chip" id="locate">Bruk posisjonen min</button>
+      <small id="locNote" class="loc-note"></small>
+    </div>
     <div class="list" id="list"></div>
   </section>
 
@@ -2085,7 +2089,7 @@ const ADDED = "2026-10-22";
 const NEW = new Set(["n19", "n20", "n21", "n22", "n23", "n24", "n25", "n26", "n27", "n28", "n29", "n30", "n31", "n32", "n33", "n34", "s12", "s13", "s14", "s15", "s16", "s17", "s18", "s19", "s20", "s21", "s22", "s23", "s24", "s25", "f14", "f15", "f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23", "f24"]);
 // Jobber lagt til senere får sin egen dato her
 const ADDED_AT = {"n48": "2026-10-24", "n49": "2026-10-24", "n50": "2026-10-24", "s38": "2026-10-24", "s39": "2026-10-24", "s40": "2026-10-24", "s41": "2026-10-24", "f31": "2026-10-24", "f32": "2026-10-24", "f33": "2026-10-24", "n35": "2026-10-23", "n36": "2026-10-23", "n37": "2026-10-23", "n38": "2026-10-23", "n39": "2026-10-23", "n40": "2026-10-23", "n41": "2026-10-23", "n42": "2026-10-23", "n43": "2026-10-23", "n44": "2026-10-23", "n45": "2026-10-23", "n46": "2026-10-23", "n47": "2026-10-23", "s26": "2026-10-23", "s27": "2026-10-23", "s28": "2026-10-23", "s29": "2026-10-23", "s30": "2026-10-23", "s31": "2026-10-23", "s32": "2026-10-23", "s33": "2026-10-23", "s34": "2026-10-23", "s35": "2026-10-23", "s36": "2026-10-23", "s37": "2026-10-23", "f25": "2026-10-23", "f26": "2026-10-23", "f27": "2026-10-23", "f28": "2026-10-23", "f29": "2026-10-23", "f30": "2026-10-23", "n51": "2026-10-24", "n52": "2026-10-24", "n53": "2026-10-24", "n54": "2026-10-24", "s42": "2026-10-24", "s43": "2026-10-24"};
-const isNew = j => { const d = ADDED_AT[j.id] || (NEW.has(j.id) ? ADDED : ""); return !!d && (TODAY - new Date(d + "T12:00:00")) / 864e5 < 3; };
+const isNew = j => { const d = ADDED_AT[j.id] || (NEW.has(j.id) ? ADDED : ""); return !!d && (Date.now() - new Date(d + "T12:00:00")) / 864e5 < 1; }; // «Ny» varer bare én dag
 const COUNTRIES = tmap({ NO: "Norge", SE: "Sverige", DK: "Danmark", FI: "Finland", IS: "Island" });
 const CATS = tmap({ trener: "Trener og instruktør", klubb: "Klubb og forbund", ledelse: "Leder", anlegg: "Idrettsanlegg", trening: "Treningssenter", larer: "Kroppsøvingslærer", annet: "Annet" });
 const SOURCES = { "arbeidsplassen.nav.no": "NAV Arbeidsplassen", "arbetsformedlingen.se": "Platsbanken (Arbetsförmedlingen)", "ledigajobb.se": "Ledigajobb.se", "jobbank.dk": "Jobbank.dk", "www.jobindex.dk": "Jobindex", "duunitori.fi": "Duunitori", "alfred.is": "Alfred.is" };
@@ -3117,7 +3121,6 @@ function renderJobs() {
   const order = { ny: j => isNew(j) ? 0 : 1, naer: j => distTo(j) ?? 1e6, heltid: fullTimeScore }[state.sort];
   const rows = JOBS.filter(j => matches(j)).sort((a, b) => (order ? order(a) - order(b) : 0) || byDeadline(a, b));
   $("count").textContent = rows.length === 1 ? t("1 stilling") : t("{n} stillinger", { n: rows.length });
-  $("sortNote").textContent = { frist: t("Kortest frist øverst"), ny: t("Nyeste øverst"), naer: home.name === "deg" ? t("Nærmest deg øverst") : t("Nærmest {x} øverst", { x: home.name }), heltid: t("Heltid øverst") }[state.sort];
   renderSort();
   $("favN").textContent = favs.size;
   $("favOnly").setAttribute("aria-pressed", String(state.favOnly));
@@ -3477,7 +3480,7 @@ function setupFilters() {
 }
 function updateFilterBtns() {
   const active = {
-    jobber: [state.cat !== "all", state.req !== "all", state.sort !== "frist", state.favOnly],
+    jobber: [state.cat !== "all", state.req !== "all", state.favOnly],
     utdanning: [state.edu !== "all"],
     arrangementer: [state.ev !== "all", state.sport !== "all"],
     klubber: [state.csport !== "all"]
@@ -4728,7 +4731,6 @@ document.querySelectorAll(".linkbtn[data-go]").forEach(b => b.onclick = () => se
 $("favOnly").addEventListener("click", () => { state.favOnly = !state.favOnly; render(); });
 
 // Sortering: kortest frist er standard; trykk på en aktiv knapp igjen for å gå tilbake til den
-const SORTS = tmap({ ny: "Nyeste først", naer: "Nærmest meg", heltid: "Heltid først" });
 const CITIES = [
   ["Oslo", 59.91, 10.75], ["Bergen", 60.39, 5.32], ["Trondheim", 63.43, 10.39], ["Stavanger", 58.97, 5.73], ["Kristiansand", 58.15, 8.0], ["Tromsø", 69.65, 18.96], ["Bodø", 67.28, 14.4],
   ["Stockholm", 59.33, 18.07], ["Göteborg", 57.71, 11.97], ["Malmö", 55.6, 13.0], ["Uppsala", 59.86, 17.64], ["Umeå", 63.83, 20.26],
@@ -4753,17 +4755,11 @@ function fullTimeScore(j) {
   if (/heltid|100 ?%/.test(t)) return 0;
   return 1;
 }
+// Sorteringen ligger til høyre over listen, ikke inne i filteret
 function renderSort() {
-  const row = $("sortRow");
-  row.querySelectorAll(".chip").forEach(b => b.remove());
-  for (const [k, label] of Object.entries(SORTS)) {
-    const b = document.createElement("button");
-    b.className = "chip"; b.type = "button";
-    b.setAttribute("aria-pressed", String(state.sort === k));
-    b.textContent = label;
-    b.onclick = () => { state.sort = state.sort === k ? "frist" : k; render(); };
-    row.appendChild(b);
-  }
+  const sel = $("sortSel"), labels = { frist: t("Kortest frist øverst"), ny: t("Nyeste øverst"), naer: home.name === "deg" ? t("Nærmest deg øverst") : t("Nærmest {x} øverst", { x: home.name }), heltid: t("Heltid øverst") };
+  sel.innerHTML = Object.entries(labels).map(([k, l]) => `<option value="${k}"${state.sort === k ? " selected" : ""}>${esc(l)}</option>`).join("");
+  sel.onchange = () => { state.sort = sel.value; render(); };
   $("homeRow").hidden = state.sort !== "naer";
 }
 $("home").innerHTML = (CITIES.some(c => c[0] === home.name) ? "" : `<option value="pos" selected>${t("Min posisjon")}</option>`) +
