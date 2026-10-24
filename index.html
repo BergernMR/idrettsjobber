@@ -1821,7 +1821,7 @@ const I18N = {
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
 "Sammenlign": ["Jämför","Sammenlign","Vertaile","Bera saman","Compare"],
 "Lignende jobber": ["Liknande jobb","Lignende job","Samankaltaiset työpaikat","Svipuð störf","Similar jobs"],
-"De tre likeste stillingene vi har nå, helst fra andre land. Trykk på en jobb for å se den.": ["De tre mest liknande tjänsterna vi har nu, helst från andra länder. Tryck på ett jobb för att se det.","De tre mest lignende stillinger, vi har nu, helst fra andre lande. Tryk på et job for at se det.","Kolme samankaltaisinta työpaikkaa, mieluiten muista maista. Avaa työpaikka napauttamalla.","Þrjú líkustu störfin sem við höfum núna, helst frá öðrum löndum. Ýttu á starf til að skoða það.","The three most similar jobs we have right now, preferably from other countries. Tap a job to open it."],
+"De tre likeste stillingene vi har nå. Trykk på en jobb for å se den.": ["De tre mest liknande tjänsterna vi har nu. Tryck på ett jobb för att se det.","De tre mest lignende stillinger, vi har nu. Tryk på et job for at se det.","Kolme samankaltaisinta työpaikkaa. Avaa työpaikka napauttamalla.","Þrjú líkustu störfin sem við höfum núna. Ýttu á starf til að skoða það.","The three most similar jobs we have right now. Tap a job to open it."],
 "Denne jobben": ["Det här jobbet","Dette job","Tämä työpaikka","Þetta starf","This job"],
 "Land": ["Land","Land","Maa","Land","Country"],
 "Arbeidsgiver": ["Arbetsgivare","Arbejdsgiver","Työnantaja","Vinnuveitandi","Employer"],
@@ -4869,7 +4869,7 @@ function compareHtml(j) {
   const row = (label, f) => `<tr><th scope="row">${label}</th>${cols.map((c, i) => `<td>${f(c.x, c, i)}</td>`).join("")}</tr>`;
   return `<div class="cmp" id="cmpBox">
     <h4>${t("Lignende jobber")}</h4>
-    <p class="cmp-why">${t("De tre likeste stillingene vi har nå, helst fra andre land. Trykk på en jobb for å se den.")}</p>
+    <p class="cmp-why">${t("De tre likeste stillingene vi har nå. Trykk på en jobb for å se den.")}</p>
     <div class="cmp-scroll"><table>
       <thead><tr><th scope="col"></th>${cols.map((c, i) => `<th scope="col">${i === 0 ? `${esc(c.x.t)}<br><small>${t("Denne jobben")}</small>` : `<button type="button" class="cmp-open" data-id="${c.x.id}">${esc(c.x.t)}</button>`}</th>`).join("")}</tr></thead>
       <tbody>
