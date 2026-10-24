@@ -545,10 +545,26 @@ table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-ri
 .mp-city { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; margin-top: 6px; }
 .mp-city select { font: inherit; font-weight: 600; color: #fff; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 5px 10px; }
 .mp-city select option, .mp-city select optgroup { color: #14211d; }
+.mp-ints { display: flex; flex-wrap: wrap; gap: 8px; }
+.mp-int { display: inline-flex; align-items: center; gap: 7px; }
+.mp-int svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mp-int[aria-pressed="true"] { background: var(--kc); border-color: var(--kc); color: #fff; }
 .mp-acts { grid-column: 1 / -1; display: flex; gap: 16px; flex-wrap: wrap; }
 .minebtn.pic .aini { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: block; }
 .minebtn.pic .aini img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .minebtn.pic { padding: 0; overflow: hidden; }
+.psearch { position: relative; display: flex; align-items: center; flex: 1; min-width: 0; }
+.psearch > svg { position: absolute; left: 11px; width: 16px; height: 16px; fill: none; stroke: var(--accent); stroke-width: 2; pointer-events: none; }
+.psin { width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; font-weight: 500; padding: 10px 12px 10px 34px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.psin:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent); }
+.psres { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 40; margin: 0; padding: 4px; list-style: none; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 30px rgb(0 0 0 / .18); max-height: 280px; overflow-y: auto; }
+.psres li { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; align-items: center; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 14.5px; text-align: left; }
+.psres li .flag { grid-row: span 2; width: 18px; height: 13px; }
+.psres li small { grid-column: 2; color: var(--muted); font-size: 12.5px; }
+.psres li:hover, .psres li[aria-selected="true"] { background: var(--accent-soft, color-mix(in oklab, var(--accent) 12%, transparent)); }
+.mp-city .psin { color: #fff; background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.25); padding-top: 7px; padding-bottom: 7px; }
+.mp-city .psin::placeholder { color: rgba(255,255,255,.7); }
+.mp-city .psearch > svg { stroke: #7fe0b7; }
 .acity { display: grid; gap: 4px; font-size: 13px; font-weight: 700; }
 .acity select { font: inherit; font-weight: 500; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 .mp-prof .aava { grid-row: span 2; display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #7fe0b7; color: #14211d; font-weight: 800; font-size: 22px; }
@@ -912,7 +928,7 @@ body.dockon .controls { top: calc(env(safe-area-inset-top, 0px) + 66px); }
 .setpop .sl { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .setpop .seg { display: flex; padding: 4px; gap: 4px; border-radius: 999px; background: var(--surface-2); }
 .setpop .seg button { flex: 1; padding: 8px 6px; border: 0; border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
-.setpop .seg { position: relative; }
+.setpop .seg { position: relative; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .setpop .seg button { position: relative; z-index: 1; transition: color .3s ease; }
 .setpop .seg button[aria-checked="true"] { color: var(--bg); }
 .segpill { position: absolute; left: 0; top: 0; z-index: 0; border-radius: 999px; background: var(--fg); pointer-events: none; transition: transform .38s cubic-bezier(.3,1.3,.5,1), width .38s cubic-bezier(.3,1.3,.5,1); }
@@ -1134,7 +1150,8 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 .foryou .fysum, .foryou .fyl { color: rgba(255,255,255,.66); }
 .foryou .fyedit, .foryou .fyskip { color: #7fe0b7; }
 .foryou .fypick { background: rgba(255,255,255,.07); }
-.foryou .fyhome select { background: #0e1f19; color: #fff; border-color: rgba(255,255,255,.2); }
+.foryou .fyhome select, .foryou .fyhome .psin { background: #0e1f19; color: #fff; border-color: rgba(255,255,255,.2); }
+.fyhome .psearch { max-width: 320px; }
 .fyint { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.18); }
 .fyint svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .fyint[aria-pressed="true"] { background: var(--kc); border-color: var(--kc); color: #fff; }
@@ -1922,6 +1939,8 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Velg idrettene du liker, så tilpasser vi jobbene, kursene og arrangementene til deg.": ["Välj sporterna du gillar, så anpassar vi jobb, kurser och evenemang efter dig.", "Vælg de sportsgrene, du kan lide, så tilpasser vi job, kurser og arrangementer til dig.", "Valitse lajit, joista pidät, niin räätälöimme työpaikat, kurssit ja tapahtumat sinulle.", "Veldu íþróttirnar sem þú hefur gaman af og við sníðum störf, námskeið og viðburði að þér.", "Pick the sports you like, and we'll tailor jobs, courses and events to you."],
+"Søk etter by eller sted": ["Sök efter stad eller ort", "Søg efter by eller sted", "Hae kaupunkia tai paikkaa", "Leitaðu að bæ eða stað", "Search for a town or place"],
 "Hvor bor du?": ["Var bor du?", "Hvor bor du?", "Missä asut?", "Hvar býrðu?", "Where do you live?"],
 "Legg til profilbilde": ["Lägg till profilbild", "Tilføj profilbillede", "Lisää profiilikuva", "Bæta við prófílmynd", "Add profile picture"],
 "Bytt profilbilde": ["Byt profilbild", "Skift profilbillede", "Vaihda profiilikuva", "Skipta um prófílmynd", "Change profile picture"],
@@ -2954,7 +2973,7 @@ function applyTheme(v) { if (v === "light" || v === "dark") document.documentEle
 try { applyTheme(localStorage.getItem("aurora-tema")); } catch (e) {}
 // Innlogging med Supabase: e-postlenke (og Google senere). Lagrer bare klubber, idretter og hjemsted i tabellen profiles.
 const SUPA = { url: "https://beddkwgxhdyloiewhpll.supabase.co", key: "sb_publishable__K2LpHIMgT5XxGlpCwH5bQ_nJ2Qz3iH" };
-let sb = null, authUser = null, authMsg = "", authMode = "in", openSettings = () => {};
+let signupPlace = null, sb = null, authUser = null, authMsg = "", authMode = "in", openSettings = () => {};
 const authName = () => { const m = authUser?.user_metadata || {}; return m.username || (m.full_name || m.name || "").split(" ")[0] || ""; };
 function loadSupa() {
   if (sb || !SUPA.key) return Promise.resolve(sb);
@@ -3040,7 +3059,7 @@ function accountHtml() {
     : `<input type="email" id="aMail" required autocomplete="email" placeholder="${t("E-post")}" aria-label="${t("E-post")}">`;
   return `<p class="sl">${t("Konto")}</p><div class="seg" data-seg="konto" role="tablist">${[["in", "Logg inn"], ["up", "Lag bruker"]].map(([k, l]) => `<button type="button" role="tab" data-m="${k}" aria-checked="${m === k || (m === "reset" && k === "in")}">${t(l)}</button>`).join("")}</div>
     ${m === "up" ? `<small>${t("Lag en gratis bruker, så har du klubbene og valgene dine på mobil og PC.")}</small>` : ""}
-    <form class="aform" id="aForm">${m === "up" ? `<label class="acity"><span>${t("Hvor bor du?")}</span><select id="aCity" aria-label="${t("Hvor bor du?")}">${cityOptions()}</select></label>` : ""}${m === "up" ? `<input id="aName" required minlength="2" maxlength="30" pattern="[^@ ]+" title="${t("Brukernavnet kan ikke ha mellomrom eller @")}" autocomplete="username" placeholder="${t("Brukernavn")}" aria-label="${t("Brukernavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
+    <form class="aform" id="aForm">${m === "up" ? `<label class="acity"><span>${t("Hvor bor du?")}</span>${psHtml("aCity", signupPlace ? signupPlace.name : "")}</label>` : ""}${m === "up" ? `<input id="aName" required minlength="2" maxlength="30" pattern="[^@ ]+" title="${t("Brukernavnet kan ikke ha mellomrom eller @")}" autocomplete="username" placeholder="${t("Brukernavn")}" aria-label="${t("Brukernavn")}">` : ""}${mail}${m !== "reset" ? `<input type="password" id="aPw" required ${m === "up" ? `minlength="8" autocomplete="new-password" placeholder="${t("Passord (minst 8 tegn)")}"` : `autocomplete="current-password" placeholder="${t("Passord")}"`} aria-label="${t("Passord")}">` : ""}
     <button type="submit" class="abtn">${t(m === "up" ? "Lag bruker" : m === "in" ? "Logg inn" : "Send lenke for nytt passord")}</button></form>
     ${m === "in" ? `<button type="button" class="alink" data-m="reset">${t("Glemt passordet?")}</button>` : m === "reset" ? `<button type="button" class="alink" data-m="in">← ${t("Tilbake")}</button>` : ""}
     ${authMsg ? `<small class="amsg">${esc(authMsg)}</small>` : ""}
@@ -3078,6 +3097,26 @@ function segPills(root) {
       SEG_AT[key] = to;
     };
     go();
+    // Dra markøren med fingeren eller musen; slipper du over et annet valg, velges det
+    let d = null, swallow = false;
+    seg.addEventListener("click", ev => { if (swallow) { ev.stopPropagation(); ev.preventDefault(); } }, true);
+    seg.addEventListener("pointerdown", e => { if (e.button > 0) return; d = { x: e.clientX, id: e.pointerId, moved: false, left: seg.getBoundingClientRect().left }; });
+    seg.addEventListener("pointermove", e => {
+      if (!d || e.pointerId !== d.id) return;
+      if (!d.moved && Math.abs(e.clientX - d.x) > 6) { d.moved = true; pill.style.transition = "none"; try { seg.setPointerCapture(e.pointerId); } catch (x) {} }
+      if (!d.moved) return;
+      const w = pill.offsetWidth, x = Math.max(4, Math.min(seg.clientWidth - w - 4, e.clientX - d.left - w / 2));
+      pill.style.transform = `translate(${x}px, ${cur.offsetTop}px)`;
+    });
+    const end = e => {
+      if (!d || e.pointerId !== d.id) return; const was = d; d = null; pill.style.transition = "";
+      if (!was.moved) return;
+      const x = e.clientX - was.left, btns = [...seg.querySelectorAll("button")];
+      const hit = btns.find(b => x >= b.offsetLeft && x < b.offsetLeft + b.offsetWidth) || (x < 0 ? btns[0] : btns[btns.length - 1]);
+      swallow = true;
+      setTimeout(() => { swallow = false; if (hit !== cur) hit.click(); else go(); }, 0);
+    };
+    seg.addEventListener("pointerup", end); seg.addEventListener("pointercancel", end);
   });
 }
 function setupSettings() {
@@ -3089,16 +3128,17 @@ function setupSettings() {
       <div class="seg" data-seg="tema" role="radiogroup" aria-label="${t("Utseende")}">${[["auto", "Automatisk"], ["light", "Lys"], ["dark", "Mørk"]].map(([k, l]) => `<button type="button" role="radio" data-v="${k}" aria-checked="${cur() === k}">${t(l)}</button>`).join("")}</div>
       <small>${t("Automatisk følger innstillingen på mobilen eller PC-en din.")}</small><hr>${accountHtml()}`;
     segPills(pop);
+    placeSearch($("aCity"), p => { signupPlace = p; });
     pop.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { authMode = b.dataset.m; authMsg = ""; draw(); });
     const f = $("aForm"); if (f) f.onsubmit = async e => { e.preventDefault();
       const v = id => ($(id)?.value || "").trim(), pw = $("aPw")?.value || "", to = location.origin + location.pathname;
-      const city = $("aCity")?.value || ""; authMsg = t("Vent litt …"); const keep = [v("aName"), v("aMail")]; draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1];
+      const city = authMode === "up" ? signupPlace : null; authMsg = t("Vent litt …"); const keep = [v("aName"), v("aMail")]; draw(); if ($("aName")) $("aName").value = keep[0]; if ($("aMail")) $("aMail").value = keep[1];
       const c = await loadSupa(); if (!c) { authMsg = t("Fikk ikke kontakt. Prøv igjen senere."); return draw(); }
       let r;
       if (authMode === "up") {
         const taken = await c.rpc("username_taken", { u: keep[0] });
         if (taken.data === true) { authMsg = t("Brukernavnet er tatt. Velg et annet."); draw(); $("aName").value = keep[0]; $("aMail").value = keep[1]; return; }
-        if (city) setHomeCity(city);
+        if (city) setHomePlace(city);
         r = await c.auth.signUp({ email: keep[1], password: pw, options: { data: { username: keep[0] }, emailRedirectTo: to } });
         if (!r.error && !r.data.session) { authMsg = t("Nesten ferdig! Vi har sendt deg en e-post. Trykk på lenken i den for å bekrefte brukeren din."); authMode = "in"; return draw(); } }
       else if (authMode === "in" && keep[1].includes("@")) r = await c.auth.signInWithPassword({ email: keep[1], password: pw });
@@ -4804,8 +4844,8 @@ function renderHome() {
 // «Til deg»: idretter man liker, hjemsted og klubbene man følger. Alt lagres bare i nettleseren (aurora-idretter, idrettsjobber-hjem, aurora-klubber).
 const INTERESTS = [
   ["fotball", "Fotball", ["Fotball"]], ["ski", "Ski og langrenn", ["Langrenn", "Ski", "Langrenn, hopp og kombinert", "Skiorientering", "Skiskyting", "Hopp"]],
-  ["alpint", "Alpint", ["Alpint"]], ["hockey", "Ishockey og bandy", ["Ishockey", "Bandy"]], ["handball", "Håndball", ["Håndball"]],
-  ["lop", "Løping og friidrett", ["Løping", "Terrengløp", "Friidrett"]], ["sykkel", "Sykling", ["Sykling"]],
+  ["alpint", "Alpint", ["Alpint"]], ["hockey", "Ishockey", ["Ishockey"]], ["bandy", "Bandy", ["Bandy"]], ["handball", "Håndball", ["Håndball"]],
+  ["lop", "Løping", ["Løping", "Terrengløp"]], ["friidrett", "Friidrett", ["Friidrett"]], ["sykkel", "Sykling", ["Sykling"]],
   ["vann", "Vannsport", ["Svømming", "Swimrun", "Triatlon", "Kano", "Roing", "Seiling"]], ["kompass", "Orientering", ["Orientering", "Skiorientering"]],
   ["ball", "Basket, volleyball og innebandy", ["Basketball", "Volleyball", "Innebandy", "Pesäpallo"]]
 ];
@@ -4836,7 +4876,7 @@ function renderForYou() {
   const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
   const picker = `<div class="fypick"><p class="fyq">${t("Hva interesserer deg?")}</p>
       <div class="fychips">${INTERESTS.map(([k, l, sps]) => `<button type="button" class="chip fyint" data-k="${k}" aria-pressed="${likes.has(k)}" style="--kc:${KIND_COLOR[kindOf(sps[0])]}">${icoOf(sps[0])}${t(l)}</button>`).join("")}</div>
-      <label class="fyhome">${t("Hjemsted")} <select id="fyHome">${cityOptions()}</select></label>
+      <div class="fyhome"><span>${t("Hjemsted")}</span>${psHtml("fyHome", home.name === "deg" ? t("Min posisjon") : home.name)}</div>
       <div class="fyacts"><button type="button" class="tablebtn fydone">${t("Ferdig")}</button>${likes.size ? "" : `<button type="button" class="fyskip">${t("Hopp over")}</button>`}</div></div>`;
   const ask = fyEdit || (!likes.size && !fySkip);
   // Mine klubber: live, neste kamp og siste sak
@@ -4858,7 +4898,7 @@ function renderForYou() {
     ${evs.length ? `<div class="fysec"><p class="fyl">${t("Arrangementer nær {x}", { x: esc(homeName) })}</p><div class="fyevs">${evs.map(({ e, km }) => { const d = evDate(e), dt = d ? new Date(d[0] + "T12:00:00") : null;
       return `<button type="button" class="fyev" data-id="${e.id}" style="--kc:${KIND_COLOR[kindOf(e.sport)]}"><span class="fybib"><b>${dt ? dt.getDate() : "—"}</b><small>${esc((dt ? monthName(dt.getMonth() + 1) : monthName(e.m)).slice(0, 3))}</small></span><span class="fyevt"><b>${esc(t(e.t))}</b><span>${esc(t(e.sport))} · ${esc(t(e.place))}${km < 1e9 ? " · " + fmtKm(km) : ""}</span></span></button>`; }).join("")}</div></div>` : ""}`;
   box.querySelectorAll(".fychips .chip").forEach(b => b.onclick = () => { const k = b.dataset.k; likes.has(k) ? likes.delete(k) : likes.add(k); saveLikes(); b.setAttribute("aria-pressed", String(likes.has(k))); });
-  const hs = $("fyHome"); if (hs) hs.onchange = () => { const c = CITIES.find(c => c[0] === hs.value); if (c) { home = { name: c[0], lat: c[1], lon: c[2] }; saveHome(); } };
+  placeSearch($("fyHome"), p => { setHomePlace(p); });
   const done = box.querySelector(".fydone"); if (done) done.onclick = () => { fyEdit = false; render(); };
   const skip = box.querySelector(".fyskip"); if (skip) skip.onclick = () => { fySkip = true; fyEdit = false; try { localStorage.setItem("aurora-idretter-hopp", "1"); } catch (e) {} render(); };
   const ed = box.querySelector(".fyedit"); if (ed) ed.onclick = () => { fyEdit = true; renderForYou(); };
@@ -4949,6 +4989,52 @@ const CITIES = [
 // Nedtrekksliste med byene, gruppert per land
 const cityOptions = (sel = home.name) => (CITIES.some(c => c[0] === sel) ? "" : `<option value="pos" selected>${t("Min posisjon")}</option>`) +
   Object.keys(COUNTRIES).map(c => `<optgroup label="${esc(COUNTRIES[c])}">${CITIES.filter(x => x[3] === c).map(([n]) => `<option${n === sel ? " selected" : ""}>${esc(n)}</option>`).join("")}</optgroup>`).join("");
+// Søk etter hvor du er fra: byene i listen først, så alle steder i Norden fra OpenStreetMap (Photon, søker mens du skriver)
+const setHomePlace = p => { home = { name: p.name, lat: p.lat, lon: p.lon }; saveHome(); };
+const psNorm = x => x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ø/g, "o").replace(/æ/g, "ae").replace(/ð/g, "d").replace(/þ/g, "th");
+const psHtml = (id, val) => `<div class="psearch" id="${id}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg><input type="search" class="psin" value="${esc(val || "")}" placeholder="${t("Søk etter by eller sted")}" aria-label="${t("Hvor bor du?")}" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-autocomplete="list"><ul class="psres" role="listbox" hidden></ul></div>`;
+function placeSearch(box, onPick) {
+  if (!box) return;
+  const inp = box.querySelector(".psin"), ul = box.querySelector(".psres");
+  let items = [], act = -1, timer = 0, seq = 0;
+  const show = () => {
+    ul.hidden = !items.length; inp.setAttribute("aria-expanded", String(!!items.length));
+    ul.innerHTML = items.map((p, i) => `<li role="option" data-i="${i}"${i === act ? ' aria-selected="true"' : ""}>${p.c ? flag(p.c) : ""}<b>${esc(p.name)}</b>${p.sub ? `<small>${esc(p.sub)}</small>` : ""}</li>`).join("");
+  };
+  const pick = p => { inp.value = p.name; items = []; show(); onPick(p); };
+  const local = q => CITIES.filter(([n]) => psNorm(n).startsWith(q)).concat(CITIES.filter(([n]) => !psNorm(n).startsWith(q) && psNorm(n).includes(q)))
+    .slice(0, 6).map(([name, lat, lon, c]) => ({ name, lat, lon, c, sub: COUNTRIES[c] }));
+  const search = () => {
+    const raw = inp.value.trim(), q = psNorm(raw); act = -1;
+    items = q ? local(q) : []; show();
+    clearTimeout(timer); if (q.length < 2) return;
+    const my = ++seq;
+    timer = setTimeout(async () => {
+      try {
+        const tags = ["city", "town", "village", "suburb", "hamlet", "municipality"].map(x => "&osm_tag=place:" + x).join("");
+        const r = await fetch(`https://photon.komoot.io/api/?limit=12&bbox=-25,54,32,72${tags}&q=${encodeURIComponent(raw)}`);
+        const d = await r.json(); if (my !== seq) return;
+        const seen = new Set(items.map(p => psNorm(p.name) + p.c)), rank = { city: 0, town: 1, municipality: 2, village: 3, suburb: 4, hamlet: 5 };
+        (d.features || []).map(f => f.properties && { ...f.properties, ll: f.geometry.coordinates }).filter(x => x && x.name && COUNTRIES[x.countrycode])
+          .sort((a, b) => (rank[a.osm_value] ?? 9) - (rank[b.osm_value] ?? 9))
+          .forEach(x => { const c = x.countrycode, key = psNorm(x.name) + c + (x.osm_value === "suburb" ? x.city || "" : "");
+            if (seen.has(key)) return; seen.add(key);
+            const region = x.osm_value === "suburb" && x.city ? x.city : (x.county || x.state || "");
+            items.push({ name: x.name, lat: +x.ll[1].toFixed(3), lon: +x.ll[0].toFixed(3), c, sub: [region, COUNTRIES[c]].filter(Boolean).join(", ") }); });
+        items = items.slice(0, 8); show();
+      } catch (e) {}
+    }, 350);
+  };
+  inp.addEventListener("input", search);
+  inp.addEventListener("focus", () => inp.select());
+  inp.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") { if (!items.length) return; e.preventDefault(); act = (act + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length; show(); }
+    else if (e.key === "Enter") { if (items.length) { e.preventDefault(); pick(items[Math.max(0, act)]); } }
+    else if (e.key === "Escape") { items = []; show(); }
+  });
+  ul.addEventListener("pointerdown", e => { const li = e.target.closest("li"); if (li) { e.preventDefault(); pick(items[+li.dataset.i]); } });
+  inp.addEventListener("blur", () => setTimeout(() => { items = []; show(); }, 150));
+}
 const setHomeCity = name => { const c = CITIES.find(c => c[0] === name); if (!c) return false; home = { name: c[0], lat: c[1], lon: c[2] }; saveHome(); return true; };
 let home = { name: "Oslo", lat: 59.91, lon: 10.75 };
 try { const h = JSON.parse(localStorage.getItem("idrettsjobber-hjem") || "null"); if (h && typeof h.lat === "number") home = h; } catch (e) {}
@@ -5648,8 +5734,8 @@ function renderMine() {
       <div class="mp-prof"><button type="button" class="mp-ava" id="mpAva" aria-label="${t(avatarUrl ? "Bytt profilbilde" : "Legg til profilbilde")}" title="${t(avatarUrl ? "Bytt profilbilde" : "Legg til profilbilde")}">${avatarHtml()}<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i></button>
         <b>${greet()}${name ? ", " + esc(name) : ""}</b>
         <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
-        <label class="mp-city">${t("Hjemsted")} <select id="mpHome" aria-label="${t("Hjemsted")}">${cityOptions()}</select></label><div class="mp-tags">${INTERESTS.filter(([k]) => likes.has(k)).map(([, l]) => `<span>${esc(t(l))}</span>`).join("")}</div>
-        <div class="mp-acts"><button type="button" class="mp-edit" id="mpEdit">${t("Endre interesser")} →</button>${avatarUrl ? `<button type="button" class="mp-edit" id="mpAvaDel">${t("Fjern bildet")}</button>` : ""}</div></div>
+        <div class="mp-city"><span>${t("Hjemsted")}</span>${psHtml("mpHome", homeName)}</div>
+        <div class="mp-acts"><button type="button" class="mp-edit" data-go="mpInt">${t("Endre interesser")} ↓</button>${avatarUrl ? `<button type="button" class="mp-edit" id="mpAvaDel">${t("Fjern bildet")}</button>` : ""}</div></div>
       ${SUPA.key && !authUser ? `<div class="mp-login"><p>${t("Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.")}</p><div class="btns"><button type="button" class="cta" id="mpLogin">${t("Logg inn eller lag bruker")}</button></div></div>` : ""}
       <div class="mp-stats">
         <button type="button" data-go="mpClubs"><b>${mine.length}</b><small>${t("Klubber du følger")}</small></button>
@@ -5658,6 +5744,7 @@ function renderMine() {
       </div>
     </aside>
     <div class="mp-main">
+      ${sec("mpInt", t("Hva interesserer deg?"), `<p>${t("Velg idrettene du liker, så tilpasser vi jobbene, kursene og arrangementene til deg.")}</p><div class="mp-ints">${INTERESTS.map(([k, l, sps]) => `<button type="button" class="chip mp-int" data-k="${k}" aria-pressed="${likes.has(k)}" style="--kc:${KIND_COLOR[kindOf(sps[0])]}">${icoOf(sps[0])}${t(l)}</button>`).join("")}</div>`, "")}
       ${sec("mpRec", t("Anbefalt for deg"), (rj.length ? `<p class="mp-h4">${t("Jobber")}</p><div class="mp-rec">${rj.map(({ j, why }) => card(`data-job="${j.id}"`, j.t, `${esc(j.emp)} · ${flag(j.c)} ${esc(j.place)}`, why)).join("")}</div>` : "")
         + (ru.length ? `<p class="mp-h4">${t("Kurs og utdanning")}</p><div class="mp-rec">${ru.map(({ u, why }) => `<a class="mp-card" href="${u.url}" target="_blank" rel="noopener"><b>${esc(u.t)}</b><small>${esc(u.org)} · ${flag(u.c)} ${esc(t(u.place))}</small><span class="why">${esc(why)}</span></a>`).join("")}</div>` : "")
         + (re.length ? `<p class="mp-h4">${t("Arrangementer")}</p><div class="mp-rec">${re.map(({ e, km, lk }) => card(`data-ev="${e.id}"`, t(e.t), `${esc(evWhen(e))} · ${flag(e.c)} ${esc(e.place)}`, lk ? t("Fordi du liker {x}", { x: t(e.sport).toLowerCase() }) : t("Nær {x}", { x: homeName }), KIND_COLOR[kindOf(e.sport)])).join("")}</div>` : "")
@@ -5674,11 +5761,11 @@ function renderMine() {
   body.querySelectorAll(".svt").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
   body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.rm.split("|"); k === "job" ? toggleFav(id) : toggleEvSave(id); render(); });
   body.querySelectorAll("[data-go]").forEach(b => b.onclick = () => $(b.dataset.go).scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }));
-  $("mpEdit").onclick = () => { fyEdit = true; setTab("forside", true); render(); setTimeout(() => { const f = $("foryou"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150); };
+  body.querySelectorAll(".mp-int").forEach(b => b.onclick = () => { const k = b.dataset.k; likes.has(k) ? likes.delete(k) : likes.add(k); saveLikes(); const y = scrollY; renderMine(); scrollTo(0, y); });
   if ($("mpLogin")) $("mpLogin").onclick = () => askLogin("");
   $("mpAva").onclick = pickAvatar;
   if ($("mpAvaDel")) $("mpAvaDel").onclick = removeAvatar;
-  $("mpHome").onchange = e => { if (setHomeCity(e.target.value)) render(); };
+  placeSearch($("mpHome"), p => { setHomePlace(p); render(); });
 }
 $("mineBtn").onclick = openMine;
 function closeJob() {
