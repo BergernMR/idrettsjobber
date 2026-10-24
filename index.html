@@ -1243,6 +1243,9 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 .sechero::before { display: none; }
 .eyebrow { color: var(--accent); }
 .sechero { border-top: 5px solid var(--accent); }
+.sechero.slim { gap: 8px; padding: clamp(18px, 3vw, 28px) clamp(20px, 4vw, 36px); border-top-width: 4px; }
+.sechero.slim h2 { font-size: clamp(26px, 3.6vw, 36px); }
+.sechero.slim p.txt { font-size: clamp(15px, 1.6vw, 16.5px); max-width: 60ch; }
 @media (max-width: 900px) { .glist { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) {
   body.home header { min-height: 0; padding: 18px 0 26px; }
@@ -3942,6 +3945,7 @@ function renderTabs() {
   document.body.dataset.tab = state.tab;
   const hero = SECHERO[state.tab];
   $("sechero").hidden = !hero;
+  $("sechero").classList.toggle("slim", state.tab === "minside");
   if (hero) $("sechero").innerHTML = `<p class="kick">${TABS[state.tab]}</p><h2>${t(hero[0])}</h2><p class="txt">${t(hero[1])}</p>${hero[2] ? `<small>${t(hero[2])}</small>` : ""}`;
   updateFilterBtns();
   $("board").setAttribute("aria-label", BOARD_LABEL[state.tab]);
