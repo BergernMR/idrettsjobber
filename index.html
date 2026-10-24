@@ -1061,6 +1061,9 @@ header .gsearch { position: relative; justify-self: end; width: min(100%, 340px)
 .gres .gr { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 8px 10px; border: 0; border-radius: 12px; background: none; color: var(--fg); font: inherit; text-decoration: none; cursor: pointer; }
 .gres .gr:hover, .gres .gr:focus-visible { background: var(--surface-2); outline: none; }
 .gres .gr .flag { width: 18px; height: 13px; flex: none; }
+.gres .gava { flex: none; display: grid !important; place-items: center; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; background: #7fe0b7; color: #14211d; font-weight: 800; font-size: 14px; }
+.gres .gava img { width: 100%; height: 100%; object-fit: cover; }
+.gres .gr .ostar svg { width: 14px; height: 14px; }
 .gres .gr span { display: grid; min-width: 0; }
 .gres .gr b { font-size: 14.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gres .gr small { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2064,6 +2067,8 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Profiler": ["Profiler","Profiler","Profiilit","Prófílar","Profiles"],
+"Bruker på Aurora": ["Användare på Aurora","Bruger på Aurora","Auroran käyttäjä","Notandi á Aurora","Aurora member"],
 "Eier av Aurora": ["Ägare av Aurora","Ejer af Aurora","Auroran omistaja","Eigandi Aurora","Owner of Aurora"],
 "Vis profilbildet": ["Visa profilbilden","Vis profilbilledet","Näytä profiilikuva","Sýna prófílmyndina","Show profile picture"],
 "Vis logoen større": ["Visa logotypen större","Vis logoet større","Näytä logo isompana","Sýna merkið stærra","Show the logo larger"],
@@ -3434,6 +3439,17 @@ function setupGlobalSearch() {
     box.innerHTML = gs.length ? gs.map(([tab, rs]) => `<div class="gg"><h4>${ICON_TAB(tab)}${TABS[tab]}<span>${rs.length}</span></h4>${rs.slice(0, 4).map(item).join("")}${rs.length > 4 ? `<button type="button" class="gall" data-tab="${tab}">${t("Vis alle {n}", { n: rs.length })} →</button>` : ""}</div>`).join("")
       : `<p class="gnone">${t("Ingen treff på «{q}»", { q: esc(q.value.trim()) })}</p>`;
     box.hidden = false; q.setAttribute("aria-expanded", "true");
+    findProfiles(q.value.trim());
+  };
+  // Andre brukere (bare brukernavn og bilde) hentes fra databasen og legges øverst når svaret kommer
+  let pseq = 0, profs = [];
+  const findProfiles = async v => {
+    const my = ++pseq; if (!authUser || !sb || !v) return;
+    const r = await sb.rpc("search_profiles", { q: v }); if (my !== pseq || box.hidden) return;
+    profs = (r.data || []).filter(p => p.id !== authUser.id); if (!profs.length) return;
+    const nn = box.querySelector(".gnone"); if (nn) nn.remove();
+    box.insertAdjacentHTML("afterbegin", `<div class="gg"><h4><svg viewBox="0 0 24 24" aria-hidden="true">${ICON.minside}</svg>${t("Profiler")}<span>${profs.length}</span></h4>${profs.slice(0, 5).map((p, i) =>
+      `<button type="button" class="gr" data-prof="${i}"><span class="gava">${p.avatar ? `<img src="${esc(p.avatar)}" alt="" loading="lazy">` : esc(p.username[0].toUpperCase())}</span><span><b>${esc(p.username)}${ownerStar(p.id)}</b><small>${t(p.id === OWNER_ID ? "Eier av Aurora" : "Bruker på Aurora")}</small></span></button>`).join("")}</div>`);
   };
   let timer; q.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(show, 120); });
   q.addEventListener("focus", () => { if (q.value.trim()) show(); });
@@ -3447,7 +3463,8 @@ function setupGlobalSearch() {
   box.addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) { close(); return; }
     close();
-    if (b.dataset.job) openJob(b.dataset.job);
+    if (b.dataset.prof) openProfile(profs[+b.dataset.prof]);
+    else if (b.dataset.job) openJob(b.dataset.job);
     else if (b.dataset.ev) openEvent(b.dataset.ev);
     else if (b.dataset.club) openClub(b.dataset.club);
     else if (b.dataset.tab) {
@@ -3459,6 +3476,8 @@ function setupGlobalSearch() {
   });
   document.addEventListener("pointerdown", e => { if (!e.target.closest(".gsearch")) close(); });
 }
+// En annen brukers profil: bare navn og bilde, forstørret. E-posten vises aldri for andre.
+const openProfile = p => p && lightbox({ img: p.avatar, letter: p.username[0], round: true, name: esc(p.username) + ownerStar(p.id), sub: t(p.id === OWNER_ID ? "Eier av Aurora" : "Bruker på Aurora") });
 const ICON_TAB = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>`;
 function renderFoot() {
   const f = $("sitefoot"); if (!f) return;
