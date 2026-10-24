@@ -423,10 +423,15 @@ table.league td.team { white-space: normal; }
 /* List */
 .count { font-family: var(--font-display); font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
 .count small { font-family: var(--font-body); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--muted); }
-.sortsel { position: relative; display: inline-flex; align-items: center; font-family: var(--font-body); font-weight: 400; text-transform: none; letter-spacing: 0; }
-.sortsel select { appearance: none; -webkit-appearance: none; font: inherit; font-size: 14px; color: var(--muted); background: transparent; border: 0; padding: 4px 22px 4px 6px; border-radius: 8px; cursor: pointer; text-align: right; }
-.sortsel select:hover, .sortsel select:focus-visible { color: var(--fg); background: color-mix(in oklab, var(--muted) 12%, transparent); }
-.sortsel svg { position: absolute; right: 4px; width: 14px; height: 14px; fill: none; stroke: var(--muted); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.sortsel { position: relative; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-body); font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 14px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 0 12px 0 12px; box-shadow: 0 1px 2px rgb(0 0 0 / .05); transition: border-color .15s, box-shadow .15s; }
+.sortsel:hover { border-color: color-mix(in oklab, var(--accent) 45%, var(--line)); box-shadow: 0 2px 8px rgb(0 0 0 / .08); }
+.sortsel:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent); }
+.sortsel .sico { width: 16px; height: 16px; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.sortsel .slbl { color: var(--muted); font-weight: 500; }
+.sortsel select { appearance: none; -webkit-appearance: none; font: inherit; color: var(--fg); background: transparent; border: 0; padding: 8px 20px 8px 0; cursor: pointer; outline: none; }
+.sortsel .chev { position: absolute; right: 10px; width: 14px; height: 14px; fill: none; stroke: var(--muted); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+@media (max-width: 480px) { .sortsel .slbl { display: none; } }
 .homerow { margin: -4px 0 12px; }
 .clogo { width: 22px; height: 22px; object-fit: contain; vertical-align: -5px; margin-right: 8px; flex: none; }
 .clogo.big { width: 44px; height: 44px; vertical-align: -9px; margin-right: 12px; }
@@ -525,6 +530,11 @@ table.league .clogo { width: 18px; height: 18px; vertical-align: -4px; margin-ri
 .minebtn.in { background: var(--accent); border-color: var(--accent); color: #fff; }
 .minebtn.in svg { display: none; }
 @media (max-width: 560px) { .tbtns #clubsBtn, .tbtns #savedBtn { display: none; } }
+.mpage { display: grid; gap: 18px; align-items: start; }
+@media (min-width: 900px) { .mpage { grid-template-columns: 320px minmax(0, 1fr); } .mp-side { position: sticky; top: 84px; } }
+.mp-side, .mp-main { display: grid; gap: 14px; align-content: start; }
+.mpage .mp-sec { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px 20px; box-shadow: var(--shadow); }
+@media (min-width: 900px) { .mp-side .mp-stats { grid-template-columns: 1fr; } .mp-side .mp-stats button { display: flex; align-items: baseline; gap: 10px; } }
 .mp-prof { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #14322a, #1d5a47); color: #fff; }
 .mp-prof .aava { grid-row: span 2; display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: #7fe0b7; color: #14211d; font-weight: 800; font-size: 22px; }
 .mp-prof b { font-size: 19px; }
@@ -834,6 +844,9 @@ dialog .sheet { border-radius: 24px; }
 /* Glidende markør i menyene, og sidene glir inn */
 .tabs { position: relative; }
 .tabbtn, .dock button { position: relative; z-index: 1; transition: color .3s ease; }
+.tabbtn, .dock button span { white-space: nowrap; }
+.mp-card small .flag { display: inline-block; }
+.mp-login .cta { font: inherit; font-weight: 700; border: 0; cursor: pointer; justify-self: start; }
 .tabs .pill, .dock .pill { position: absolute; z-index: 0; left: 0; top: 0; border-radius: 999px; background: var(--fg); pointer-events: none; transition: transform .38s cubic-bezier(.3,1.3,.5,1), width .38s cubic-bezier(.3,1.3,.5,1), height .3s ease; }
 .tabs.glide .tabbtn[aria-current="page"], .dock.glide button[aria-current="page"] { background: transparent; }
 .tabs.glide .tabbtn[aria-current="page"]:hover, .dock.glide button[aria-current="page"]:hover { background: transparent; }
@@ -1161,6 +1174,8 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
   </header>
   <section class="sechero" id="sechero" hidden></section>
 
+  <div class="tab" id="tab-minside" hidden><div class="mpage" id="mpage"></div></div>
+
   <div class="tab" id="tab-forside" hidden>
     <section class="hub" id="hub" aria-label="Snarveier"></section>
     <section class="livestrip" id="liveStrip" hidden></section>
@@ -1188,7 +1203,7 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
   </section>
 
   <section aria-live="polite">
-    <div class="count"><span id="count"></span><label class="sortsel"><select id="sortSel" aria-label="Sorter"></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></label></div>
+    <div class="count"><span id="count"></span><label class="sortsel"><svg class="sico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M3.5 16.5L7 20l3.5-3.5M17 20V4M13.5 7.5L17 4l3.5 3.5"/></svg><span class="slbl">Sorter:</span><select id="sortSel" aria-label="Sorter"></select><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></label></div>
     <div class="row homerow" id="homeRow" hidden>
       <span class="row-label">Jeg bor i</span>
       <select id="home" class="home-select" aria-label="Velg hvor du bor"></select>
@@ -1888,6 +1903,9 @@ const I18N = {
 "Formel 1": ["Formel 1","Formel 1","Formula 1","Formúla 1","Formula 1"],
 "Motorsport": ["Motorsport","Motorsport","Moottoriurheilu","Akstursíþróttir","Motorsport"],
 "Rally": ["Rally","Rally","Ralli","Rall","Rally"],
+"Din plass i idretten": ["Din plats i idrotten","Din plads i idrætten","Paikkasi urheilussa","Þinn staður í íþróttunum","Your place in sport"],
+"For deg som vil delta eller jobbe i idretten. Her samles klubbene, jobbene og arrangementene dine, og forslag som passer akkurat deg.": ["För dig som vill delta eller jobba inom idrotten. Här samlas dina klubbar, jobb och evenemang, och förslag som passar just dig.","Til dig, der vil deltage eller arbejde i idrætten. Her samles dine klubber, job og arrangementer og forslag, der passer netop dig.","Sinulle, joka haluat osallistua tai tehdä töitä urheilussa. Täällä ovat seurasi, työpaikkasi ja tapahtumasi sekä juuri sinulle sopivat ehdotukset.","Fyrir þig sem vilt taka þátt eða starfa í íþróttum. Hér safnast félögin, störfin og viðburðirnir þínir, og tillögur sem henta þér.","For you who want to take part or work in sport. Your clubs, jobs and events in one place, with suggestions that suit you."],
+"Sorter:": ["Sortera:","Sortér:","Järjestä:","Raða:","Sort:"],
 "Futsal": ["Futsal", "Futsal", "Futsal", "Futsal", "Futsal"],
 "Slutten av januar": ["Slutet av januari", "Slutningen af januar", "Tammikuun lopussa", "Í lok janúar", "Late January"],
 "Midten av august": ["Mitten av augusti", "Midten af august", "Elokuun puolivälissä", "Um miðjan ágúst", "Mid-August"],
@@ -3022,7 +3040,7 @@ function setupSettings() {
   };
   const close = () => { pop.hidden = true; btn.setAttribute("aria-expanded", "false"); };
   openSettings = () => { draw(); pop.hidden = false; btn.setAttribute("aria-expanded", "true"); };
-  redrawAuth = () => { if (!pop.hidden) draw(); if (typeof updMine === "function") updMine(); if (typeof renderForYou === "function" && $("foryou")) renderForYou(); };
+  redrawAuth = () => { if (!pop.hidden) draw(); if (typeof updMine === "function") updMine(); if (typeof renderForYou === "function" && $("foryou")) renderForYou(); if (state.tab === "minside" && typeof renderMine === "function") renderMine(); };
   btn.onclick = () => { if (!pop.hidden) return close(); draw(); pop.hidden = false; btn.setAttribute("aria-expanded", "true"); pop.querySelector("[aria-checked=true]").focus(); };
   document.addEventListener("pointerdown", e => { if (!e.target.closest("#setPop, #setBtn")) close(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !pop.hidden) { close(); btn.focus(); } });
@@ -3142,7 +3160,7 @@ function renderCats() {
 
 function render() {
   renderTabs(); renderBoard();
-  ({ forside: renderHome, jobber: renderJobs, utdanning: renderEdu, arrangementer: renderEvents, klubber: renderClubs })[state.tab]();
+  ({ forside: renderHome, minside: renderMine, jobber: renderJobs, utdanning: renderEdu, arrangementer: renderEvents, klubber: renderClubs })[state.tab]();
   syncFlag();
   if (typeof paintLive === "function" && Object.keys(LIVE).length) paintLive();
 }
@@ -3517,7 +3535,7 @@ const CLUBS = {
 };
 
 // ---------- Faner ----------
-const TABS = tmap({ forside: "Forside", jobber: "Jobber", utdanning: "Utdanning", arrangementer: "Arrangementer", klubber: "Klubber" });
+const TABS = tmap({ forside: "Forside", minside: "Min side", jobber: "Jobber", utdanning: "Utdanning", arrangementer: "Arrangementer", klubber: "Klubber" });
 const MONTHS = ["januar","februar","mars","april","mai","juni","juli","august","september","oktober","november","desember"];
 // Nøyaktige datoer for neste gang arrangementet går, hentet 23. oktober 2026 fra arrangørene, FIS, Ski Classics og løpskalendere.
 // Når datoen har passert, faller siden tilbake til måneden arrangementet pleier å gå.
@@ -3563,7 +3581,8 @@ const SECHERO = {
   jobber: ["Utvalgte stillinger i nordisk idrett", "Trenere, ledere, instruktører og mer, håndplukket fra de største jobbsidene i Norden.", "Sist oppdatert 24. oktober 2026"],
   utdanning: ["Bli bedre i idretten", "Studier, trenerkurs og folkehøgskoler som gjør deg klar for neste steg."],
   arrangementer: ["Øyeblikkene du vil være med på", "Fra Birken til Gothia Cup. Store løp, turneringer og mesterskap gjennom hele året."],
-  klubber: ["Lagene du heier på", "Følg klubbene dine i hele Norden og samle dem på ett sted."]
+  klubber: ["Lagene du heier på", "Følg klubbene dine i hele Norden og samle dem på ett sted."],
+  minside: ["Din plass i idretten", "For deg som vil delta eller jobbe i idretten. Her samles klubbene, jobbene og arrangementene dine, og forslag som passer akkurat deg."]
 };
 // Filtrene ligger bak én knapp, så delene ser rolige ut
 const FILTER_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>';
@@ -3701,7 +3720,7 @@ function renderTabs() {
   document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + state.tab);
   $("stamp").innerHTML = STAMP[state.tab];
   const home = state.tab === "forside";
-  $("board").hidden = $("stamp").hidden = $("hlede").hidden = home;
+  $("board").hidden = $("stamp").hidden = $("hlede").hidden = home || state.tab === "minside";
   if (home) startHero();
   $("herohead").innerHTML = home ? `${t("Finn din plass i")} <em>${t("nordisk idrett")}</em>` : "";
   document.body.classList.toggle("home", home);
@@ -4347,8 +4366,8 @@ const FAN = [
   ["x-fi-orientering-tampereen-pyrinto-suunnistus", "FI", "Tampereen Pyrintö Suunnistus", "Orientering", "Tammerfors", 61.5, 23.76, ""],
   ["x-dk-orientering-ok-pan-arhus", "DK", "OK Pan Århus", "Orientering", "Aarhus", 56.16, 10.2, ""]
 ].map(([id, c, n, sport, city, lat, lon, url, div]) => ({ id, c, n, sport, city, geo: lat === null ? null : [city, lat, lon], url, div }));
-// Klubblogoer for de to øverste fotballdivisjonene i hvert land (hentet fra FotMob, lagret i img/logo)
-const LOGO = new Set(["aab","agf","aik","bajen","bif","brann","breidablik","dif","dkfb-aarhus-fremad","dkfb-ab","dkfb-ac-horsens","dkfb-esbjerg-fb","dkfb-fc-fredericia","dkfb-hb-koge","dkfb-hillerod-fodbold","dkfb-hobro-ik","dkfb-hvidovre-if","dkfb-kolding-if","dkfb-lyngby-bk","dkfb-sonderjyske","dkfb-vejle-boldklub","dkfb-vendsyssel-ff","dkfb-viborg-ff","elfsborg","fck","fcm","fcn","ffk","fh","fifb-ac-oulu","fifb-eif","fifb-fc-haka","fifb-fc-ktp","fifb-ff-jaro","fifb-if-gnistan","fifb-japs","fifb-jippo","fifb-kapa","fifb-klubi-04","fifb-mp","fifb-pk-35","fifb-sjk-akatemia","fifb-tps","glimt","godset","hacken","hamkam","hjk","ia","ifkg","ifkm","ifkn","ilvesf","inter","isfb-aegir","isfb-afturelding","isfb-fram","isfb-fylkir","isfb-grindavik","isfb-grotta","isfb-hk","isfb-ibv","isfb-ir","isfb-keflavik","isfb-leiknir-reykjavik","isfb-njardvik","isfb-thor-akureyri","isfb-throttur-reykjavik","isfb-vestri","isfb-volsungur","ka","kbk","kr","kups","lsk","mff","mfk","nofb-aalesund","nofb-asane","nofb-bryne","nofb-egersund","nofb-haugesund","nofb-hodd","nofb-ik-start","nofb-kfum-oslo","nofb-kongsvinger","nofb-lyn","nofb-moss","nofb-ranheim","nofb-raufoss","nofb-sandefjord","nofb-sandnes-ulf","nofb-sogndal","nofb-stabaek","nofb-strommen","ob","odd","randers","rbk","s08","sefb-brommapojkarna","sefb-degerfors","sefb-falkenbergs-ff","sefb-gais","sefb-gif-sundsvall","sefb-halmstads-bk","sefb-helsingborgs-if","sefb-ifk-varnamo","sefb-ik-brage","sefb-ik-oddevold","sefb-kalmar-ff","sefb-landskrona-bois","sefb-ljungskile-sk","sefb-mjallby","sefb-nordic-united-fc","sefb-norrby-if","sefb-orebro-sk","sefb-orgryte","sefb-osters-if","sefb-ostersunds-fk","sefb-sandvikens-if","sefb-sirius","sefb-varbergs-bois","sefb-vasteras-sk","sif","sjk","stjarnan","til","valur","vif","viking","vikingur","vps"]);
+// Klubblogoer (fotball fra FotMob, andre idretter fra TheSportsDB), lagret i img/logo
+const LOGO = new Set(["aab","aalh","agf","aik","bajen","bif","bluefox","brann","breidablik","brynas","dif","dkfb-aarhus-fremad","dkfb-ab","dkfb-ac-horsens","dkfb-asa-aarhus","dkfb-b-93","dkfb-bk-frem","dkfb-brabrand-if","dkfb-bronshoj-bk","dkfb-esbjerg-fb","dkfb-fa-2000","dkfb-fc-fredericia","dkfb-fc-helsingor","dkfb-fc-roskilde","dkfb-fremad-amager","dkfb-hb-koge","dkfb-hik","dkfb-hillerod-fodbold","dkfb-hobro-ik","dkfb-holbaek-b-i","dkfb-holstebro-bk","dkfb-horsholm-usserod-ik","dkfb-hvidovre-if","dkfb-ishoj-if","dkfb-kolding-if","dkfb-lyngby-bk","dkfb-middelfart","dkfb-naesby-bk","dkfb-naestved-bk","dkfb-nykobing-fc","dkfb-ringsted-if","dkfb-skive-ik","dkfb-sonderjyske","dkfb-sundby-bk","dkfb-thisted-fc","dkfb-vanlose-if","dkfb-vejle-boldklub","dkfb-vendsyssel-ff","dkfb-viborg-ff","dkfb-vsk-aarhus","elfsborg","elverum","esbjerg","fbk","fck","fcm","fcn","ffk","fh","fifb-ac-oulu","fifb-eif","fifb-fc-haka","fifb-fc-inter-turku-ii","fifb-fc-jazz","fifb-fc-ktp","fifb-ff-jaro","fifb-if-gnistan","fifb-japs","fifb-jippo","fifb-jjk-jyvaskyla","fifb-kapa","fifb-klubi-04","fifb-kpv","fifb-kups-akatemia","fifb-mp","fifb-ols","fifb-pk-35","fifb-pk-keski-uusimaa","fifb-rops","fifb-salpa","fifb-sjk-akatemia","fifb-tampere-united","fifb-tps","fifb-tpv","fifb-vjs","frisk","frolunda","glimt","godset","gog","hacken","hamkam","haukar","hjk","hv71","ia","ifkg","ifkm","ifkn","ilves","ilvesf","inter","isfb-aegir","isfb-afturelding","isfb-dalvik-reynir","isfb-fjolnir","isfb-fram","isfb-fylkir","isfb-grindavik","isfb-grotta","isfb-haukar","isfb-hk","isfb-hviti-riddarinn","isfb-ibv","isfb-ir","isfb-kari","isfb-keflavik","isfb-kfa","isfb-kfg","isfb-kormakur-hvot","isfb-leiknir-reykjavik","isfb-magni","isfb-njardvik","isfb-selfoss","isfb-thor-akureyri","isfb-throttur-reykjavik","isfb-throttur-vogum","isfb-vestri","isfb-vikingur-olafsvik","isfb-volsungur","jyp","ka","kalpa","karpat","kbk","keflavik","kolstad","kr","kups","leksand","lhf","lsk","lukko","mff","mfk","nofb-aalesund","nofb-aalesund-2","nofb-akra","nofb-alta","nofb-arendal","nofb-asane","nofb-asane-2","nofb-asker","nofb-askoy","nofb-austevoll","nofb-baerum","nofb-bjarg","nofb-bjorkelangen","nofb-bossekop","nofb-brann-2","nofb-brattvag","nofb-brodd","nofb-brumunddal","nofb-bryne","nofb-byasen","nofb-djerv-1919","nofb-drobak-frogn","nofb-egersund","nofb-eidsvold-turn","nofb-eik-tonsberg","nofb-elverum","nofb-fana","nofb-fauske-sprint","nofb-finnsnes","nofb-flekkeroy","nofb-floya","nofb-follo","nofb-forde","nofb-fram-larvik","nofb-frigg","nofb-fyllingsdalen","nofb-gjovik-lyn","nofb-gneist","nofb-grei","nofb-grorud","nofb-harstad","nofb-haugesund","nofb-haugesund-2","nofb-heming","nofb-herd","nofb-hinna","nofb-hodd","nofb-honefoss","nofb-ik-start","nofb-jerv","nofb-junkeren","nofb-kfum-oslo","nofb-kfum-oslo-2","nofb-kjelsas","nofb-kongsvinger","nofb-kongsvinger-2","nofb-konnerud","nofb-kvik","nofb-kvik-halden","nofb-levanger","nofb-lillehammer","nofb-lillestrom-2","nofb-lokomotiv-oslo","nofb-lorenskog","nofb-lyn","nofb-lyn-2","nofb-lysekloster","nofb-madla","nofb-mandalskameratene","nofb-melhus","nofb-mjondalen","nofb-molde-2","nofb-moss","nofb-nardo","nofb-nordstrand","nofb-notodden","nofb-ntnui","nofb-odd-2","nofb-oppsal","nofb-orkla","nofb-orn-horten","nofb-os","nofb-pors","nofb-rade","nofb-raelingen","nofb-rana","nofb-ranheim","nofb-ranheim-2","nofb-raufoss","nofb-ready","nofb-rosenborg-2","nofb-sandefjord","nofb-sandefjord-2","nofb-sandnes-ulf","nofb-sandviken","nofb-sarpsborg-08-2","nofb-skedsmo","nofb-skeid","nofb-skjervoy","nofb-skjetten","nofb-sogndal","nofb-sogndal-2","nofb-sotra","nofb-spjelkavik","nofb-staal-jorpeland","nofb-stabaek","nofb-stabaek-2","nofb-stjordals-blink","nofb-stord","nofb-strindheim","nofb-strommen","nofb-stromsgodset-2","nofb-traeff","nofb-tromsdalen","nofb-tromso-2","nofb-trygg-lade","nofb-ulfstind","nofb-ullensaker-kisa","nofb-ullern","nofb-union-carl-berner","nofb-vag","nofb-valerenga-2","nofb-vard-haugesund","nofb-varegg","nofb-varhaug","nofb-vidar","nofb-viking-2","nofb-vindbjart","nofb-volda","ob","odd","odh","oilers","pirates","randers","rbk","rogle","rungsted","s08","saik","savehof","sefb-afc-eskilstuna","sefb-afc-malmo","sefb-angelholms-ff","sefb-assyriska-ff","sefb-atvidabergs-ff","sefb-bk-olympic","sefb-brommapojkarna","sefb-degerfors","sefb-enkopings-sk","sefb-eskilsminne-if","sefb-falkenbergs-ff","sefb-fbk-karlstad","sefb-fc-arlanda","sefb-fc-jarfalla","sefb-fc-rosengard","sefb-fc-stockholm","sefb-gais","sefb-gefle-if","sefb-gif-sundsvall","sefb-halmstads-bk","sefb-hammarby-tff","sefb-hassleholms-if","sefb-helsingborgs-if","sefb-if-karlstad","sefb-ifk-stocksund","sefb-ifk-varnamo","sefb-ik-brage","sefb-ik-oddevold","sefb-jonkopings-sodra","sefb-kalmar-ff","sefb-karlbergs-bk","sefb-kristianstad-fc","sefb-laholms-fk","sefb-landskrona-bois","sefb-ljungskile-sk","sefb-lunds-bk","sefb-mjallby","sefb-nordic-united-fc","sefb-norrby-if","sefb-orebro-sk","sefb-orgryte","sefb-osters-if","sefb-ostersunds-fk","sefb-pitea-if","sefb-sandvikens-if","sefb-sirius","sefb-skovde-aik","sefb-sollentuna-fk","sefb-trelleborgs-ff","sefb-trollhattan-fc","sefb-tvaakers-if","sefb-umea-fc","sefb-utsiktens-bk","sefb-varbergs-bois","sefb-vasalunds-if","sefb-vasteras-sk","sif","sjk","stjarnan","storhamar","tappara","til","tindastoll","valur","valurh","vif","viking","vikingur","vps","ystad"]);
 const clubLogo = (k, cls = "clogo") => k && LOGO.has(k.id) ? `<img class="${cls}" src="img/logo/${k.id}.webp" alt="" width="64" height="64" loading="lazy" decoding="async">` : "";
 // Rekkefølgen på divisjonene, øverst først
 const DIV_ORDER = [...new Set(FAN.filter(k => k.div).map(k => k.div))];
@@ -4677,6 +4696,7 @@ const FRONT_PHOTOS = [
   ["jobber", "Jobb med idrett", "Jeffrey F Lin", "https://unsplash.com/photos/three-men-standing-on-football-field-pSHpFB5WNUE"]
 ];
 const ICON = {
+  minside: '<circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4 4-6.5 8-6.5s7.2 2.5 8 6.5"/>',
   klubber: '<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9.5" r="2.4"/><path d="M3.5 19c.6-3.3 2.8-5 5.5-5s4.9 1.7 5.5 5M14.5 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 3.7 1.4 4.2 4"/>',
   arrangementer: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
   utdanning: '<path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.5c1.5 1.4 3.4 2 5.5 2s4-.6 5.5-2v-4.5M21.5 9.5v5"/>',
@@ -5035,7 +5055,8 @@ function drawMap(cfg) {
   wrap.querySelector('[data-z="out"]').onclick = () => zoomBy(.5);
   wrap.querySelector('[data-z="home"]').onclick = () => { MAPLIFT[cfg.id] = ""; svg.querySelectorAll(".land").forEach(p => p.classList.remove("lift", "dim")); animateTo({ x: 0, y: 0, w: MAP.W }); };
   jump.querySelectorAll("button").forEach(btn => btn.onclick = () => {
-    const c = btn.dataset.c;
+    // Trykk på samme land igjen for å slå av markeringen
+    const c = btn.dataset.c && MAPLIFT[cfg.id] === btn.dataset.c ? "" : btn.dataset.c;
     MAPLIFT[cfg.id] = c || "";
     jump.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.c === c)));
     svg.querySelectorAll(".land").forEach(p => { p.classList.toggle("lift", !!c && p.dataset.c === c); p.classList.toggle("dim", !!c && p.dataset.c !== c); });
@@ -5517,8 +5538,10 @@ function updMine() {
   $("mineN").hidden = !due; $("mineN").textContent = due; b.classList.toggle("due", due > 0); b.classList.toggle("live", live);
   b.setAttribute("aria-label", t("Min side")); b.title = t("Min side");
 }
-function openMine() {
-  curSheet = openMine; updMine();
+function openMine() { closeJob(); setTab("minside"); scrollTo({ top: 0, behavior: reduceMotion() ? "auto" : "smooth" }); }
+// Min side er en egen del av siden, ikke et vindu
+function renderMine() {
+  updMine();
   const name = authUser ? (authName() || (authUser.email || "").split("@")[0]) : "";
   const items = savedItems(), jobs = items.filter(i => i.kind === "job"), evs = items.filter(i => i.kind === "ev");
   const mine = FAN.filter(k => follows.has(k.id)).sort((a, b) => (nextMatch(a) ? nextMatch(a)[0] : "9") < (nextMatch(b) ? nextMatch(b)[0] : "9") ? -1 : 1);
@@ -5535,14 +5558,8 @@ function openMine() {
   const rj = recJobs(), ru = recEdu(), re = recEvents(), rc = mine.length >= 3 ? [] : recClubs();
   const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
   const sec = (id, title, body, empty) => `<section class="mp-sec" id="${id}"><h3>${title}</h3>${body || `<p>${empty}</p>`}</section>`;
-  $("sheetBody").innerHTML = `
-    <div class="sheet-top">
-      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="s-eyebrow">Aurora</div>
-      <h2 class="s-title" id="s-title">${t("Min side")}</h2>
-      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    </div>
-    <div class="sheet-body">
+  $("mpage").innerHTML = `
+    <aside class="mp-side">
       <div class="mp-prof"><span class="aava">${esc((name || "?")[0].toUpperCase())}</span>
         <b>${greet()}${name ? ", " + esc(name) : ""}</b>
         <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
@@ -5554,6 +5571,8 @@ function openMine() {
         <button type="button" data-go="mpJobs"><b>${jobs.length}</b><small>${t("Lagrede jobber")}</small></button>
         <button type="button" data-go="mpEvs"><b>${evs.length}</b><small>${t("Lagrede arrangementer")}</small></button>
       </div>
+    </aside>
+    <div class="mp-main">
       ${sec("mpRec", t("Anbefalt for deg"), (rj.length ? `<p class="mp-h4">${t("Jobber")}</p><div class="mp-rec">${rj.map(({ j, why }) => card(`data-job="${j.id}"`, j.t, `${esc(j.emp)} · ${flag(j.c)} ${esc(j.place)}`, why)).join("")}</div>` : "")
         + (ru.length ? `<p class="mp-h4">${t("Kurs og utdanning")}</p><div class="mp-rec">${ru.map(({ u, why }) => `<a class="mp-card" href="${u.url}" target="_blank" rel="noopener"><b>${esc(u.t)}</b><small>${esc(u.org)} · ${flag(u.c)} ${esc(t(u.place))}</small><span class="why">${esc(why)}</span></a>`).join("")}</div>` : "")
         + (re.length ? `<p class="mp-h4">${t("Arrangementer")}</p><div class="mp-rec">${re.map(({ e, km, lk }) => card(`data-ev="${e.id}"`, t(e.t), `${esc(evWhen(e))} · ${flag(e.c)} ${esc(e.place)}`, lk ? t("Fordi du liker {x}", { x: t(e.sport).toLowerCase() }) : t("Nær {x}", { x: homeName }), KIND_COLOR[kindOf(e.sport)])).join("")}</div>` : "")
@@ -5563,17 +5582,14 @@ function openMine() {
       ${sec("mpJobs", t("Lagrede jobber"), jobs.length ? `<div class="svlist">${jobs.map(saved).join("")}</div>` : "", t("Ingen lagrede jobber ennå. Trykk på hjertet ved en jobb."))}
       ${sec("mpEvs", t("Lagrede arrangementer"), evs.length ? `<div class="svlist">${evs.map(saved).join("")}</div>` : "", t("Ingen lagrede arrangementer ennå. Trykk på hjertet ved et arrangement."))}
     </div>`;
-  const dlg = $("sheet");
-  if (!dlg.open) { lastFocus = document.activeElement; dlg.showModal(); }
-  $("closeBtn").onclick = closeJob; $("closeBtn").focus();
-  const body = $("sheetBody");
+  const body = $("mpage");
   body.querySelectorAll("[data-club]").forEach(b => b.onclick = () => openClub(b.dataset.club));
   body.querySelectorAll("[data-job]").forEach(b => b.onclick = () => openJob(b.dataset.job));
   body.querySelectorAll("[data-ev]").forEach(b => b.onclick = () => openEvent(b.dataset.ev));
   body.querySelectorAll(".svt").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
-  body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.rm.split("|"); k === "job" ? toggleFav(id) : toggleEvSave(id); if (typeof render === "function") render(); openMine(); });
+  body.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const [k, id] = b.dataset.rm.split("|"); k === "job" ? toggleFav(id) : toggleEvSave(id); render(); });
   body.querySelectorAll("[data-go]").forEach(b => b.onclick = () => $(b.dataset.go).scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }));
-  $("mpEdit").onclick = () => { closeJob(); fyEdit = true; setTab("forside", true); render(); setTimeout(() => { const f = $("foryou"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150); };
+  $("mpEdit").onclick = () => { fyEdit = true; setTab("forside", true); render(); setTimeout(() => { const f = $("foryou"); if (f) f.scrollIntoView({ behavior: "smooth", block: "start" }); }, 150); };
   if ($("mpLogin")) $("mpLogin").onclick = () => askLogin("");
 }
 $("mineBtn").onclick = openMine;
