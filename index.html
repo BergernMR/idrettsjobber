@@ -737,6 +737,13 @@ table.league td.tform { padding-left: 10px; }
 .plist .pnone { color: var(--muted); text-align: center; padding: 12px; }
 .mp-prof .mp-foll { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .mp-prof .mp-foll:empty { display: none; }
+.mp-prof .mp-find { grid-column: 1 / -1; }
+.mp-find input { width: 100%; font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 999px; border: 0; background: rgba(255,255,255,.14); color: #fff; }
+.mp-find input::placeholder { color: rgba(255,255,255,.7); }
+.mp-find .plist { margin-top: 6px; max-height: 260px; background: var(--surface, #fff); border-radius: 14px; padding: 4px; }
+.mp-find .plist button { color: var(--fg); }
+.mp-prof .mp-find .plist b { font-size: 15px; }
+.mp-find .plist .pnone { color: var(--muted); }
 .mp-foll button { font: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; background: rgba(255,255,255,.14); border: 0; color: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
 .mp-foll button:hover, .mp-foll button:focus-visible { background: rgba(255,255,255,.24); }
 .mp-prof .mp-foll b { font-size: inherit; font-weight: 800; }
@@ -2233,6 +2240,10 @@ const I18N = {
 "Vent litt før du skriver igjen.": ["Vänta lite innan du skriver igen.","Vent lidt, før du skriver igen.","Odota hetki ennen kuin kirjoitat uudelleen.","Bíddu aðeins áður en þú skrifar aftur.","Wait a moment before writing again."],
 "Du har skrevet mye den siste timen. Prøv igjen senere.": ["Du har skrivit mycket den senaste timmen. Försök igen senare.","Du har skrevet meget den seneste time. Prøv igen senere.","Olet kirjoittanut paljon viimeisen tunnin aikana. Yritä myöhemmin uudelleen.","Þú hefur skrifað mikið síðustu klukkustund. Reyndu aftur síðar.","You have written a lot in the last hour. Try again later."],
 "Logg inn for å være med i diskusjonen": ["Logga in för att delta i diskussionen","Log ind for at deltage i diskussionen","Kirjaudu sisään osallistuaksesi keskusteluun","Skráðu þig inn til að taka þátt í umræðunni","Log in to join the discussion"],
+"Logg inn for å søke etter brukere": ["Logga in för att söka efter användare","Log ind for at søge efter brugere","Kirjaudu sisään hakeaksesi käyttäjiä","Skráðu þig inn til að leita að notendum","Log in to search for users"],
+"Søk etter jobber, idrettslag, brukere …": ["Sök efter jobb, föreningar, användare …","Søg efter job, klubber, brugere …","Hae töitä, seuroja, käyttäjiä …","Leitaðu að störfum, félögum, notendum …","Search jobs, clubs, users …"],
+"Finn andre brukere": ["Hitta andra användare","Find andre brugere","Etsi muita käyttäjiä","Finndu aðra notendur","Find other users"],
+"Ingen brukere funnet.": ["Inga användare hittades.","Ingen brugere fundet.","Käyttäjiä ei löytynyt.","Engir notendur fundust.","No users found."],
 "Følg tilbake": ["Följ tillbaka","Følg tilbage","Seuraa takaisin","Fylgja til baka","Follow back"],
 "Følger deg": ["Följer dig","Følger dig","Seuraa sinua","Fylgir þér","Follows you"],
 "følger": ["följare","følger","seuraaja","fylgjandi","follower"],
@@ -3594,7 +3605,7 @@ function setupSettings() {
 }
 function setupGlobalSearch() {
   const q = $("gq"), box = $("gres"); if (!q) return;
-  q.placeholder = t("Søk i hele Aurora"); q.setAttribute("aria-label", t("Søk i hele Aurora"));
+  q.placeholder = t("Søk etter jobber, idrettslag, brukere …"); q.setAttribute("aria-label", t("Søk i hele Aurora"));
   const words = v => v.toLowerCase().split(/\s+/).filter(Boolean);
   const hit = (ws, h) => ws.every(w => h.includes(w));
   const groups = ws => [
@@ -3618,7 +3629,9 @@ function setupGlobalSearch() {
   // Andre brukere (bare brukernavn og bilde) hentes fra databasen og legges øverst når svaret kommer
   let pseq = 0, profs = [];
   const findProfiles = async v => {
-    const my = ++pseq; if (!authUser || !sb || !v) return;
+    const my = ++pseq;
+    if (!authUser && v && SUPA.key) { box.insertAdjacentHTML("beforeend", `<button type="button" class="gall" data-login="1">${t("Logg inn for å søke etter brukere")} →</button>`); return; }
+    if (!authUser || !sb || !v) return;
     const r = await sb.rpc("search_profiles", { q: v }); if (my !== pseq || box.hidden) return;
     profs = (r.data || []).filter(p => p.id !== authUser.id); if (!profs.length) return;
     const nn = box.querySelector(".gnone"); if (nn) nn.remove();
@@ -3637,7 +3650,8 @@ function setupGlobalSearch() {
   box.addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) { close(); return; }
     close();
-    if (b.dataset.prof) openProfile(profs[+b.dataset.prof]);
+    if (b.dataset.login) askLogin(t("Logg inn for å søke etter brukere"));
+    else if (b.dataset.prof) openProfile(profs[+b.dataset.prof]);
     else if (b.dataset.job) openJob(b.dataset.job);
     else if (b.dataset.ev) openEvent(b.dataset.ev);
     else if (b.dataset.club) openClub(b.dataset.club);
@@ -7436,7 +7450,7 @@ function renderMine() {
       <div class="mp-prof"><button type="button" class="mp-ava" id="mpAva" aria-label="${t(avatarUrl ? "Vis profilbildet" : "Legg til profilbilde")}" title="${t(avatarUrl ? "Vis profilbildet" : "Legg til profilbilde")}">${avatarHtml()}<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i></button>
         <b class="mp-hi">${greet()}${name ? ", " + esc(name) : ""}${authUser ? ownerStar(authUser.id) : ""}${authUser ? `<button type="button" class="mp-rename" id="mpRename" aria-label="${t("Endre brukernavn")}" title="${t("Endre brukernavn")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>` : ""}</b>
         <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
-        ${authUser ? `<div class="mp-foll" id="mpFoll"></div>` : ""}
+        ${authUser ? `<div class="mp-foll" id="mpFoll"></div><div class="mp-find"><input id="mpFind" type="search" autocomplete="off" spellcheck="false" placeholder="${t("Finn andre brukere")}" aria-label="${t("Finn andre brukere")}"><ul class="plist" id="mpFindRes" hidden></ul></div>` : ""}
         ${authUser ? `<form class="mp-nameform" id="mpNameForm" hidden><label for="mpNameIn">${t("Nytt brukernavn")}</label><div class="mp-namerow"><input id="mpNameIn" required minlength="2" maxlength="30" pattern="[^@ ]+" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(authName())}"><button type="submit" class="mp-namesave">${t("Lagre")}</button><button type="button" class="mp-namecancel" id="mpNameX">${t("Avbryt")}</button></div><small id="mpNameMsg">${t("Du kan endre brukernavnet én gang i måneden.")}</small></form>` : ""}
         <div class="mp-city"><span>${t("Hjemsted")}</span>${psHtml("mpHome", homeName)}</div></div>
       ${SUPA.key && !authUser ? `<div class="mp-login"><p>${t("Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.")}</p><div class="btns"><button type="button" class="cta" id="mpLogin">${t("Logg inn eller lag bruker")}</button></div></div>` : ""}
@@ -7469,6 +7483,11 @@ function renderMine() {
   $("mpAva").onclick = () => avatarUrl ? lightbox({ img: avatarUrl, round: true, name: esc(name) + ownerStar(authUser.id),
     acts: [{ label: t("Bytt profilbilde"), run: pickAvatar }, { label: t("Fjern bildet"), del: true, run: removeAvatar }] }) : pickAvatar();
   placeSearch($("mpHome"), p => { setHomePlace(p); render(); });
+  if ($("mpFind")) { let seq = 0, tm; const inp = $("mpFind"), res = $("mpFindRes");
+    inp.oninput = () => { clearTimeout(tm); tm = setTimeout(async () => { const v = inp.value.trim(), my = ++seq; if (!v) { res.hidden = true; return; }
+      const r = await sb.rpc("search_profiles", { q: v }); if (my !== seq) return; const ps = (r.data || []).filter(p => p.id !== authUser.id);
+      res.innerHTML = ps.length ? ps.map((p, i) => `<li><button type="button" data-i="${i}">${avaHtml(p)}<span><b>${esc(p.username)}${ownerStar(p.id)}</b></span></button></li>`).join("") : `<li class="pnone">${t("Ingen brukere funnet.")}</li>`;
+      res.hidden = false; res.querySelectorAll("[data-i]").forEach(b => b.onclick = () => openProfile(ps[+b.dataset.i])); }, 200); }; }
   if ($("mpFoll")) sb.rpc("follow_info", { uid: authUser.id }).then(r => { const f = r.data, el = $("mpFoll"); if (!f || !el) return;
     el.innerHTML = `<button type="button" data-pl="followers" data-u="${authUser.id}"><b>${f.followers}</b> ${t(f.followers === 1 ? "følger" : "følgere")}</button><button type="button" data-pl="following" data-u="${authUser.id}">${t("Følger")} <b>${f.following}</b></button>`;
     bindCounts(el, name); });
