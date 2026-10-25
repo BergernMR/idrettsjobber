@@ -300,6 +300,25 @@ a.item { color: inherit; text-decoration: none; grid-template-columns: 72px 1fr 
 .mt .clogo { margin: 0; }
 .msc { font: 800 34px/1 "Barlow Condensed", sans-serif; letter-spacing: .02em; }
 .mfacts, .mload { margin: 0; text-align: center; color: var(--muted); font-size: 13px; }
+.mwall { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 10px; }
+.mwall h3 { margin: 0; font-family: "Barlow Condensed", sans-serif; font-size: 22px; text-transform: uppercase; letter-spacing: .02em; }
+.mwlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-height: 340px; overflow-y: auto; }
+.mwlist li { display: flex; gap: 10px; align-items: flex-start; }
+.mwlist li > div { min-width: 0; flex: 1; background: var(--surface-2); border-radius: 4px 14px 14px 14px; padding: 8px 12px; }
+.mwlist li.me > div { background: color-mix(in srgb, var(--accent, #1f7a55) 18%, var(--surface-2)); }
+.mwlist .gava { flex: none; width: 32px; height: 32px; }
+.mwh { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+.mwh small { color: var(--muted); font-size: 12px; }
+.mwb { margin: 2px 0 0; font-size: 14.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.mwdel { margin-left: auto; font: inherit; font-size: 18px; line-height: 1; background: none; border: 0; color: var(--muted); cursor: pointer; padding: 0 4px; }
+.mwdel:hover { color: var(--urgent, #e05252); }
+.mwlist .mwnone { color: var(--muted); font-size: 14px; display: block; text-align: center; padding: 8px; }
+.mwform { display: flex; gap: 8px; align-items: flex-end; }
+.mwform textarea { flex: 1; font: inherit; font-size: 15px; resize: none; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); min-height: 44px; }
+.mwform button, .mwlogin { font: inherit; font-weight: 800; border: 0; border-radius: 999px; padding: 11px 18px; background: var(--accent, #1f7a55); color: #fff; cursor: pointer; }
+.mwform button:disabled { opacity: .6; }
+.mwlogin { width: 100%; }
+.mwmsg { color: var(--urgent, #e05252); font-size: 13px; }
 .mev { list-style: none; margin: 0; padding: 10px 0; display: grid; gap: 6px; border-block: 1px solid var(--line); }
 .mev li { display: flex; gap: 8px; align-items: baseline; font-size: 14px; }
 .mev li.a { flex-direction: row-reverse; text-align: right; }
@@ -2159,6 +2178,19 @@ const I18N = {
 "Profiler": ["Profiler","Profiler","Profiilit","Prófílar","Profiles"],
 "Følg": ["Följ","Følg","Seuraa","Fylgja","Follow"],
 "Følger ✓": ["Följer ✓","Følger ✓","Seuraat ✓","Fylgir ✓","Following ✓"],
+"Diskusjon": ["Diskussion","Diskussion","Keskustelu","Umræða","Discussion"],
+"nå": ["nu","nu","nyt","núna","now"],
+"{n} min siden": ["{n} min sedan","{n} min. siden","{n} min sitten","fyrir {n} mín","{n} min ago"],
+"{n} t siden": ["{n} tim sedan","{n} t. siden","{n} t sitten","fyrir {n} klst","{n} h ago"],
+"Slett": ["Radera","Slet","Poista","Eyða","Delete"],
+"Slette kommentaren?": ["Radera kommentaren?","Slette kommentaren?","Poistetaanko kommentti?","Eyða athugasemdinni?","Delete the comment?"],
+"Ingen har skrevet noe ennå. Bli den første!": ["Ingen har skrivit något än. Bli först!","Ingen har skrevet noget endnu. Bliv den første!","Kukaan ei ole vielä kirjoittanut mitään. Ole ensimmäinen!","Enginn hefur skrifað neitt enn. Vertu fyrst/ur!","Nobody has written anything yet. Be the first!"],
+"Skriv en kommentar": ["Skriv en kommentar","Skriv en kommentar","Kirjoita kommentti","Skrifaðu athugasemd","Write a comment"],
+"Hva synes du om kampen?": ["Vad tycker du om matchen?","Hvad synes du om kampen?","Mitä mieltä olet ottelusta?","Hvað finnst þér um leikinn?","What did you think of the match?"],
+"Send": ["Skicka","Send","Lähetä","Senda","Send"],
+"Vent litt før du skriver igjen.": ["Vänta lite innan du skriver igen.","Vent lidt, før du skriver igen.","Odota hetki ennen kuin kirjoitat uudelleen.","Bíddu aðeins áður en þú skrifar aftur.","Wait a moment before writing again."],
+"Du har skrevet mye den siste timen. Prøv igjen senere.": ["Du har skrivit mycket den senaste timmen. Försök igen senare.","Du har skrevet meget den seneste time. Prøv igen senere.","Olet kirjoittanut paljon viimeisen tunnin aikana. Yritä myöhemmin uudelleen.","Þú hefur skrifað mikið síðustu klukkustund. Reyndu aftur síðar.","You have written a lot in the last hour. Try again later."],
+"Logg inn for å være med i diskusjonen": ["Logga in för att delta i diskussionen","Log ind for at deltage i diskussionen","Kirjaudu sisään osallistuaksesi keskusteluun","Skráðu þig inn til að taka þátt í umræðunni","Log in to join the discussion"],
 "Følg tilbake": ["Följ tillbaka","Følg tilbage","Seuraa takaisin","Fylgja til baka","Follow back"],
 "Følger deg": ["Följer dig","Følger dig","Seuraa sinua","Fylgir þér","Follows you"],
 "følger": ["följare","følger","seuraaja","fylgjandi","follower"],
@@ -5962,7 +5994,7 @@ async function openMatch(k, mid) {
   if (!d.open) d.showModal();
   let j = null;
   try { const r = await fetch(`data/kamp/${mid}.json`); if (r.ok) j = await r.json(); } catch (x) {}
-  if (!j) { d.innerHTML = shell(null, `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>`); return; }
+  if (!j) { d.innerHTML = shell(null, `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>${wallHtml}`); matchWall(mid); return; }
   let ht = [0, 0], sc = [0, 0];
   const evs = j.ev.filter(e => { if (e[2] === "ht") { ht = sc.slice(); return false; } if (e[5]) sc = e[5]; return true; });
   const ico = { g: "⚽", pen: "⚽", own: "⚽", y: "🟨", r: "🟥" };
@@ -5972,7 +6004,44 @@ async function openMatch(k, mid) {
       <span class="mbar"><i style="width:${(x / sum * 100).toFixed(1)}%"></i><i style="width:${(y / sum * 100).toFixed(1)}%"></i></span></div>`; }).join("")}</div>` : `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>`;
   const facts = [ht.join("–") && j.ev.some(e => e[2] === "ht") ? t("Pause") + " " + ht.join("–") : "", j.v, j.ref && t("Dommer") + ": " + j.ref, j.att && t("Tilskuere") + ": " + Number(j.att).toLocaleString(LOCALE[LANG])].filter(Boolean);
   d.innerHTML = shell(j, `${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}${evHtml}${stHtml}
-    <p class="s-note">${t("Statistikk fra Opta, via")} <a href="https://www.fotmob.com/match/${esc(mid)}" target="_blank" rel="noopener">FotMob</a></p>`);
+    <p class="s-note">${t("Statistikk fra Opta, via")} <a href="https://www.fotmob.com/match/${esc(mid)}" target="_blank" rel="noopener">FotMob</a></p>${wallHtml}`);
+  matchWall(mid);
+}
+// Diskusjonsvegg under hver kamp: kommentarer i databasen (match_comments), hentes på nytt hvert 20. sekund mens kortet er åpent
+const wallHtml = `<section class="mwall" aria-labelledby="mwH"><h3 id="mwH"></h3><ul class="mwlist" id="mwList"><li class="mwnone">…</li></ul><div id="mwForm"></div></section>`;
+let wallTimer = 0;
+const agoText = iso => { const s = (Date.now() - new Date(iso)) / 1000;
+  return s < 60 ? t("nå") : s < 3600 ? t("{n} min siden", { n: Math.floor(s / 60) }) : s < 86400 ? t("{n} t siden", { n: Math.floor(s / 3600) }) : fxDate(iso.slice(0, 10)); };
+async function matchWall(mid) {
+  clearInterval(wallTimer);
+  const box = $("mbox"), list = $("mwList"), form = $("mwForm"); if (!list) return;
+  $("mwH").textContent = t("Diskusjon");
+  await loadSupa(); if (!sb) { list.innerHTML = `<li class="mwnone">${t("Fikk ikke kontakt. Prøv igjen senere.")}</li>`; return; }
+  const draw = async () => {
+    if (!box.open || $("mwList") !== list) return clearInterval(wallTimer);
+    const r = await sb.rpc("match_comments_list", { mid: +mid }); if (r.error) return;
+    const cs = r.data || [], me = authUser && authUser.id, stick = list.scrollTop + list.clientHeight >= list.scrollHeight - 8;
+    list.innerHTML = cs.length ? cs.map(c => `<li${c.user_id === me ? ' class="me"' : ""}>${avaHtml(c)}<div><p class="mwh"><b>${esc(c.username)}${ownerStar(c.user_id)}</b><small>${esc(agoText(c.created_at))}</small>${me && (c.user_id === me || me === OWNER_ID) ? `<button type="button" class="mwdel" data-del="${c.id}" aria-label="${t("Slett")}" title="${t("Slett")}">×</button>` : ""}</p><p class="mwb">${esc(c.body)}</p></div></li>`).join("")
+      : `<li class="mwnone">${t("Ingen har skrevet noe ennå. Bli den første!")}</li>`;
+    if (stick) list.scrollTop = list.scrollHeight;
+    list.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => { if (!confirm(t("Slette kommentaren?"))) return; await sb.from("match_comments").delete().eq("id", +b.dataset.del); draw(); });
+  };
+  if (authUser) {
+    form.innerHTML = `<form class="mwform" id="mwF"><textarea id="mwIn" rows="2" maxlength="500" aria-label="${t("Skriv en kommentar")}" placeholder="${t("Hva synes du om kampen?")}" required></textarea><button type="submit">${t("Send")}</button></form><small class="mwmsg" id="mwMsg" aria-live="polite"></small>`;
+    const f = $("mwF"), inp = $("mwIn"), msg = $("mwMsg");
+    inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); f.requestSubmit(); } });
+    f.onsubmit = async e => { e.preventDefault(); const body = inp.value.trim(); if (!body) return;
+      const btn = f.querySelector("button"); btn.disabled = true; msg.textContent = "";
+      const r = await sb.from("match_comments").insert({ match_id: +mid, body });
+      btn.disabled = false;
+      if (r.error) { msg.textContent = /for_fort/.test(r.error.message) ? t("Vent litt før du skriver igjen.") : /for_mange/.test(r.error.message) ? t("Du har skrevet mye den siste timen. Prøv igjen senere.") : t("Fikk ikke kontakt. Prøv igjen senere."); return; }
+      inp.value = ""; await draw(); list.scrollTop = list.scrollHeight; };
+  } else {
+    form.innerHTML = `<button type="button" class="mwlogin" id="mwLogin">${t("Logg inn for å være med i diskusjonen")}</button>`;
+    $("mwLogin").onclick = () => { box.close(); askLogin(t("Logg inn for å være med i diskusjonen")); };
+  }
+  await draw(); list.scrollTop = list.scrollHeight;
+  wallTimer = setInterval(draw, 20000);
 }
 document.addEventListener("click", e => { const li = e.target.closest(".fxlist li[data-m]"); if (li) openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); });
 document.addEventListener("keydown", e => { const li = e.target.closest && e.target.closest(".fxlist li[data-m]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); } });
