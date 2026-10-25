@@ -738,6 +738,17 @@ table.league td.tform { padding-left: 10px; }
 .mp-prof .mp-foll { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .mp-prof .mp-foll:empty { display: none; }
 .mp-prof .mp-find { grid-column: 1 / -1; }
+.mp-prof .mp-priv { grid-column: 1 / -1; font-size: 13.5px; }
+.mp-priv summary { cursor: pointer; color: rgba(255,255,255,.85); font-weight: 600; }
+.mp-priv label { display: inline-flex; align-items: center; gap: 6px; margin: 6px 12px 0 0; cursor: pointer; }
+.mp-priv small { display: block; margin-top: 6px; }
+.u-title { display: flex; align-items: center; gap: 12px; }
+.u-ava { padding: 0; border: 0; background: none; cursor: pointer; border-radius: 50%; }
+.u-ava .gava { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: #7fe0b7; color: #14211d; font-weight: 800; font-size: 24px; }
+.u-ava .gava img { width: 100%; height: 100%; object-fit: cover; }
+.u-foll { flex-direction: row; justify-content: flex-start; flex-wrap: wrap; min-height: 0; margin: 0 0 8px; }
+.u-sec { margin-top: 14px; } .u-sec h3 { margin: 0 0 8px; }
+.u-hid { color: var(--muted); margin: 0; }
 .mp-find input { width: 100%; font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 999px; border: 0; background: rgba(255,255,255,.14); color: #fff; }
 .mp-find input::placeholder { color: rgba(255,255,255,.7); }
 .mp-find .plist { margin-top: 6px; max-height: 260px; background: var(--surface, #fff); border-radius: 14px; padding: 4px; }
@@ -2244,6 +2255,13 @@ const I18N = {
 "Søk etter jobber, idrettslag, brukere …": ["Sök efter jobb, föreningar, användare …","Søg efter job, klubber, brugere …","Hae töitä, seuroja, käyttäjiä …","Leitaðu að störfum, félögum, notendum …","Search jobs, clubs, users …"],
 "Finn andre brukere": ["Hitta andra användare","Find andre brugere","Etsi muita käyttäjiä","Finndu aðra notendur","Find other users"],
 "Ingen brukere funnet.": ["Inga användare hittades.","Ingen brugere fundet.","Käyttäjiä ei löytynyt.","Engir notendur fundust.","No users found."],
+"Skjult av brukeren": ["Dold av användaren","Skjult af brugeren","Käyttäjä on piilottanut","Falið af notandanum","Hidden by the user"],
+"Følger ingen idrettslag ennå.": ["Följer inga föreningar än.","Følger ingen klubber endnu.","Ei seuraa vielä seuroja.","Fylgir engum félögum enn.","Not following any clubs yet."],
+"Ingen lagrede arrangementer.": ["Inga sparade evenemang.","Ingen gemte arrangementer.","Ei tallennettuja tapahtumia.","Engir vistaðir viðburðir.","No saved events."],
+"Ingen lagrede jobber.": ["Inga sparade jobb.","Ingen gemte job.","Ei tallennettuja töitä.","Engin vistuð störf.","No saved jobs."],
+"Logg inn for å se hva andre følger og har lagret.": ["Logga in för att se vad andra följer och har sparat.","Log ind for at se, hvad andre følger og har gemt.","Kirjaudu sisään nähdäksesi, mitä muut seuraavat ja ovat tallentaneet.","Skráðu þig inn til að sjá hverju aðrir fylgja og hafa vistað.","Log in to see what others follow and have saved."],
+"Hva andre ser på siden din": ["Vad andra ser på din sida","Hvad andre ser på din side","Mitä muut näkevät sivullasi","Hvað aðrir sjá á síðunni þinni","What others see on your page"],
+"E-posten din vises aldri for andre.": ["Din e-post visas aldrig för andra.","Din e-mail vises aldrig for andre.","Sähköpostiosoitettasi ei näytetä muille.","Netfangið þitt er aldrei sýnt öðrum.","Your email is never shown to others."],
 "Følg tilbake": ["Följ tillbaka","Følg tilbage","Seuraa takaisin","Fylgja til baka","Follow back"],
 "Følger deg": ["Följer dig","Følger dig","Seuraa sinua","Fylgir þér","Follows you"],
 "følger": ["följare","følger","seuraaja","fylgjandi","follower"],
@@ -3410,6 +3428,8 @@ function loadSupa() {
 // Slår sammen det som er lagret på kontoen med det som er valgt i denne nettleseren
 // savedCol blir false hvis tabellen ennå mangler kolonnen «saved», så klubbene fortsatt lagres
 let savedCol = true, avatarUrl = "";
+// Hva andre brukere kan se på brukersiden din (lagres i profiles.saved.priv). Jobber er skjult som standard.
+let priv = { clubs: true, ev: true, jobs: false };
 async function cloudLoad() {
   sb.from("profiles").select("avatar").eq("id", authUser.id).maybeSingle().then(a => { avatarUrl = a.data?.avatar || ""; redrawAuth(); });
   let r = await sb.from("profiles").select("clubs,likes,home,saved").eq("id", authUser.id).maybeSingle();
@@ -3417,7 +3437,7 @@ async function cloudLoad() {
   const data = r.data;
   if (data) { (data.clubs || []).forEach(id => follows.add(id)); (data.likes || []).forEach(k => likes.add(k)); splitBall(likes);
     if (data.home && typeof data.home.lat === "number") home = data.home;
-    if (data.saved) { (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
+    if (data.saved) { if (data.saved.priv) priv = Object.assign({ clubs: true, ev: true, jobs: false }, data.saved.priv); (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
       if (Array.isArray(data.saved.seen)) { seen = [...new Set([...seen, ...data.saved.seen])].slice(0, 40); try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) {} }
       try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {} updSaved(); }
     try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} }
@@ -3427,7 +3447,7 @@ let cloudTimer;
 function cloudSave(now) {
   if (!sb || !authUser) return;
   clearTimeout(cloudTimer);
-  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved], seen } } : {});
+  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved], seen, priv } } : {});
   const go = () => sb.from("profiles").upsert(row()).then(r => {
     if (r.error && savedCol && /saved/i.test(r.error.message)) { savedCol = false; return go(); }
     if (r.error) console.warn("Aurora lagring:", r.error.message); });
@@ -3669,13 +3689,37 @@ function setupGlobalSearch() {
 const avaHtml = p => `<span class="gava">${p.avatar ? `<img src="${esc(p.avatar)}" alt="" loading="lazy">` : esc((p.username || "?")[0].toUpperCase())}</span>`;
 const countsHtml = (f, uid) => `<div class="pcounts"><button type="button" data-pl="followers" data-u="${uid}"><b>${f.followers}</b><small>${t(f.followers === 1 ? "følger" : "følgere")}</small></button><button type="button" data-pl="following" data-u="${uid}"><b>${f.following}</b><small>${t("Følger")}</small></button></div>`;
 const bindCounts = (root, name) => root.querySelectorAll("[data-pl]").forEach(b => b.onclick = () => peopleList(b.dataset.u, b.dataset.pl, name));
+// Brukerside: navn, bilde, følgere og det personen har valgt å vise (idrettslag, arrangementer, jobber). Aldri e-post.
 async function openProfile(p) {
   if (!p) return;
-  lightbox({ img: p.avatar, letter: p.username[0], round: true, name: esc(p.username) + ownerStar(p.id), sub: t(p.id === OWNER_ID ? "Eier av Aurora" : "Bruker på Aurora") });
-  const card = $("lbox").querySelector(".lbcard"); if (!card) return;
-  card.insertAdjacentHTML("beforeend", `<div class="pfoll" id="pfoll"></div>`);
+  curSheet = () => openProfile(p);
+  const sub = t(p.id === OWNER_ID ? "Eier av Aurora" : "Bruker på Aurora");
+  $("sheetBody").innerHTML = `
+    <div class="sheet-top">
+      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="s-eyebrow">${sub}</div>
+      <h2 class="s-title u-title" id="s-title"><button type="button" class="u-ava" id="uAva" aria-label="${t("Vis profilbildet")}">${avaHtml(p)}</button>${esc(p.username)}${ownerStar(p.id)}</h2>
+      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sheet-body"><div class="pfoll u-foll" id="pfoll"></div><div id="uBody"><p class="mload">${t("Vent litt …")}</p></div></div>`;
+  const dlg = $("sheet"); lastFocus = document.activeElement;
+  if (!dlg.open) dlg.showModal();
+  $("closeBtn").onclick = closeJob; $("closeBtn").focus();
+  $("uAva").onclick = () => lightbox({ img: p.avatar, letter: p.username[0], round: true, name: esc(p.username) + ownerStar(p.id), sub });
   const box = $("pfoll");
-  if (!authUser || !sb) { box.innerHTML = `<button type="button" class="pfbtn" id="pfBtn">${t("Følg")}</button>`; $("pfBtn").onclick = () => { $("lbox").close(); askLogin(t("Logg inn for å følge andre.")); }; return; }
+  if (!authUser || !sb) { box.innerHTML = `<button type="button" class="pfbtn" id="pfBtn">${t("Følg")}</button>`; $("pfBtn").onclick = () => { closeJob(); askLogin(t("Logg inn for å følge andre.")); };
+    $("uBody").innerHTML = `<p class="mload">${t("Logg inn for å se hva andre følger og har lagret.")}</p>`; return; }
+  sb.rpc("public_profile", { uid: p.id }).then(r => { const u = r.data, el = $("uBody"); if (!el || $("pfoll") !== box) return;
+    if (!u) { el.innerHTML = `<p class="mload">${t("Fikk ikke kontakt. Prøv igjen senere.")}</p>`; return; }
+    const sec = (title, list, empty) => `<section class="u-sec"><h3>${title}</h3>${list === null ? `<p class="u-hid">🔒 ${t("Skjult av brukeren")}</p>` : list.length ? `<div class="svlist">${list.join("")}</div>` : `<p class="u-hid">${empty}</p>`}</section>`;
+    const clubs = u.clubs && FAN.filter(k => u.clubs.includes(k.id)).map(k => `<button type="button" class="mcitem" data-club="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="mcico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k, "clogo", false) || icoOf(k.sport)}</span><span><b>${esc(k.n)}</b><small>${esc(t(k.sport))}${k.div ? " · " + esc(k.div) : ""}</small></span></button>`);
+    const evs = u.ev && EVENTS.filter(e => u.ev.includes(e.id)).map(e => `<button type="button" class="mcitem" data-ev="${e.id}" style="--kc:${KIND_COLOR[kindOf(e.sport)]}"><span><b>${esc(t(e.t))}</b><small>${esc(evWhen(e))} · ${flag(e.c)} ${esc(e.place)}</small></span></button>`);
+    const jobs = u.jobs && JOBS.filter(x => u.jobs.includes(x.id)).map(x => `<button type="button" class="mcitem" data-job="${x.id}"><span><b>${esc(x.t)}</b><small>${esc(x.emp)} · ${flag(x.c)} ${esc(x.place)}</small></span></button>`);
+    el.innerHTML = sec(t("Klubber"), clubs, t("Følger ingen idrettslag ennå.")) + sec(t("Arrangementer"), evs, t("Ingen lagrede arrangementer.")) + sec(t("Jobber"), jobs, t("Ingen lagrede jobber."));
+    el.querySelectorAll("[data-club]").forEach(b => b.onclick = () => openClub(b.dataset.club));
+    el.querySelectorAll("[data-ev]").forEach(b => b.onclick = () => openEvent(b.dataset.ev));
+    el.querySelectorAll("[data-job]").forEach(b => b.onclick = () => openJob(b.dataset.job));
+  });
   const draw = f => {
     const self = p.id === authUser.id;
     box.innerHTML = countsHtml(f, p.id) + (self ? "" : `<button type="button" class="pfbtn${f.me ? " on" : ""}" id="pfBtn" aria-pressed="${f.me}">${t(f.me ? "Følger ✓" : f.back ? "Følg tilbake" : "Følg")}</button>`) + (!self && f.back ? `<small class="pback">${t("Følger deg")}</small>` : "");
@@ -7450,7 +7494,8 @@ function renderMine() {
       <div class="mp-prof"><button type="button" class="mp-ava" id="mpAva" aria-label="${t(avatarUrl ? "Vis profilbildet" : "Legg til profilbilde")}" title="${t(avatarUrl ? "Vis profilbildet" : "Legg til profilbilde")}">${avatarHtml()}<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i></button>
         <b class="mp-hi">${greet()}${name ? ", " + esc(name) : ""}${authUser ? ownerStar(authUser.id) : ""}${authUser ? `<button type="button" class="mp-rename" id="mpRename" aria-label="${t("Endre brukernavn")}" title="${t("Endre brukernavn")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>` : ""}</b>
         <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
-        ${authUser ? `<div class="mp-foll" id="mpFoll"></div><div class="mp-find"><input id="mpFind" type="search" autocomplete="off" spellcheck="false" placeholder="${t("Finn andre brukere")}" aria-label="${t("Finn andre brukere")}"><ul class="plist" id="mpFindRes" hidden></ul></div>` : ""}
+        ${authUser ? `<div class="mp-foll" id="mpFoll"></div><div class="mp-find"><input id="mpFind" type="search" autocomplete="off" spellcheck="false" placeholder="${t("Finn andre brukere")}" aria-label="${t("Finn andre brukere")}"><ul class="plist" id="mpFindRes" hidden></ul></div>
+        <details class="mp-priv"><summary>${t("Hva andre ser på siden din")}</summary>${[["clubs", "Klubber"], ["ev", "Arrangementer"], ["jobs", "Jobber"]].map(([k, l]) => `<label><input type="checkbox" data-priv="${k}"${priv[k] ? " checked" : ""}> ${t(l)}</label>`).join("")}<small>${t("E-posten din vises aldri for andre.")}</small></details>` : ""}
         ${authUser ? `<form class="mp-nameform" id="mpNameForm" hidden><label for="mpNameIn">${t("Nytt brukernavn")}</label><div class="mp-namerow"><input id="mpNameIn" required minlength="2" maxlength="30" pattern="[^@ ]+" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(authName())}"><button type="submit" class="mp-namesave">${t("Lagre")}</button><button type="button" class="mp-namecancel" id="mpNameX">${t("Avbryt")}</button></div><small id="mpNameMsg">${t("Du kan endre brukernavnet én gang i måneden.")}</small></form>` : ""}
         <div class="mp-city"><span>${t("Hjemsted")}</span>${psHtml("mpHome", homeName)}</div></div>
       ${SUPA.key && !authUser ? `<div class="mp-login"><p>${t("Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.")}</p><div class="btns"><button type="button" class="cta" id="mpLogin">${t("Logg inn eller lag bruker")}</button></div></div>` : ""}
@@ -7483,6 +7528,7 @@ function renderMine() {
   $("mpAva").onclick = () => avatarUrl ? lightbox({ img: avatarUrl, round: true, name: esc(name) + ownerStar(authUser.id),
     acts: [{ label: t("Bytt profilbilde"), run: pickAvatar }, { label: t("Fjern bildet"), del: true, run: removeAvatar }] }) : pickAvatar();
   placeSearch($("mpHome"), p => { setHomePlace(p); render(); });
+  body.querySelectorAll("[data-priv]").forEach(c => c.onchange = () => { priv[c.dataset.priv] = c.checked; cloudSave(true); });
   if ($("mpFind")) { let seq = 0, tm; const inp = $("mpFind"), res = $("mpFindRes");
     inp.oninput = () => { clearTimeout(tm); tm = setTimeout(async () => { const v = inp.value.trim(), my = ++seq; if (!v) { res.hidden = true; return; }
       const r = await sb.rpc("search_profiles", { q: v }); if (my !== seq) return; const ps = (r.data || []).filter(p => p.id !== authUser.id);
