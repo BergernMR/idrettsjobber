@@ -306,7 +306,8 @@ a.item { color: inherit; text-decoration: none; grid-template-columns: 72px 1fr 
 .mwlist li { display: flex; gap: 10px; align-items: flex-start; }
 .mwlist li > div { min-width: 0; flex: 1; background: var(--surface-2); border-radius: 4px 14px 14px 14px; padding: 8px 12px; }
 .mwlist li.me > div { background: color-mix(in srgb, var(--accent, #1f7a55) 18%, var(--surface-2)); }
-.mwlist .gava { flex: none; width: 32px; height: 32px; }
+.mwlist .gava, .plist .gava { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: #7fe0b7; color: #14211d; font-weight: 800; font-size: 14px; }
+.mwlist .gava img, .plist .gava img { width: 100%; height: 100%; object-fit: cover; }
 .mwh { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
 .mwh small { color: var(--muted); font-size: 12px; }
 .mwb { margin: 2px 0 0; font-size: 14.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
