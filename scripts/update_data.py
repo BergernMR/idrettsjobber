@@ -73,7 +73,7 @@ for k in fan:
             comp = COMP.get(lid, "Cup")
             if st.get("finished") and st.get("scoreStr"):
                 a, b = [int(x) for x in re.findall(r"\d+", st["scoreStr"])[:2]]
-                played.append([t.strftime("%Y-%m-%d"), oname, 1 if home else 0, a if home else b, b if home else a, comp])
+                played.append([t.strftime("%Y-%m-%d"), oname, 1 if home else 0, a if home else b, b if home else a, comp, int(m["id"])])
             elif not st.get("started") and t > now:
                 upcoming.append((t, [t.strftime("%Y-%m-%d"), oname, 1 if home else 0, comp, t.strftime("%H:%M")]))
     slug = re.sub(r"[^a-z0-9]+", "-", unicodedata.normalize("NFKD", names.get(fid, k["n"]).lower()).encode("ascii", "ignore").decode()).strip("-")
