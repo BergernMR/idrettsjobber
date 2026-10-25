@@ -667,6 +667,23 @@ table.league td.tform { padding-left: 10px; }
 .lbacts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
 .lbacts button { font: inherit; font-weight: 700; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); cursor: pointer; }
 .lbacts button.del { color: var(--urgent, #e05252); }
+.pfoll { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 6px; min-height: 76px; }
+.pcounts { display: flex; gap: 6px; }
+.pcounts button { font: inherit; background: none; border: 0; color: var(--fg); cursor: pointer; padding: 4px 10px; border-radius: 10px; text-align: center; }
+.pcounts button:hover { background: var(--surface-2); }
+.pcounts b { display: block; font-size: 18px; } .pcounts small { color: var(--muted); font-size: 12.5px; }
+.pfbtn { font: inherit; font-weight: 800; padding: 10px 26px; border-radius: 999px; border: 0; background: var(--accent, #1f7a55); color: #fff; cursor: pointer; min-width: 140px; }
+.pfbtn.on { background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); }
+.pfbtn:disabled { opacity: .6; cursor: default; }
+.pback { font-size: 12.5px; color: var(--muted); }
+.plist { list-style: none; margin: 8px 0 0; padding: 0; width: 100%; max-height: 52vh; overflow: auto; display: grid; gap: 4px; }
+.plist button { width: 100%; display: flex; align-items: center; gap: 10px; font: inherit; text-align: left; background: none; border: 0; border-radius: 12px; padding: 8px 10px; color: var(--fg); cursor: pointer; }
+.plist button:hover, .plist button:focus-visible { background: var(--surface-2); }
+.plist .gava { flex: none; }
+.plist .pnone { color: var(--muted); text-align: center; padding: 12px; }
+.mp-foll { display: flex; gap: 4px; justify-content: center; margin: 2px 0 4px; }
+.mp-foll button { font: inherit; background: var(--surface-2); border: 1px solid var(--line); color: var(--fg); border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; }
+.mp-foll b { font-weight: 800; }
 .lbx { position: absolute; right: 12px; top: 12px; width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--surface-2); color: var(--fg); cursor: pointer; }
 .lbx svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .logozoom { padding: 0; border: 0; background: none; cursor: zoom-in; display: inline-flex; border-radius: 12px; }
@@ -2138,6 +2155,17 @@ const I18N = {
 "H": ["H","H","K","H","H"],
 "B": ["B","U","V","Ú","A"],
 "Profiler": ["Profiler","Profiler","Profiilit","Prófílar","Profiles"],
+"Følg": ["Följ","Følg","Seuraa","Fylgja","Follow"],
+"Følger ✓": ["Följer ✓","Følger ✓","Seuraat ✓","Fylgir ✓","Following ✓"],
+"Følg tilbake": ["Följ tillbaka","Følg tilbage","Seuraa takaisin","Fylgja til baka","Follow back"],
+"Følger deg": ["Följer dig","Følger dig","Seuraa sinua","Fylgir þér","Follows you"],
+"følger": ["följare","følger","seuraaja","fylgjandi","follower"],
+"følgere": ["följare","følgere","seuraajaa","fylgjendur","followers"],
+"Følgere": ["Följare","Følgere","Seuraajat","Fylgjendur","Followers"],
+"Følger": ["Följer","Følger","Seuratut","Fylgir","Following"],
+"Ingen følgere ennå.": ["Inga följare än.","Ingen følgere endnu.","Ei vielä seuraajia.","Engir fylgjendur enn.","No followers yet."],
+"Følger ingen ennå.": ["Följer ingen än.","Følger ingen endnu.","Ei seuraa vielä ketään.","Fylgir engum enn.","Not following anyone yet."],
+"Logg inn for å følge andre.": ["Logga in för att följa andra.","Log ind for at følge andre.","Kirjaudu sisään seurataksesi muita.","Skráðu þig inn til að fylgja öðrum.","Log in to follow others."],
 "Bruker på Aurora": ["Användare på Aurora","Bruger på Aurora","Auroran käyttäjä","Notandi á Aurora","Aurora member"],
 "Eier av Aurora": ["Ägare av Aurora","Ejer af Aurora","Auroran omistaja","Eigandi Aurora","Owner of Aurora"],
 "Vis profilbildet": ["Visa profilbilden","Vis profilbilledet","Näytä profiilikuva","Sýna prófílmyndina","Show profile picture"],
@@ -3547,7 +3575,46 @@ function setupGlobalSearch() {
   document.addEventListener("pointerdown", e => { if (!e.target.closest(".gsearch")) close(); });
 }
 // En annen brukers profil: bare navn og bilde, forstørret. E-posten vises aldri for andre.
-const openProfile = p => p && lightbox({ img: p.avatar, letter: p.username[0], round: true, name: esc(p.username) + ownerStar(p.id), sub: t(p.id === OWNER_ID ? "Eier av Aurora" : "Bruker på Aurora") });
+// Følge andre: tabellen follows i databasen. Bare antall, brukernavn og bilde vises, aldri e-post.
+const avaHtml = p => `<span class="gava">${p.avatar ? `<img src="${esc(p.avatar)}" alt="" loading="lazy">` : esc((p.username || "?")[0].toUpperCase())}</span>`;
+const countsHtml = (f, uid) => `<div class="pcounts"><button type="button" data-pl="followers" data-u="${uid}"><b>${f.followers}</b><small>${t(f.followers === 1 ? "følger" : "følgere")}</small></button><button type="button" data-pl="following" data-u="${uid}"><b>${f.following}</b><small>${t("Følger")}</small></button></div>`;
+const bindCounts = (root, name) => root.querySelectorAll("[data-pl]").forEach(b => b.onclick = () => peopleList(b.dataset.u, b.dataset.pl, name));
+async function openProfile(p) {
+  if (!p) return;
+  lightbox({ img: p.avatar, letter: p.username[0], round: true, name: esc(p.username) + ownerStar(p.id), sub: t(p.id === OWNER_ID ? "Eier av Aurora" : "Bruker på Aurora") });
+  const card = $("lbox").querySelector(".lbcard"); if (!card) return;
+  card.insertAdjacentHTML("beforeend", `<div class="pfoll" id="pfoll"></div>`);
+  const box = $("pfoll");
+  if (!authUser || !sb) { box.innerHTML = `<button type="button" class="pfbtn" id="pfBtn">${t("Følg")}</button>`; $("pfBtn").onclick = () => { $("lbox").close(); askLogin(t("Logg inn for å følge andre.")); }; return; }
+  const draw = f => {
+    const self = p.id === authUser.id;
+    box.innerHTML = countsHtml(f, p.id) + (self ? "" : `<button type="button" class="pfbtn${f.me ? " on" : ""}" id="pfBtn" aria-pressed="${f.me}">${t(f.me ? "Følger ✓" : f.back ? "Følg tilbake" : "Følg")}</button>`) + (!self && f.back ? `<small class="pback">${t("Følger deg")}</small>` : "");
+    bindCounts(box, p.username);
+    const b = $("pfBtn"); if (!b) return;
+    b.onclick = async () => {
+      b.disabled = true;
+      const r = f.me ? await sb.from("follows").delete().eq("follower", authUser.id).eq("followee", p.id) : await sb.from("follows").insert({ follower: authUser.id, followee: p.id });
+      if (r.error && r.error.code !== "23505") { b.disabled = false; b.textContent = t("Fikk ikke kontakt. Prøv igjen senere."); return; }
+      const n = await sb.rpc("follow_info", { uid: p.id }); draw(n.data || { ...f, me: !f.me }); if (state.tab === "minside") renderMine();
+    };
+  };
+  const r = await sb.rpc("follow_info", { uid: p.id });
+  if (r.data && $("pfoll") === box) draw(r.data);
+}
+// Liste over følgere eller dem en person følger
+async function peopleList(uid, kind, name) {
+  let d = $("pbox");
+  if (!d) { d = document.createElement("dialog"); d.id = "pbox"; d.className = "lbox"; document.body.appendChild(d);
+    d.addEventListener("click", e => { if (e.target === d || e.target.closest(".lbx")) d.close(); }); }
+  const title = kind === "followers" ? t("Følgere") : t("Følger");
+  d.innerHTML = `<div class="lbcard"><button type="button" class="lbx" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <p class="lbname">${title}</p>${name ? `<p class="lbsub">${esc(name)}</p>` : ""}<ul class="plist" id="plist"><li class="pnone">${t("Vent litt …")}</li></ul></div>`;
+  if (!d.open) d.showModal();
+  const r = await sb.rpc("follow_list", { uid, kind }), ps = r.data || [];
+  $("plist").innerHTML = ps.length ? ps.map((p, i) => `<li><button type="button" data-i="${i}">${avaHtml(p)}<span><b>${esc(p.username)}${ownerStar(p.id)}</b></span></button></li>`).join("")
+    : `<li class="pnone">${t(kind === "followers" ? "Ingen følgere ennå." : "Følger ingen ennå.")}</li>`;
+  $("plist").querySelectorAll("[data-i]").forEach(b => b.onclick = () => { d.close(); openProfile(ps[+b.dataset.i]); });
+}
 const ICON_TAB = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>`;
 function renderFoot() {
   const f = $("sitefoot"); if (!f) return;
@@ -7220,6 +7287,7 @@ function renderMine() {
       <div class="mp-prof"><button type="button" class="mp-ava" id="mpAva" aria-label="${t(avatarUrl ? "Vis profilbildet" : "Legg til profilbilde")}" title="${t(avatarUrl ? "Vis profilbildet" : "Legg til profilbilde")}">${avatarHtml()}<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i></button>
         <b class="mp-hi">${greet()}${name ? ", " + esc(name) : ""}${authUser ? ownerStar(authUser.id) : ""}${authUser ? `<button type="button" class="mp-rename" id="mpRename" aria-label="${t("Endre brukernavn")}" title="${t("Endre brukernavn")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>` : ""}</b>
         <small>${authUser ? esc(authUser.email || "") : t("Du er ikke logget inn")}</small>
+        ${authUser ? `<div class="mp-foll" id="mpFoll"></div>` : ""}
         ${authUser ? `<form class="mp-nameform" id="mpNameForm" hidden><label for="mpNameIn">${t("Nytt brukernavn")}</label><div class="mp-namerow"><input id="mpNameIn" required minlength="2" maxlength="30" pattern="[^@ ]+" autocomplete="username" autocapitalize="none" spellcheck="false" value="${esc(authName())}"><button type="submit" class="mp-namesave">${t("Lagre")}</button><button type="button" class="mp-namecancel" id="mpNameX">${t("Avbryt")}</button></div><small id="mpNameMsg">${t("Du kan endre brukernavnet én gang i måneden.")}</small></form>` : ""}
         <div class="mp-city"><span>${t("Hjemsted")}</span>${psHtml("mpHome", homeName)}</div></div>
       ${SUPA.key && !authUser ? `<div class="mp-login"><p>${t("Logg inn for å lagre jobber og arrangementer og ha Min side på både mobil og PC.")}</p><div class="btns"><button type="button" class="cta" id="mpLogin">${t("Logg inn eller lag bruker")}</button></div></div>` : ""}
@@ -7252,6 +7320,9 @@ function renderMine() {
   $("mpAva").onclick = () => avatarUrl ? lightbox({ img: avatarUrl, round: true, name: esc(name) + ownerStar(authUser.id),
     acts: [{ label: t("Bytt profilbilde"), run: pickAvatar }, { label: t("Fjern bildet"), del: true, run: removeAvatar }] }) : pickAvatar();
   placeSearch($("mpHome"), p => { setHomePlace(p); render(); });
+  if ($("mpFoll")) sb.rpc("follow_info", { uid: authUser.id }).then(r => { const f = r.data, el = $("mpFoll"); if (!f || !el) return;
+    el.innerHTML = `<button type="button" data-pl="followers" data-u="${authUser.id}"><b>${f.followers}</b> ${t(f.followers === 1 ? "følger" : "følgere")}</button><button type="button" data-pl="following" data-u="${authUser.id}">${t("Følger")} <b>${f.following}</b></button>`;
+    bindCounts(el, name); });
   // Brukernavn kan byttes én gang per 30 dager; grensen sjekkes i databasen (change_username)
   const nf = $("mpNameForm");
   if (nf) {
