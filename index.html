@@ -681,9 +681,11 @@ table.league td.tform { padding-left: 10px; }
 .plist button:hover, .plist button:focus-visible { background: var(--surface-2); }
 .plist .gava { flex: none; }
 .plist .pnone { color: var(--muted); text-align: center; padding: 12px; }
-.mp-foll { display: flex; gap: 4px; justify-content: center; margin: 2px 0 4px; }
-.mp-foll button { font: inherit; background: var(--surface-2); border: 1px solid var(--line); color: var(--fg); border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; }
-.mp-foll b { font-weight: 800; }
+.mp-prof .mp-foll { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.mp-prof .mp-foll:empty { display: none; }
+.mp-foll button { font: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; background: rgba(255,255,255,.14); border: 0; color: #fff; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.mp-foll button:hover, .mp-foll button:focus-visible { background: rgba(255,255,255,.24); }
+.mp-prof .mp-foll b { font-size: inherit; font-weight: 800; }
 .lbx { position: absolute; right: 12px; top: 12px; width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: var(--surface-2); color: var(--fg); cursor: pointer; }
 .lbx svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .logozoom { padding: 0; border: 0; background: none; cursor: zoom-in; display: inline-flex; border-radius: 12px; }
