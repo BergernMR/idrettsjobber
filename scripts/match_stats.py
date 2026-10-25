@@ -3,6 +3,7 @@
 # Ferdigspilte kamper endrer seg ikke, så filer som finnes hentes ikke på nytt. Filer for kamper som ikke lenger vises slettes.
 # Tallene er Opta-statistikken som FotMob viser. Bruk: python3 scripts/match_stats.py index.html
 import json, os, sys, time, urllib.request
+from lineup import lineup
 HTML = sys.argv[1]
 DIR = os.path.join(os.path.dirname(os.path.abspath(HTML)), "data", "kamp")
 os.makedirs(DIR, exist_ok=True)
@@ -22,7 +23,9 @@ def compact(d):
     h, c = d["header"], d["content"]
     st = h.get("status", {})
     if not st.get("finished"): return None
-    out = {"t": [x["name"] for x in h["teams"]], "s": [x["score"] for x in h["teams"]]}
+    out = {"t": [x["name"] for x in h["teams"]], "s": [x["score"] for x in h["teams"]], "ko": st.get("utcTime")}
+    lu = lineup(d)
+    if lu: out["lu"] = lu
     ib = (c.get("matchFacts") or {}).get("infoBox") or {}
     if ib.get("Stadium"): out["v"] = ib["Stadium"].get("name")
     if ib.get("Referee"): out["ref"] = ib["Referee"].get("text")
@@ -47,8 +50,11 @@ def compact(d):
     out["st"] = [[k, *rows[t]] for t, k in WANT if t in rows]
     return out
 have = {f[:-5] for f in os.listdir(DIR) if f.endswith(".json")}
+# Filer fra før lagoppstilling og avsparkstid kom med (uten "ko") hentes på nytt, maks MAX_OLD per kjøring
+MAX_OLD = int(os.environ.get("MAX_OLD", "200"))
+old = sorted(m for m in have & ids if '"ko"' not in open(os.path.join(DIR, m + ".json"), encoding="utf-8").read())[:MAX_OLD]
 new = 0
-for mid in sorted(ids - have):
+for mid in sorted(ids - have) + old:
     d = fetch(f"https://www.fotmob.com/api/data/matchDetails?matchId={mid}"); time.sleep(0.6)
     o = d and compact(d)
     if not o: continue
