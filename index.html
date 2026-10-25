@@ -877,6 +877,12 @@ dialog::backdrop { background: var(--scrim); }
 .cols .req h4.nice { margin-top: 14px; }
 .cols .req ul.nice li::before { background: transparent; box-shadow: inset 0 0 0 1.5px var(--lane); }
 .s-note { font-size: 14px; color: var(--muted); background: var(--surface-2); border-radius: 8px; padding: 10px 12px; margin: 0; }
+.rsvp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px; }
+.rsvpb[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg, #fff); border-color: transparent; }
+.rsvpb .rn { margin-left: 8px; padding: 0 7px; border-radius: 99px; background: rgba(127,127,127,.18); font-size: .85em; }
+.rsvpf { flex-basis: 100%; margin: 2px 0 0; display: flex; align-items: center; gap: 6px; font-size: .9rem; opacity: .85; }
+.rsvpf .gava { width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: inline-grid; place-items: center; font-size: .7rem; background: rgba(127,127,127,.2); }
+.rsvpf .gava img { width: 100%; height: 100%; object-fit: cover; }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
 .cta { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--accent-fg); text-decoration: none; font-weight: 700; padding: 12px 18px; border-radius: 10px; }
 .cta:hover { filter: brightness(1.08); }
@@ -2262,6 +2268,11 @@ const I18N = {
 "Logg inn for å se hva andre følger og har lagret.": ["Logga in för att se vad andra följer och har sparat.","Log ind for at se, hvad andre følger og har gemt.","Kirjaudu sisään nähdäksesi, mitä muut seuraavat ja ovat tallentaneet.","Skráðu þig inn til að sjá hverju aðrir fylgja og hafa vistað.","Log in to see what others follow and have saved."],
 "Hva andre ser på siden din": ["Vad andra ser på din sida","Hvad andre ser på din side","Mitä muut näkevät sivullasi","Hvað aðrir sjá á síðunni þinni","What others see on your page"],
 "E-posten din vises aldri for andre.": ["Din e-post visas aldrig för andra.","Din e-mail vises aldrig for andre.","Sähköpostiosoitettasi ei näytetä muille.","Netfangið þitt er aldrei sýnt öðrum.","Your email is never shown to others."],
+"Skal": ["Ska","Skal","Osallistun","Ætla","Going"],
+"Interessert": ["Intresserad","Interesseret","Kiinnostunut","Áhugasamur","Interested"],
+"Logg inn eller lag en gratis bruker for å si at du skal.": ["Logga in eller skapa ett gratis konto för att säga att du ska.","Log ind eller opret en gratis bruger for at sige, at du kommer.","Kirjaudu sisään tai luo ilmainen tili ilmoittaaksesi osallistumisesi.","Skráðu þig inn eða búðu til ókeypis aðgang til að segjast ætla.","Log in or create a free account to say you're going."],
+"{x} og {n} andre du følger skal eller er interessert": ["{x} och {n} andra du följer ska eller är intresserade","{x} og {n} andre du følger kommer eller er interesserede","{x} ja {n} muuta seuraamaasi osallistuu tai on kiinnostunut","{x} og {n} aðrir sem þú fylgir ætla eða hafa áhuga","{x} and {n} others you follow are going or interested"],
+"{x} skal eller er interessert": ["{x} ska eller är intresserad","{x} kommer eller er interesseret","{x} osallistuu tai on kiinnostunut","{x} ætlar eða hefur áhuga","{x} going or interested"],
 "Følg tilbake": ["Följ tillbaka","Følg tilbage","Seuraa takaisin","Fylgja til baka","Follow back"],
 "Følger deg": ["Följer dig","Følger dig","Seuraa sinua","Fylgir þér","Follows you"],
 "følger": ["följare","følger","seuraaja","fylgjandi","follower"],
@@ -7114,6 +7125,7 @@ function openEvent(id) {
         ${info.tips ? `<div class="req"><h4>${t("Godt å vite")}</h4>${list(info.tips)}</div>` : ""}
       </div>` : ""}
       <p class="s-note">${t("Datoer, priser og påmelding endrer seg fra år til år. Sjekk alltid hos arrangøren.")}</p>
+      ${SUPA.key ? `<div class="rsvp" id="rsvp"></div>` : ""}
       <div class="actions">
         <div class="btns">
           <a class="cta" href="${e.url}" target="_blank" rel="noopener">${e.kind === "se" ? t("Program og billetter") : t("Påmelding og program")} ${ARROW}</a>
@@ -7128,8 +7140,34 @@ function openEvent(id) {
   $("closeBtn").onclick = closeJob;
   $("shareBtn").onclick = () => shareThing(t(e.t), `${SHARE_URL}#${e.id}`);
   bindSheetSave("ev", e.id);
+  if ($("rsvp")) rsvpBox(e.id);
   $("closeBtn").focus();
   if (location.hash !== "#" + e.id) history.replaceState(history.state, "", "#" + e.id);
+}
+// «Skal» og «Interessert»: alle ser tallene, og du ser hvem av dem du følger som skal
+async function rsvpBox(id) {
+  const box = $("rsvp"); let info = { going: 0, interested: 0, me: null, friends: [] }, busy = false;
+  const draw = () => {
+    if (!box.isConnected) return;
+    const fr = info.friends || [], names = fr.slice(0, 2).map(f => `<b>${esc(f.username)}</b>`).join(", ");
+    box.innerHTML = [["going", "Skal"], ["interested", "Interessert"]].map(([k, l]) =>
+      `<button type="button" class="share rsvpb" data-r="${k}" aria-pressed="${info.me === k}">${k === "going" ? "✓" : "★"} ${t(l)}<span class="rn">${info[k] || 0}</span></button>`).join("")
+      + (fr.length ? `<p class="rsvpf">${fr.slice(0, 3).map(f => `<span class="gava">${f.avatar ? `<img src="${esc(f.avatar)}" alt="">` : esc((f.username || "?")[0].toUpperCase())}</span>`).join("")}
+        ${fr.length > 2 ? t("{x} og {n} andre du følger skal eller er interessert", { x: names, n: fr.length - 2 }) : t("{x} skal eller er interessert", { x: names })}</p>` : "");
+    box.querySelectorAll(".rsvpb").forEach(b => b.onclick = () => pick(b.dataset.r));
+  };
+  const load = async () => { const r = await sb.rpc("event_rsvp_info", { eid: id }); if (r.data) info = r.data; draw(); };
+  const pick = async k => {
+    if (busy || needLogin(t("Logg inn eller lag en gratis bruker for å si at du skal."))) return;
+    busy = true; const off = info.me === k;
+    if (info.me) info[info.me] = Math.max(0, (info[info.me] || 0) - 1);
+    info.me = off ? null : k; if (!off) info[k] = (info[k] || 0) + 1; draw();
+    const r = off ? await sb.from("event_rsvp").delete().eq("user_id", authUser.id).eq("event_id", id)
+      : await sb.from("event_rsvp").upsert({ user_id: authUser.id, event_id: id, status: k });
+    if (!off && !evSaved.has(id)) { toggleEvSave(id); const s = $("saveTog"); if (s) { s.setAttribute("aria-pressed", "true"); s.innerHTML = HEART + t("Lagret"); } }
+    busy = false; if (r.error) console.warn(r.error); load();
+  };
+  draw(); load();
 }
 // ---------- Lagret: jobber og arrangementer du har trykket hjerte på, med påminnelse og kalender ----------
 const isSaved = (kind, id) => kind === "job" ? favs.has(id) : evSaved.has(id);
