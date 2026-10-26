@@ -117,7 +117,11 @@ for fan_id, tid in TS.items():
 # Ishockey og andre idretter fra forbundenes og ligaenes egne kampoppsett (går foran TheSportsDB)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fixtures_other
-try: out.update(fixtures_other.collect(fan, now))
+try:
+    for fid, v in fixtures_other.collect(fan, now).items():
+        # Har forbundet bare kommende kamper, beholdes resultatene fra TheSportsDB
+        if "l" not in v and "l" in out.get(fid, {}): v["l"] = out[fid]["l"]
+        out[fid] = v
 except Exception as ex: print("fixtures_other feilet:", ex)
 # Fotballtabeller fra de samme FotMob-filene; lagnavn byttes til navnene siden bruker
 def tables(html):

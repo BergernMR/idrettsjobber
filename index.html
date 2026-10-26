@@ -1182,6 +1182,10 @@ body.dockon .controls { top: calc(env(safe-area-inset-top, 0px) + 66px); }
 .setpop .seg { position: relative; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .setpop .seg button { position: relative; z-index: 1; transition: color .3s ease; }
 .setpop .seg button[aria-checked="true"] { color: var(--bg); }
+.gseg { position: relative; display: flex; width: max-content; max-width: 100%; margin: 4px 0 12px; padding: 4px; gap: 4px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.gseg button { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border: 0; border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer; transition: color .3s ease; }
+.gseg button .n { font-size: 12px; font-weight: 600; opacity: .7; }
+.gseg button[aria-checked="true"] { color: var(--bg); }
 .segpill { position: absolute; left: 0; top: 0; z-index: 0; border-radius: 999px; background: var(--fg); pointer-events: none; transition: transform .38s cubic-bezier(.3,1.3,.5,1), width .38s cubic-bezier(.3,1.3,.5,1); }
 @media (prefers-reduced-motion: reduce) { .segpill { transition: none; } }
 .setpop small { color: var(--muted); font-size: 12.5px; }
@@ -1596,7 +1600,7 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
       </div>
       <div class="row" id="clubSportRow"><span class="row-label">Idrett</span></div>
     </section>
-    <section aria-live="polite"><div class="count"><span id="clubCount"></span><small>Trykk Følg for å legge klubben til i Mine klubber</small></div><div class="hirelist" id="clubList"></div></section>
+    <section aria-live="polite"><div class="count"><span id="clubCount"></span><small>Trykk Følg for å legge klubben til i Mine klubber</small></div><div class="gseg seg" data-seg="kjonn" id="clubGender" role="radiogroup" aria-label="Menn eller kvinner"></div><div class="hirelist" id="clubList"></div></section>
     <section class="more">
       <h2>Vil du selv være med?</h2>
       <p class="lede">Hvert land har egne sider der du kan finne en klubb å trene i der du bor.</p>
@@ -3262,7 +3266,7 @@ const LINKS = {
        ["Starfatorg.is","https://www.starfatorg.is/","Offentlige stillinger, blant annet svømmehaller og idrettshaller."]]
 };
 
-const state = { wsport: "all", wAll: false, csport: "all", kq: "", openNations: new Set(), hireAll: false, eplace: "", vplace: "", cplace: "", tab: "forside", edu: "all", ev: "all", sport: "all", eq: "", vq: "", q: "", country: "all", cat: "all", req: "all", place: "", sort: "frist", favOnly: false };
+const state = { cgender: "m", wsport: "all", wAll: false, csport: "all", kq: "", openNations: new Set(), hireAll: false, eplace: "", vplace: "", cplace: "", tab: "forside", edu: "all", ev: "all", sport: "all", eq: "", vq: "", q: "", country: "all", cat: "all", req: "all", place: "", sort: "frist", favOnly: false };
 
 // Krav fra annonsene: [krever erfaring, krever utdanning/sertifikat]. Jobber som mangler her er ikke sjekket.
 const REQ = {
@@ -6012,7 +6016,13 @@ function toggleFollow(id) {
   cloudSave(); updClubs();
 }
 const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
-const clubMatch = (k, skip) => (!deepClub(k) || !!state.kq || follows.has(k.id)) && inCountry(k) && (skip === "place" || skip === "map" || inPlace("cplace", k.geo)) && (skip === "sport" || skip === "map" || state.csport === "all" || k.sport === state.csport) &&
+// Kvinnelag kjennes på navnet (Kvinner, dam, Kvinder, Naiset, kvenna) eller serien. Idretter uten kjønnsdelte lag vises i begge
+const WOMEN_RE = /(\s(Kvinner|dam|Dam|Kvinder|Naiset|kvenna)$)/, WOMEN_DIV = /kvinner|kvinder|naiset|kvenna|\bdam\b|Kvindeligaen|Toppserien|Damallsvenskan|SDHL|NDHL|Auroraliiga|Kansallinen Liiga/i;
+const isWomen = k => WOMEN_RE.test(k.n) || WOMEN_DIV.test(k.div || "");
+const NOGENDER = new Set(["Friidrett", "Svømming", "Orientering"]);
+const genderOk = k => NOGENDER.has(k.sport) || (state.cgender === "w") === isWomen(k);
+try { if (localStorage.getItem("aurora-kjonn") === "w") state.cgender = "w"; } catch (e) {}
+const clubMatch = (k, skip) => (!deepClub(k) || !!state.kq || follows.has(k.id)) && inCountry(k) && (skip === "gender" || genderOk(k)) && (skip === "place" || skip === "map" || inPlace("cplace", k.geo)) && (skip === "sport" || skip === "map" || state.csport === "all" || k.sport === state.csport) &&
   (!state.kq || hay(k.n, k.sport, t(k.sport), k.city, k.div || "", COUNTRIES[k.c]).includes(state.kq.toLowerCase()));
 const followBtn = k => `<button type="button" class="follow" data-id="${k.id}" aria-pressed="${follows.has(k.id)}">${STAR}<span>${follows.has(k.id) ? t("Følger") : t("Følg")}</span></button>`;
 // Antall seriekamper per lag i hele sesongen. Delte ligaer regnes med full sluttspillrunde, så trofeet aldri kommer for tidlig.
@@ -6391,6 +6401,13 @@ function renderClubs() {
     : `<div class="empty">${t("Følg klubbene du heier på, så samles de her.")}</div>`;
   simpleChips("clubSportRow", tmap({ ...FAN_SPORTS }), "csport", s => FAN.filter(k => clubMatch(k, "sport") && (s === "all" || k.sport === s)).length);
   drawMap({ id: "mapClub", key: "cplace", items: FAN.filter(k => clubMatch(k, "map")), geo: k => k.geo, one: "klubb", many: "klubber", list: "clubCount" });
+  const gseg = $("clubGender");
+  if (gseg) {
+    gseg.innerHTML = [["m", "Menn"], ["w", "Kvinner"]].map(([k, l]) => `<button type="button" role="radio" data-g="${k}" aria-checked="${state.cgender === k}">${t(l)}<span class="n">${FAN.filter(x => clubMatch(x, "gender") && (NOGENDER.has(x.sport) || (k === "w") === isWomen(x))).length}</span></button>`).join("");
+    gseg.querySelectorAll("button").forEach(b => b.onclick = () => { if (state.cgender === b.dataset.g) return; state.cgender = b.dataset.g;
+      try { localStorage.setItem("aurora-kjonn", state.cgender); } catch (e) {} render(); });
+    segPills(gseg.parentElement);
+  }
   const list = FAN.filter(k => clubMatch(k));
   const hidden = state.kq ? 0 : FAN.filter(k => deepClub(k) && !follows.has(k.id) && inCountry(k) && (state.csport === "all" || k.sport === state.csport)).length;
   $("clubCount").textContent = t("{n} klubber å følge", { n: list.length }) + (hidden ? " · " + t("{n} til lenger ned i divisjonene, søk for å finne dem", { n: hidden }) : "");
