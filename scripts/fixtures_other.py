@@ -5,6 +5,8 @@
 #  - Finsk ishockey (Liiga): liiga.fi sitt eget kampprogram
 #  - Dansk håndball (Herreligaen, Kvindeligaen, 1. division herrer og kvinder): tophaandbold.dk, ligaenes egen side
 #  - Svensk håndball (Handbollsligan herrer og damer): handbollsligan.se (bare kommende kamper; resultatene kommer fra TheSportsDB der laget finnes)
+#  - Finsk innebandy (F-liiga menn og kvinner): fliiga.com, ligaens egen side
+#  - Dansk innebandy (Unihoc Floorball Liga): resultater.floorball.dk, forbundets resultatservice (TMS)
 import datetime, html as H, json, re, time, unicodedata, urllib.request
 from zoneinfo import ZoneInfo
 
@@ -24,7 +26,7 @@ def norm(s):
 AFF = r"\b(if|ik|hc|hf|hk|bk|sk|aif|is|soss|gois|bois|hockey|hockeyklubb|forening|dam|naiset|kvinner|kvinder|kvenna|ry|håndbold|håndboldklub|herrehåndbold|herrer|hh|fh|kh|handboll|hbk|team)\b"
 def core(s): return norm(re.sub(AFF, " ", s.lower()))
 
-ALIAS = {"Kiekko-Espoo": "K-Espoo", "Skanderborg AGF": "SAH", "NFH": "Nykøbing F. Håndboldklub", "H65 Höör": "Höörs HK H 65"}
+ALIAS = {"Aarhus FK": "Århus Floorball Klub", "Pirkkalan Pirkat": "Pirkat", "Kiekko-Espoo": "K-Espoo", "Skanderborg AGF": "SAH", "NFH": "Nykøbing F. Håndboldklub", "H65 Höör": "Höörs HK H 65"}
 def matcher(clubs, names):
     """Kobler lagnavnene i en liga til klubbene våre. Bare sikre treff (ett eneste kandidatnavn) brukes."""
     out = {}
@@ -121,6 +123,36 @@ def handbollsligan(path, comp, now):
         out.append((t, L[i + 1], L[i + 3], None, None, comp, True))
     return out
 
+# ---------- Innebandy ----------
+def fliiga(path, comp):
+    s = get(f"https://fliiga.com/ottelut/{path}/")
+    if not s: return []
+    out = []
+    for c in re.split(r'<div class="grid-item match-card', s)[1:]:
+        ts = re.search(r'data-match-gameday="(\d+)"', c)
+        tn = re.findall(r'<span class="team-name">(.*?)</span>', c)
+        if not ts or len(tn) != 2: continue
+        hg = re.search(r'class="home-goals[^"]*">(\d+)<', c); ag = re.search(r'class="away-goals[^"]*">(\d+)<', c)
+        played = "match-Played" in c[:200] and hg and ag
+        t = datetime.datetime.fromtimestamp(int(ts.group(1)), datetime.timezone.utc)
+        out.append((t, H.unescape(tn[0]), H.unescape(tn[1]), int(hg.group(1)) if played else None, int(ag.group(1)) if played else None, comp, True))
+    return out
+
+def tms(base, pulje, comp, tz):
+    """Kampprogram fra TMS, resultattjenesten flere danske forbund bruker (floorball, volleyball)."""
+    s = get(f"{base}/tms/Turneringer-og-resultater/Pulje-Komplet-Kampprogram.aspx?PuljeId={pulje}")
+    if not s: return []
+    out = []
+    for r in re.findall(r"<tr[^>]*>(.*?)</tr>", s, re.S):
+        c = [" ".join(H.unescape(re.sub(r"<[^>]+>", " ", x)).split()) for x in re.findall(r"<td[^>]*>(.*?)</td>", r, re.S)]
+        if len(c) < 6: continue
+        m = re.fullmatch(r"(\d{2})-(\d{2})-(\d{2})(?: kl\. (\d{2}:\d{2}))?", c[1])
+        if not m: continue
+        t = datetime.datetime.fromisoformat(f"20{m.group(3)}-{m.group(2)}-{m.group(1)}T{m.group(4) or '12:00'}").replace(tzinfo=ZoneInfo(tz)).astimezone(datetime.timezone.utc)
+        g = re.fullmatch(r"(\d+) - (\d+)", c[5])
+        out.append((t, c[2], c[3], int(g.group(1)) if g else None, int(g.group(2)) if g else None, comp, bool(m.group(4))))
+    return out
+
 def collect(fan, now):
     out = {}
     def add(games, clubs, src, url):
@@ -146,6 +178,12 @@ def collect(fan, now):
     for div, path in (("Handbollsligan", "herr"), ("Handbollsligan dam", "dam")):
         clubs = [k for k in fan if k["sport"] == "Håndball" and k["c"] == "SE" and k["div"] == div]
         print(f"  {div}: {add(handbollsligan(path, div, now), clubs, 'Handbollsligan', f'https://handbollsligan.se/{path}/spelschema/')} av {len(clubs)} lag")
+    for div, path in (("F-liiga", "miehet"), ("F-liiga naiset", "naiset")):
+        clubs = [k for k in fan if k["sport"] == "Innebandy" and k["c"] == "FI" and k["div"] == div]
+        print(f"  {div}: {add(fliiga(path, 'F-liiga'), clubs, 'F-liiga', f'https://fliiga.com/ottelut/{path}/')} av {len(clubs)} lag")
+    clubs = [k for k in fan if k["sport"] == "Innebandy" and k["c"] == "DK"]
+    url = "https://resultater.floorball.dk/tms/Turneringer-og-resultater/Pulje-Komplet-Kampprogram.aspx?PuljeId=612"
+    print(f"  Floorball Liga: {add(tms('https://resultater.floorball.dk', 612, 'Floorball Liga', 'Europe/Copenhagen'), clubs, 'Floorball Danmark', url)} av {len(clubs)} lag")
     fi = [k for k in fan if k["sport"] == "Ishockey" and k["c"] == "FI" and k["div"] == "Liiga"]
     print(f"  Liiga: {add(liiga(now), fi, 'Liiga', 'https://liiga.fi/fi/ohjelma')} av {len(fi)} lag")
     return out
