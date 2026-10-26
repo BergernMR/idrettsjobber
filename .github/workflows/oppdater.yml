@@ -46,4 +46,13 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Oppdater kamper, tabeller, nyheter og jobber"
-          for i in 1 2 3; do git pull --rebase -q && git push && exit 0; sleep 10; done; exit 1
+          for i in 1 2 3; do
+            if git pull --rebase -q; then git push && exit 0
+            else
+              # Noen andre endret de samme linjene mens denne kjøringen pågikk (f.eks. en ny versjon av siden).
+              # Dataene hentes på nytt neste time, så denne runden hoppes over i stedet for å feile.
+              git rebase --abort || true
+              echo "Konflikt med nyere endringer på main, hopper over denne oppdateringen"; exit 0
+            fi
+            sleep 10
+          done; exit 1
