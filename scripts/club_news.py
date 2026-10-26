@@ -124,7 +124,7 @@ def match(country, title, extra="", tags=(), sportish=False, hint=(), amedia=Fal
 
 PAY = ("aftenposten.no bt.no adressa.no aftenbladet.no dn.no rbnett.no itromso.no smp.no h-avis.no ba.no fvn.no f-b.no sa.no op.no gp.se sydsvenskan.se dn.se svd.se nt.se barometern.se "
        "vlt.se na.se bt.se hd.se unt.se corren.se berlingske.dk politiken.dk jyllands-posten.dk jv.dk stiften.dk fyens.dk hs.fi hbl.fi kaleva.fi ess.fi vasabladet.fi").split()
-MAYBE = "vg.no dagbladet.no nettavisen.no aftonbladet.se expressen.se ekstrabladet.dk bt.dk is.fi iltalehti.fi mbl.is".split()
+MAYBE = "mvt.se st.nu allehanda.se gd.se op.se nlt.se sla.se nwt.se nsd.se kuriren.nu smp.se blt.se kristianstadsbladet.se ystadsallehanda.se ksml.fi savonsanomat.fi kouvolansanomat.fi kymensanomat.fi ita-savo.fi aamulehti.fi satakunnankansa.fi ostnyland.fi vg.no dagbladet.no nettavisen.no aftonbladet.se expressen.se ekstrabladet.dk bt.dk is.fi iltalehti.fi mbl.is".split()
 def pw(url, premium=None):
     if premium is not None: return 2 if premium else 0
     h = re.sub(r"^(www|m)\.", "", urllib.parse.urlparse(url).hostname or "")
@@ -185,15 +185,38 @@ RSS = {"NO": [("NRK " + d.replace("-", " ").title(), f"https://www.nrk.no/{d}/to
               ("blekinge", "dalarna", "gavleborg", "halland", "helsingborg", "jamtland", "jonkoping", "norrbotten", "skane", "smaland", "sodertalje", "sormland", "stockholm",
                "uppsala", "varmland", "vast", "vasterbotten", "vasternorrland", "vastmanland", "orebro", "ost")] +
               [("SVT", "https://www.svt.se/sport/rss.xml", True), ("SVT", "https://www.svt.se/sport/fotboll/rss.xml", True), ("SVT", "https://www.svt.se/sport/ishockey/rss.xml", True),
-               ("Aftonbladet", "https://www.aftonbladet.se/sportbladet/rss.xml", True), ("Expressen", "https://www.expressen.se/rss/sport", True)],
+               ("Aftonbladet", "https://www.aftonbladet.se/sportbladet/rss.xml", True), ("Expressen", "https://www.expressen.se/rss/sport", True)] +
+              # Lokalaviser (hele avisen; sportssakene kjennes igjen på /sport/ i lenken)
+              [(n, f"https://www.{d}/rss", False) for d, n in (("nt.se", "NT"), ("corren.se", "Corren"), ("unt.se", "UNT"), ("vlt.se", "VLT"), ("na.se", "NA"), ("mvt.se", "MVT"),
+               ("st.nu", "Sundsvalls Tidning"), ("allehanda.se", "Allehanda"), ("gd.se", "Gefle Dagblad"), ("op.se", "Östersunds-Posten"), ("nlt.se", "NLT"), ("sla.se", "SLA"),
+               ("nwt.se", "NWT"), ("nsd.se", "NSD"), ("kuriren.nu", "Norrbottens-Kuriren"), ("bt.se", "Borås Tidning"), ("smp.se", "Smålandsposten"), ("barometern.se", "Barometern"),
+               ("blt.se", "BLT"), ("kristianstadsbladet.se", "Kristianstadsbladet"), ("hd.se", "HD"), ("ystadsallehanda.se", "Ystads Allehanda"))] +
+              # Egne sider for hver idrett, også for de lavere divisjonene
+              [("Hockeysverige", "https://www.hockeysverige.se/feed", True), ("Hockeyettan", "https://www.hockeyettan.se/feed", True),
+               ("Handbollskanalen", "https://handbollskanalen.se/feed", True), ("Innebandymagazinet", "https://www.innebandymagazinet.se/feed", True),
+               ("Bandypuls", "https://bandypuls.se/feed", True)],
        "DK": [("TV Syd", "https://www.tvsyd.dk/rss", False), ("TV 2 Fyn", "https://www.tv2fyn.dk/rss", False), ("TV Midtvest", "https://www.tvmidtvest.dk/rss", False),
               ("TV 2 Øst", "https://www.tv2east.dk/rss", False), ("TV 2 Kosmopol", "https://www.tv2kosmopol.dk/rss", False),
+              ("TV2 Nord", "https://www.tv2nord.dk/rss", False), ("TV2 Østjylland", "https://www.tv2ostjylland.dk/rss", False),
+              ("hbold.dk", "https://www.hbold.dk/feed", True), ("Volleyball Danmark", "https://www.volleyball.dk/feed", True),
               ("DR", "https://www.dr.dk/nyheder/service/feeds/sporten", True), ("TV 2 Sport", "https://feeds.services.tv2.dk/api/feeds/sport/rss", True)],
        "FI": [("Yle", "https://yle.fi/rss/urheilu", True), ("MTV", "https://www.mtvuutiset.fi/api/feed/rss/urheilu", True), ("Iltalehti", "https://www.iltalehti.fi/rss/urheilu.xml", True),
-              ("Ilta-Sanomat", "https://www.is.fi/rss/urheilu.xml", True), ("HS", "https://www.hs.fi/rss/urheilu.xml", True)],
+              ("Ilta-Sanomat", "https://www.is.fi/rss/urheilu.xml", True), ("HS", "https://www.hs.fi/rss/urheilu.xml", True),
+              ("Aamulehti", "https://www.aamulehti.fi/rss/urheilu.xml", True), ("Satakunnan Kansa", "https://www.satakunnankansa.fi/rss/urheilu.xml", True),
+              ("Salibandy.fi", "https://www.salibandy.fi/feed", True)] +
+              [(n, f"https://www.{d}/rss", False) for d, n in (("ksml.fi", "Keskisuomalainen"), ("savonsanomat.fi", "Savon Sanomat"), ("ess.fi", "Etelä-Suomen Sanomat"),
+               ("kouvolansanomat.fi", "Kouvolan Sanomat"), ("kymensanomat.fi", "Kymen Sanomat"), ("ita-savo.fi", "Itä-Savo"), ("hbl.fi", "HBL"), ("vasabladet.fi", "Vasabladet"),
+               ("ostnyland.fi", "Östnyland"))],
        "IS": [("RÚV", "https://www.ruv.is/rss/ithrottir", True), ("mbl.is", "https://www.mbl.is/feeds/sport/", True), ("mbl.is", "https://www.mbl.is/feeds/fotbolti/", True),
-              ("mbl.is", "https://www.mbl.is/feeds/handbolti/", True), ("Fótbolti.net", "https://fotbolti.net/rss.php", True)]}
-HINT = {"fotbolti.net": ["Fotball"], "/fotbolti/": ["Fotball"], "/handbolti/": ["Håndball"], "/fotboll/": ["Fotball"], "/ishockey/": ["Ishockey"], "/handball/": ["Håndball"]}
+              ("mbl.is", "https://www.mbl.is/feeds/handbolti/", True), ("Fótbolti.net", "https://fotbolti.net/rss.php", True), ("Karfan.is", "https://www.karfan.is/feed", True)]}
+HINT = {"fotbolti.net": ["Fotball"], "/fotbolti/": ["Fotball"], "/handbolti/": ["Håndball"], "/fotboll/": ["Fotball"], "/ishockey/": ["Ishockey"], "/handball/": ["Håndball"],
+        "hockeysverige.se": ["Ishockey"], "hockeyettan.se": ["Ishockey"], "handbollskanalen.se": ["Håndball"], "innebandymagazinet.se": ["Innebandy"], "bandypuls.se": ["Bandy"],
+        "hbold.dk": ["Håndball"], "volleyball.dk": ["Volleyball"], "salibandy.fi": ["Innebandy"], "karfan.is": ["Basketball"]}
+# Lenken sier ofte hvilken avdeling og idrett saken hører til (nt.se/sport/ishockey/…, ksml.fi/urheilu/…)
+SPORTPATH = re.compile(r"/(sport|sporten|urheilu|idrett|idraet|ithrottir)(/|$)", re.I)
+PATHHINT = {"ishockey": "Ishockey", "hockey": "Ishockey", "jaakiekko": "Ishockey", "handboll": "Håndball", "handbold": "Håndball", "kasipallo": "Håndball",
+            "innebandy": "Innebandy", "salibandy": "Innebandy", "floorball": "Innebandy", "bandy": "Bandy", "basket": "Basketball", "koripallo": "Basketball",
+            "volleyboll": "Volleyball", "lentopallo": "Volleyball", "pesapallo": "Pesäpallo", "fotboll": "Fotball", "fodbold": "Fotball", "jalkapallo": "Fotball"}
 def rss(job):
     c, (src, url, sportish) = job
     b = get(url); out = []
@@ -213,7 +236,11 @@ with cf.ThreadPoolExecutor(10) as ex:
     for (c, src, sportish, arts), (_, (_, furl, _)) in zip(ex.map(rss, [(c, f) for c, fs in RSS.items() for f in fs]), [(c, f) for c, fs in RSS.items() for f in fs]):
         hint = [s for key, v in HINT.items() if key in furl for s in v]
         for when, t, desc, cats, link in arts:
-            for cid in match(c, t, desc, cats, sportish, hint):
+            path = urllib.parse.urlparse(link).path.lower()
+            h2 = hint + [v for k2, v in PATHHINT.items() if f"/{k2}/" in path]
+            # Hele lokalaviser: bare sportssakene, så «Hamar» i en trafikksak ikke blir en klubbnyhet
+            if not sportish and furl.endswith("/rss") and any(d in furl for d in (".se/", ".nu/", ".fi/")) and not (SPORTPATH.search(path) or h2 or "Urheilu" in cats): continue
+            for cid in match(c, t, desc, cats, sportish or bool(SPORTPATH.search(path)), h2):
                 add(cid, when, t, link, src, pw(link)); n_rss += 1
 
 # ---------- 3) Bing News på omgang ----------
@@ -225,6 +252,9 @@ CI = {"NO": 0, "SE": 1, "DK": 2, "FI": 3, "IS": 4}
 MKT = {"NO": ("nb", "NO"), "SE": ("sv", "SE"), "DK": ("da", "DK"), "FI": ("fi", "FI"), "IS": ("is", "IS")}
 checked = state["checked"]
 order = sorted(CLUBS, key=lambda c: checked.get(c["k"]["id"], ""))[:BING_PER_RUN]
+# Andre idretter enn fotball har færre saker i avisene, så de får en ekstra runde hver time (Noah 2026-10-26)
+picked = {c["k"]["id"] for c in order}
+order += [c for c in sorted(CLUBS, key=lambda c: checked.get(c["k"]["id"], "")) if c["k"]["sport"] != "Fotball" and c["k"]["id"] not in picked][:int(os.environ.get("BING_EXTRA", "120"))]
 JUNK = re.compile(r"odds|bet|apuest|wett|casino|transfer|flashscore|sofascore|livescore|fotmob|besoccer|soccerway|wikipedia|tipset|spelpro|sportsgambler|scores24|aiscore|youtube|facebook|instagram|tiktok", re.I)
 JUNKT = re.compile(r"fixtures|results|live score|livescore|prediction|predictions|\btips\b|\bodds\b|\bvs\.?\s.*\b(h2h|stream)|livestream|tv-tider|tv guide|spelschema|speltips|vedonlyönti|vihje", re.I)
 def bing(c):
