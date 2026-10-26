@@ -19,6 +19,10 @@ jobs:
           python-version: "3.12"
       - name: Hent nye kamper og tabeller
         run: python3 scripts/update_data.py index.html
+      - name: Hent verdenscup og VM i vintersport (FIS og IBU)
+        continue-on-error: true
+        timeout-minutes: 8
+        run: python3 scripts/winter.py index.html
       - name: Hent kampstatistikk for spilte kamper
         run: python3 scripts/match_stats.py index.html
       - name: Hent ferske sportsnyheter til forsiden

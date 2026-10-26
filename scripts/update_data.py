@@ -114,6 +114,11 @@ for fan_id, tid in TS.items():
     L.sort(key=lambda x: x[0], reverse=True)
     if L: e["l"] = L[:5]
     if len(e) > 1: out[k["id"]] = e
+# Ishockey og andre idretter fra forbundenes og ligaenes egne kampoppsett (går foran TheSportsDB)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fixtures_other
+try: out.update(fixtures_other.collect(fan, now))
+except Exception as ex: print("fixtures_other feilet:", ex)
 # Fotballtabeller fra de samme FotMob-filene; lagnavn byttes til navnene siden bruker
 def tables(html):
     i = html.index("const TABLES = "); j = html.index(";\n", i)

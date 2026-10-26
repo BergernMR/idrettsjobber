@@ -1,0 +1,118 @@
+# Kampoppsett og resultater for andre idretter enn fotball, fra forbundenes og ligaenes egne sider (Noah 2026-10-26).
+# Brukes av update_data.py: collect(fan, now) gir {klubb-id: {"s", "u", "n", "l"}} i samme form som fotballkampene.
+# Kilder:
+#  - Svensk ishockey (SHL, HockeyAllsvenskan, Hockeyettan, SDHL): stats.swehockey.se, Svenska Ishockeyförbundets resultattjeneste
+#  - Finsk ishockey (Liiga): liiga.fi sitt eget kampprogram
+import datetime, html as H, json, re, time, unicodedata, urllib.request
+from zoneinfo import ZoneInfo
+
+UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"}
+TZ = {"NO": "Europe/Oslo", "SE": "Europe/Stockholm", "DK": "Europe/Copenhagen", "FI": "Europe/Helsinki", "IS": "Atlantic/Reykjavik"}
+
+def get(url, tries=3):
+    for a in range(tries):
+        try: return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40).read().decode("utf-8", "replace")
+        except Exception: time.sleep(3 + 5 * a)
+    return None
+
+def norm(s):
+    s = s.lower().replace("æ", "ae").replace("ø", "o").replace("å", "a").replace("þ", "th").replace("ð", "d")
+    s = "".join(ch for ch in unicodedata.normalize("NFKD", s) if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z0-9]", "", s)
+AFF = r"\b(if|ik|hc|hf|hk|bk|sk|aif|is|soss|gois|bois|hockey|hockeyklubb|forening|dam|naiset|kvinner|kvinder|kvenna|ry)\b"
+def core(s): return norm(re.sub(AFF, " ", s.lower()))
+
+ALIAS = {"Kiekko-Espoo": "K-Espoo"}
+def matcher(clubs, names):
+    """Kobler lagnavnene i en liga til klubbene våre. Bare sikre treff (ett eneste kandidatnavn) brukes."""
+    out = {}
+    for k in clubs:
+        want = re.sub(r"\s+(dam|Dam|Naiset|Kvinner|Kvinder|kvenna)$", "", k["n"])
+        want = ALIAS.get(want, want)
+        hit = [n for n in names if norm(n) == norm(want)] or [n for n in names if core(n) and core(n) == core(want)] or \
+              [n for n in names if core(want) and core(n) and (core(want) in core(n) or core(n) in core(want)) and min(len(core(want)), len(core(n))) >= 3]
+        if len(hit) == 1: out[hit[0]] = k["id"]
+    return out
+
+def entry(games, team, k, src, url, now, names):
+    """games: [(utc-tid, hjemme, borte, hjemmemål|None, bortemål|None, turnering, tid kjent)] -> FIXTURES-element for laget."""
+    tz = ZoneInfo(TZ[k["c"]]); up, played = [], []
+    for t, h, a, hs, as_, comp, timed in games:
+        if team not in (h, a): continue
+        home = h == team; opp = names.get(a if home else h, a if home else h); lt = t.astimezone(tz)
+        if hs is not None and as_ is not None:
+            played.append([lt.strftime("%Y-%m-%d"), opp, 1 if home else 0, hs if home else as_, as_ if home else hs, comp])
+        elif t > now:
+            up.append((t, [lt.strftime("%Y-%m-%d"), opp, 1 if home else 0, comp, lt.strftime("%H:%M") if timed else ""]))
+    e = {"s": src, "u": url}
+    if up: e["n"] = sorted(up)[0][1]
+    if played: e["l"] = sorted(played, key=lambda x: x[0], reverse=True)[:5]
+    return e if len(e) > 2 else None
+
+# ---------- Svensk ishockey ----------
+SWEHOCKEY = {"SHL": 20961, "HockeyAllsvenskan": 20962, "Hockeyettan": 21041, "SDHL": 20960}
+def swehockey(sid, comp):
+    s = get(f"https://stats.swehockey.se/ScheduleAndResults/Schedule/{sid}")
+    if not s: return []
+    games, day = [], None
+    for r in re.findall(r"<tr[^>]*>(.*?)</tr>", s, re.S):
+        cells = [" ".join(H.unescape(re.sub(r"<[^>]+>", " ", c)).split()) for c in re.findall(r"<td[^>]*>(.*?)</td>", r, re.S)]
+        for c in cells:
+            m = re.match(r"^(\d{4}-\d{2}-\d{2})", c)
+            if m: day = m.group(1); break
+        g = next((c for c in cells if " - " in c and not re.match(r"^\d+ - \d+$", c) and not re.match(r"^\(", c)), None)
+        if not g or not day: continue
+        h, a = [x.strip() for x in g.split(" - ", 1)]
+        a = re.sub(r"\s+(Postponed|Uppskjuten|Inställd)$", "", a)
+        tm = next((c for c in cells if re.fullmatch(r"\d{2}:\d{2}", c)), "")
+        sc = next((c for c in cells if re.fullmatch(r"\d+ - \d+", c)), None)
+        t = datetime.datetime.fromisoformat(f"{day}T{tm or '12:00'}").replace(tzinfo=ZoneInfo("Europe/Stockholm")).astimezone(datetime.timezone.utc)
+        hs, as_ = (int(x) for x in sc.split(" - ")) if sc else (None, None)
+        games.append((t, h, a, hs, as_, comp, bool(tm)))
+    return games
+
+# ---------- Liiga ----------
+def liiga(now):
+    season = now.year + 1 if now.month >= 7 else now.year
+    out = []
+    for tour in ("runkosarja", "playoffs"):
+        s = get(f"https://liiga.fi/api/v2/games?tournament={tour}&season={season}")
+        try: d = json.loads(s) if s else []
+        except Exception: d = []
+        for g in d:
+            t = datetime.datetime.fromisoformat(g["start"].replace("Z", "+00:00"))
+            done = g.get("ended")
+            out.append((t, g["homeTeam"]["teamName"], g["awayTeam"]["teamName"], g["homeTeam"].get("goals") if done else None,
+                        g["awayTeam"].get("goals") if done else None, "Liiga" if tour == "runkosarja" else "Sluttspill", True))
+    return out
+
+def collect(fan, now):
+    out = {}
+    def add(games, clubs, src, url):
+        names = {n for g in games for n in (g[1], g[2])}
+        m = matcher(clubs, names)
+        disp = {n: next(k["n"] for k in clubs if k["id"] == cid) for n, cid in m.items()}
+        for n, cid in m.items():
+            k = next(x for x in clubs if x["id"] == cid)
+            e = entry(games, n, k, src, url, now, disp)
+            if e: out[cid] = e
+        return len(m)
+    se = [k for k in fan if k["sport"] == "Ishockey" and k["c"] == "SE"]
+    for comp, sid in SWEHOCKEY.items():
+        women = comp == "SDHL"
+        clubs = [k for k in se if bool(re.search(r"\bdam$", k["n"])) == women and (k["div"] or "").split(",")[0] == comp]
+        n = add(swehockey(sid, comp), clubs, "Svenska Ishockeyförbundet", f"https://stats.swehockey.se/ScheduleAndResults/Schedule/{sid}")
+        print(f"  {comp}: {n} av {len(clubs)} lag")
+    fi = [k for k in fan if k["sport"] == "Ishockey" and k["c"] == "FI" and k["div"] == "Liiga"]
+    print(f"  Liiga: {add(liiga(now), fi, 'Liiga', 'https://liiga.fi/fi/ohjelma')} av {len(fi)} lag")
+    return out
+
+if __name__ == "__main__":
+    import sys
+    page = open(sys.argv[1], encoding="utf-8").read()
+    src = page[page.index("const FAN = ["):page.index("].map(([id, c, n, sport, city")]
+    rows = [json.loads(l.strip().rstrip(",")) for l in src.split("\n") if l.strip().startswith('["')]
+    fan = [dict(id=r[0], c=r[1], n=r[2], sport=r[3], div=r[8] if len(r) > 8 else "") for r in rows]
+    res = collect(fan, datetime.datetime.now(datetime.timezone.utc))
+    print(len(res), "lag")
+    for k, v in list(res.items())[:4]: print(k, v)
