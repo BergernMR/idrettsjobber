@@ -1400,6 +1400,9 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 .fyedit, .fyskip { font: inherit; font-size: 14px; font-weight: 700; border: 0; background: none; color: var(--accent); cursor: pointer; padding: 4px 0; }
 .fypick { display: grid; gap: 12px; padding: 16px; border-radius: 16px; background: var(--surface-2); }
 .fyq { margin: 0; font-weight: 800; font-size: 18px; }
+a.fyev.fyedu { text-decoration: none; color: inherit; }
+.fyq2 { margin: 6px 0 -2px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.fygoals .chip svg { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .fychips { display: flex; flex-wrap: wrap; gap: 8px; }
 .fyhome { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; }
 .fyhome select { font: inherit; padding: 7px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
@@ -2106,6 +2109,14 @@ const I18N = {
 "Se kalenderen": ["Se kalendern","Se kalenderen","Katso kalenteri","Sjá dagatalið","See the calendar"],
 "Se utdanning": ["Se utbildning","Se uddannelse","Katso koulutus","Sjá nám","See education"],
 "Se ledige jobber": ["Se lediga jobb","Se ledige job","Katso avoimet työpaikat","Sjá laus störf","See open jobs"],
+"Idretter": ["Idrotter","Idrætter","Urheilulajit","Íþróttir","Sports"],
+"Nyheter": ["Nyheter","Nyheder","Uutiset","Fréttir","News"],
+"Hva bruker du Aurora til?": ["Vad använder du Aurora till?","Hvad bruger du Aurora til?","Mihin käytät Auroraa?","Til hvers notar þú Aurora?","What do you use Aurora for?"],
+"Finne jobb": ["Hitta jobb","Finde job","Löytää työtä","Finna vinnu","Finding a job"],
+"Utdanning og kurs": ["Utbildning och kurser","Uddannelse og kurser","Koulutus ja kurssit","Nám og námskeið","Education and courses"],
+"Følge klubber og kamper": ["Följa klubbar och matcher","Følge klubber og kampe","Seurata seuroja ja otteluita","Fylgjast með félögum og leikjum","Following clubs and matches"],
+"Frivillig arbeid": ["Ideellt arbete","Frivilligt arbejde","Vapaaehtoistyö","Sjálfboðastarf","Volunteering"],
+"Utdanning og kurs for deg": ["Utbildning och kurser för dig","Uddannelse og kurser til dig","Koulutusta ja kursseja sinulle","Nám og námskeið fyrir þig","Education and courses for you"],
 "Hva interesserer deg?": ["Vad är du intresserad av?","Hvad interesserer dig?","Mikä sinua kiinnostaa?","Hvað vekur áhuga þinn?","What are you interested in?"],
 "Ski og langrenn": ["Skidor och längdåkning","Ski og langrend","Hiihto","Skíði og skíðaganga","Skiing and cross-country"],
 "Ishockey og bandy": ["Ishockey och bandy","Ishockey og bandy","Jääkiekko ja jääpallo","Íshokkí og bandí","Ice hockey and bandy"],
@@ -3525,7 +3536,8 @@ async function cloudLoad() {
   const data = r.data;
   if (data) { (data.clubs || []).forEach(id => follows.add(id)); (data.likes || []).forEach(k => likes.add(k)); splitBall(likes);
     if (data.home && typeof data.home.lat === "number") home = data.home;
-    if (data.saved) { if (data.saved.priv) priv = Object.assign({ clubs: true, ev: true, jobs: false }, data.saved.priv); (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
+    if (data.saved) { if (data.saved.priv) priv = Object.assign({ clubs: true, ev: true, jobs: false }, data.saved.priv);
+      if (Array.isArray(data.saved.goals)) { data.saved.goals.forEach(k => goals.add(k)); try { localStorage.setItem("aurora-formal", JSON.stringify([...goals])); } catch (e) {} } (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
       if (Array.isArray(data.saved.seen)) { seen = [...new Set([...seen, ...data.saved.seen])].slice(0, 40); try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) {} }
       try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {} updSaved(); }
     try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} }
@@ -3535,7 +3547,7 @@ let cloudTimer;
 function cloudSave(now) {
   if (!sb || !authUser) return;
   clearTimeout(cloudTimer);
-  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved], seen, priv } } : {});
+  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes, ...(likes.has("ski") ? ["ski2"] : [])], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved], seen, priv, goals: [...goals] } } : {});
   const go = () => sb.from("profiles").upsert(row()).then(r => {
     if (r.error && savedCol && /saved/i.test(r.error.message)) { savedCol = false; return go(); }
     if (r.error) console.warn("Aurora lagring:", r.error.message); });
@@ -3544,8 +3556,8 @@ function cloudSave(now) {
 // Ved utlogging: klubbene, idrettene, hjemstedet og det du har lagret ligger trygt på kontoen, så de fjernes fra denne nettleseren
 function clearLocalPrefs() {
   avatarUrl = "";
-  follows.clear(); likes.clear(); favs.clear(); evSaved.clear(); seen = []; home = { name: "Oslo", lat: 59.91, lon: 10.75 };
-  try { [FOLLOW_KEY, "aurora-idretter", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY, SEEN_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  follows.clear(); likes.clear(); goals.clear(); favs.clear(); evSaved.clear(); seen = []; home = { name: "Oslo", lat: 59.91, lon: 10.75 };
+  try { [FOLLOW_KEY, "aurora-idretter", "aurora-formal", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY, SEEN_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
   updSaved(); updClubs();
 }
 let redrawAuth = () => {};
@@ -6642,7 +6654,9 @@ const ICON = {
   klubber: '<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9.5" r="2.4"/><path d="M3.5 19c.6-3.3 2.8-5 5.5-5s4.9 1.7 5.5 5M14.5 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 3.7 1.4 4.2 4"/>',
   arrangementer: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
   utdanning: '<path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.5c1.5 1.4 3.4 2 5.5 2s4-.6 5.5-2v-4.5M21.5 9.5v5"/>',
-  jobber: '<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5M3 13h18"/>'
+  jobber: '<rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5M3 13h18"/>',
+  nyheter: '<rect x="3" y="4.5" width="15" height="15" rx="2"/><path d="M18 8.5h2.5V17a2.5 2.5 0 0 1-5 0M6.5 8.5h8M6.5 12h8M6.5 15.5h5"/>',
+  frivillig: '<path d="M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z"/><path d="M9.5 12.5l2 2 3-3.5"/>'
 };
 function renderHome() {
   const ls = $("liveStrip"); $("tab-forside").appendChild(ls); // ut før hub tegnes på nytt
@@ -6655,24 +6669,34 @@ function renderHome() {
 }
 // «Til deg»: idretter man liker, hjemsted og klubbene man følger. Alt lagres bare i nettleseren (aurora-idretter, idrettsjobber-hjem, aurora-klubber).
 const INTERESTS = [
-  ["fotball", "Fotball", ["Fotball", "Futsal"]], ["ski", "Ski og langrenn", ["Langrenn", "Ski", "Langrenn, hopp og kombinert", "Skiorientering", "Skiskyting", "Hopp"]],
-  ["alpint", "Alpint", ["Alpint"]], ["hockey", "Ishockey", ["Ishockey"]], ["bandy", "Bandy", ["Bandy"]], ["handball", "Håndball", ["Håndball"]],
-  ["lop", "Løping", ["Løping", "Terrengløp"]], ["friidrett", "Friidrett", ["Friidrett"]], ["sykkel", "Sykling", ["Sykling"]],
-  ["vann", "Vannsport", ["Svømming", "Swimrun", "Triatlon", "Kano", "Roing", "Seiling"]], ["kompass", "Orientering", ["Orientering", "Skiorientering"]],
-  ["basket", "Basketball", ["Basketball"]], ["volley", "Volleyball", ["Volleyball"]], ["innebandy", "Innebandy", ["Innebandy"]], ["pesapallo", "Pesäpallo", ["Pesäpallo"]]
+  ["fotball", "Fotball", ["Fotball", "Futsal"]], ["handball", "Håndball", ["Håndball"]], ["hockey", "Ishockey", ["Ishockey"]], ["bandy", "Bandy", ["Bandy"]],
+  ["basket", "Basketball", ["Basketball"]], ["volley", "Volleyball", ["Volleyball"]], ["innebandy", "Innebandy", ["Innebandy"]], ["pesapallo", "Pesäpallo", ["Pesäpallo"]],
+  ["ski", "Langrenn", ["Langrenn", "Ski", "Langrenn, hopp og kombinert"]], ["skiskyting", "Skiskyting", ["Skiskyting"]], ["hopp", "Hopp", ["Hopp", "Langrenn, hopp og kombinert"]],
+  ["alpint", "Alpint", ["Alpint"]], ["skoyter", "Skøyter", ["Skøyter"]], ["kunstlop", "Kunstløp", ["Kunstløp"]], ["curling", "Curling", ["Curling"]], ["bob", "Bob og skeleton", ["Bob og skeleton"]],
+  ["lop", "Løping", ["Løping", "Terrengløp"]], ["friidrett", "Friidrett", ["Friidrett"]], ["kompass", "Orientering", ["Orientering", "Skiorientering"]], ["sykkel", "Sykling", ["Sykling"]],
+  ["svomming", "Svømming", ["Svømming", "Swimrun"]], ["triatlon", "Triatlon", ["Triatlon", "Swimrun"]], ["ro", "Roing", ["Roing", "Kano"]], ["seil", "Seiling", ["Seiling"]]
 ];
+// Hvorfor man er på Aurora (Noah 2026-10-27: «vi ønsker å vite hvorfor folk er på nettsiden»). Lagres i aurora-formal og profiles.saved.goals
+const GOALS = [["jobb", "Finne jobb", "jobber"], ["arr", "Arrangementer", "arrangementer"], ["utd", "Utdanning og kurs", "utdanning"],
+  ["klubb", "Følge klubber og kamper", "klubber"], ["nyheter", "Nyheter", "nyheter"], ["frivillig", "Frivillig arbeid", "frivillig"]];
 // Den gamle samlekategorien "ball" er delt i fire
-const splitBall = set => { if (set.delete("ball")) ["basket", "volley", "innebandy", "pesapallo"].forEach(k => set.add(k)); };
-let likes = new Set(), fySkip = false;
-try { likes = new Set(JSON.parse(localStorage.getItem("aurora-idretter") || "[]")); splitBall(likes); fySkip = localStorage.getItem("aurora-idretter-hopp") === "1"; } catch (e) {}
-const saveLikes = () => { try { localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); } catch (e) {} cloudSave(); };
+// «Ski og langrenn» og «Vannsport» er også delt opp (2026-10-27)
+const splitBall = set => { if (set.delete("ball")) ["basket", "volley", "innebandy", "pesapallo"].forEach(k => set.add(k));
+  if (set.delete("vann")) ["svomming", "triatlon", "ro", "seil"].forEach(k => set.add(k));
+  if (set.has("ski") && !set.has("ski2")) { set.add("skiskyting"); set.add("hopp"); } set.delete("ski2"); };
+let likes = new Set(), goals = new Set(), fySkip = false;
+try { likes = new Set(JSON.parse(localStorage.getItem("aurora-idretter") || "[]")); splitBall(likes); fySkip = localStorage.getItem("aurora-idretter-hopp") === "1";
+  goals = new Set(JSON.parse(localStorage.getItem("aurora-formal") || "[]")); } catch (e) {}
+// «ski2» merker at den nye inndelingen er brukt, så skiskyting og hopp ikke legges til igjen hvis man har tatt dem bort
+const saveLikes = () => { try { localStorage.setItem("aurora-idretter", JSON.stringify([...likes, ...(likes.has("ski") ? ["ski2"] : [])])); } catch (e) {} cloudSave(); };
+const saveGoals = () => { try { localStorage.setItem("aurora-formal", JSON.stringify([...goals])); } catch (e) {} cloudSave(); };
 const liked = sp => likes.size > 0 && INTERESTS.some(([k, , sps]) => likes.has(k) && sps.includes(sp));
 const kmFrom = (lat, lon) => { const R = 6371, r = Math.PI / 180, dLat = (lat - home.lat) * r, dLon = (lon - home.lon) * r;
   return 2 * R * Math.asin(Math.sqrt(Math.sin(dLat / 2) ** 2 + Math.cos(home.lat * r) * Math.cos(lat * r) * Math.sin(dLon / 2) ** 2)); };
 let fyEdit = false;
 const KIND_COLOR = { fotball: "#1f9254", ski: "#2f6fd6", alpint: "#2f6fd6", kompass: "#2f6fd6", hockey: "#0b7a92", basket: "#e0610e", handball: "#c2255c",
   friidrett: "#d4452a", lop: "#d4452a", fjell: "#d4452a", sykkel: "#d08a00", vann: "#1c7ed6", seil: "#1c7ed6", ro: "#1c7ed6", annet: "#7048e8",
-  volley: "#e0610e", innebandy: "#0b7a92", bandy: "#0b7a92", pesis: "#d08a00", skoyte: "#1c7ed6", kunstlop: "#1c7ed6", curling: "#1c7ed6", skiskyting: "#2f6fd6", hopp: "#2f6fd6" };
+  volley: "#e0610e", innebandy: "#0b7a92", bob: "#1c7ed6", bandy: "#0b7a92", pesis: "#d08a00", skoyte: "#1c7ed6", kunstlop: "#1c7ed6", curling: "#1c7ed6", skiskyting: "#2f6fd6", hopp: "#2f6fd6" };
 const CLUB_KIND = { Fotball: "fotball", Ishockey: "hockey", Håndball: "handball", Basketball: "basket", Volleyball: "volley", Innebandy: "innebandy", Bandy: "bandy", Friidrett: "friidrett", Svømming: "vann", Orientering: "kompass", Pesäpallo: "pesis",
   Skøyter: "skoyte", Kunstløp: "kunstlop", Curling: "curling" };
 const kindOf = sp => CLUB_KIND[sp] || SPORT_KIND[sp] || "annet";
@@ -6730,15 +6754,20 @@ function renderGuestHome(box) {
   box.querySelector(".fyjoin-up").onclick = () => { askLogin(""); authMode = "up"; };
   box.querySelector(".fyjoin-in").onclick = () => askLogin("");
 }
+// Rekkefølgen på delene i «Til deg»: det man har sagt man er her for, kommer først
+const fyOrder = () => { const all = ["klubb", "jobb", "utd", "arr"]; return [...all.filter(k => goals.has(k)), ...all.filter(k => !goals.has(k))]; };
 function renderForYou() {
   const box = $("foryou"); if (!box) return;
   if (SUPA.key && !authUser && !authPending) return renderGuestHome(box);
   const homeName = home.name === "deg" ? t("Min posisjon") : home.name;
   const picker = `<div class="fypick"><p class="fyq">${t("Hva interesserer deg?")}</p>
+      <p class="fyq2">${t("Hva bruker du Aurora til?")}</p>
+      <div class="fychips fygoals">${GOALS.map(([k, l, ic]) => `<button type="button" class="chip fyint" data-g="${k}" aria-pressed="${goals.has(k)}"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[ic] || ""}</svg>${t(l)}</button>`).join("")}</div>
+      <p class="fyq2">${t("Idretter")}</p>
       <div class="fychips">${INTERESTS.map(([k, l, sps]) => `<button type="button" class="chip fyint" data-k="${k}" aria-pressed="${likes.has(k)}" style="--kc:${KIND_COLOR[kindOf(sps[0])]}">${icoOf(sps[0])}${t(l)}</button>`).join("")}</div>
       <div class="fyhome"><span>${t("Hjemsted")}</span>${psHtml("fyHome", home.name === "deg" ? t("Min posisjon") : home.name)}</div>
-      <div class="fyacts"><button type="button" class="tablebtn fydone">${t("Ferdig")}</button>${likes.size ? "" : `<button type="button" class="fyskip">${t("Hopp over")}</button>`}</div></div>`;
-  const ask = fyEdit || (!likes.size && !fySkip);
+      <div class="fyacts"><button type="button" class="tablebtn fydone">${t("Ferdig")}</button>${likes.size || goals.size ? "" : `<button type="button" class="fyskip">${t("Hopp over")}</button>`}</div></div>`;
+  const ask = fyEdit || (!likes.size && !goals.size && !fySkip);
   // Mine klubber: live, neste kamp og siste sak
   const mine = FAN.filter(k => follows.has(k.id));
   const clubCard = k => { const n = nextMatch(k), ns = newsOf(k)[0], L = LIVE[k.id], cd = n && countdown(n);
@@ -6747,19 +6776,26 @@ function renderForYou() {
     return `<button type="button" class="fyclub" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k, "clogo", false) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span>${top}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
   // Arrangementer nær hjemstedet det neste året, innenfor rekkevidden brukeren har valgt med slideren
   // Forslag til klubber nær deg når man ikke følger noen ennå
-  const fyJobs = authUser && taste().any ? recJobs().slice(0, 4) : [];
+  let fyJobs = authUser && taste().any ? recJobs().slice(0, 4) : [];
+  // Vil man finne jobb, får man alltid jobber: de nærmeste i hjemlandet når vi ikke vet nok ennå
+  if (!fyJobs.length && goals.has("jobb")) { const hc = homeCountry();
+    fyJobs = JOBS.filter(j => j.c === hc && !(daysLeft(j.dl) < 0)).sort((a, b) => (distTo(a) ?? 1e6) - (distTo(b) ?? 1e6)).slice(0, 4).map(j => ({ j, why: "" })); }
+  const fyEdu = goals.has("utd") ? recEdu() : [];
   const near = mine.length ? [] : FAN.filter(k => k.geo && (!likes.size || liked(k.sport))).map(k => ({ k, km: kmFrom(k.geo[1], k.geo[2]) })).sort((a, b) => a.km - b.km).slice(0, 4);
-  box.innerHTML = `<div class="fyh"><p class="fyhello">${greet()}${typeof authName === "function" && authName() ? ", " + esc(authName()) : ""}</p><h3 id="fyH">${t("Til deg")}</h3>${ask ? "" : `<span class="fysum">${likes.size ? INTERESTS.filter(([k]) => likes.has(k)).map(([, l]) => t(l)).join(", ") + " · " : ""}${esc(homeName)}</span><button type="button" class="fyedit">${t("Tilpass")}</button>`}</div>
+  box.innerHTML = `<div class="fyh"><p class="fyhello">${greet()}${typeof authName === "function" && authName() ? ", " + esc(authName()) : ""}</p><h3 id="fyH">${t("Til deg")}</h3>${ask ? "" : `<span class="fysum">${[...GOALS.filter(([k]) => goals.has(k)), ...INTERESTS.filter(([k]) => likes.has(k))].map(([, l]) => t(l)).join(", ")}${likes.size || goals.size ? " · " : ""}${esc(homeName)}</span><button type="button" class="fyedit">${t("Tilpass")}</button>`}</div>
     ${ask ? picker : ""}
-    ${mine.length ? `<div class="fysec"><p class="fyl">${t("Dine klubber")}</p><div class="fyclubs">${mine.slice(0, 6).map(clubCard).join("")}</div></div>` : ""}
-    ${near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k, "clogo", false) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""}
-    ${fyJobs.length ? `<div class="fysec"><p class="fyl">${t("Jobber for deg")}</p><div class="fyevs">${fyJobs.map(({ j, why }) => `<button type="button" class="fyev fyjob" data-j="${j.id}"><span class="fybib fyflag">${flag(j.c)}</span><span class="fyevt"><b>${esc(j.t)}</b><span>${esc(j.emp)} · ${esc(j.place)}${distTo(j) != null ? " · " + fmtKm(distTo(j)) : ""}</span><em class="fywhy">${esc(why)}</em></span></button>`).join("")}</div></div>` : ""}
-    <div class="fysec fyevsec"><div class="fyrange"><p class="fyl">${t("Arrangementer nær {x}", { x: esc(homeName) })}</p><label class="fyslide"><span id="fyKm">${t("innen {n} km", { n: evRange })}</span><input type="range" id="fyRange" min="10" max="300" step="10" value="${evRange}" aria-label="${t("Rekkevidde i km")}"></label></div>
-      <div class="fyevs" id="fyEvs"></div></div>`;
+    ${fyOrder().map(k => ({
+      klubb: () => (mine.length ? `<div class="fysec"><p class="fyl">${t("Dine klubber")}</p><div class="fyclubs">${mine.slice(0, 6).map(clubCard).join("")}</div></div>` : "") + (near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k, "clogo", false) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""),
+      jobb: () => fyJobs.length ? `<div class="fysec"><p class="fyl">${t("Jobber for deg")}</p><div class="fyevs">${fyJobs.map(({ j, why }) => `<button type="button" class="fyev fyjob" data-j="${j.id}"><span class="fybib fyflag">${flag(j.c)}</span><span class="fyevt"><b>${esc(j.t)}</b><span>${esc(j.emp)} · ${esc(j.place)}${distTo(j) != null ? " · " + fmtKm(distTo(j)) : ""}</span><em class="fywhy">${esc(why)}</em></span></button>`).join("")}</div></div>` : "",
+      utd: () => fyEdu.length ? `<div class="fysec"><p class="fyl">${t("Utdanning og kurs for deg")}</p><div class="fyevs">${fyEdu.map(({ u, why }) => `<a class="fyev fyedu" href="${u.url}" target="_blank" rel="noopener"><span class="fybib fyflag">${flag(u.c)}</span><span class="fyevt"><b>${esc(u.t)}</b><span>${esc(u.org)} · ${esc(t(u.place))}</span>${why ? `<em class="fywhy">${esc(why)}</em>` : ""}</span></a>`).join("")}</div></div>` : "",
+      arr: () => `<div class="fysec fyevsec"><div class="fyrange"><p class="fyl">${t("Arrangementer nær {x}", { x: esc(homeName) })}</p><label class="fyslide"><span id="fyKm">${t("innen {n} km", { n: evRange })}</span><input type="range" id="fyRange" min="10" max="300" step="10" value="${evRange}" aria-label="${t("Rekkevidde i km")}"></label></div>
+<div class="fyevs" id="fyEvs"></div></div>`
+    })[k]()).join("")}`;
   paintFyEvs();
   $("fyRange").oninput = e => { evRange = +e.target.value; $("fyKm").textContent = t("innen {n} km", { n: evRange }); paintFyEvs(); };
   $("fyRange").onchange = () => { try { localStorage.setItem("aurora-rekkevidde", evRange); } catch (e) {} };
-  box.querySelectorAll(".fychips .chip").forEach(b => b.onclick = () => { const k = b.dataset.k; likes.has(k) ? likes.delete(k) : likes.add(k); saveLikes(); b.setAttribute("aria-pressed", String(likes.has(k))); });
+  box.querySelectorAll(".fychips .chip[data-k]").forEach(b => b.onclick = () => { const k = b.dataset.k; likes.has(k) ? likes.delete(k) : likes.add(k); saveLikes(); b.setAttribute("aria-pressed", String(likes.has(k))); });
+  box.querySelectorAll(".fychips .chip[data-g]").forEach(b => b.onclick = () => { const k = b.dataset.g; goals.has(k) ? goals.delete(k) : goals.add(k); saveGoals(); b.setAttribute("aria-pressed", String(goals.has(k))); });
   placeSearch($("fyHome"), p => { setHomePlace(p); });
   const done = box.querySelector(".fydone"); if (done) done.onclick = () => { fyEdit = false; render(); };
   const skip = box.querySelector(".fyskip"); if (skip) skip.onclick = () => { fySkip = true; fyEdit = false; try { localStorage.setItem("aurora-idretter-hopp", "1"); } catch (e) {} render(); };
