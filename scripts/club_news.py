@@ -258,7 +258,7 @@ order += [c for c in sorted(CLUBS, key=lambda c: checked.get(c["k"]["id"], "")) 
 JUNK = re.compile(r"odds|bet|apuest|wett|casino|transfer|flashscore|sofascore|livescore|fotmob|besoccer|soccerway|wikipedia|tipset|spelpro|sportsgambler|scores24|aiscore|youtube|facebook|instagram|tiktok", re.I)
 JUNKT = re.compile(r"fixtures|results|live score|livescore|prediction|predictions|\btips\b|\bodds\b|\bvs\.?\s.*\b(h2h|stream)|livestream|tv-tider|tv guide|spelschema|speltips|vedonlyönti|vihje", re.I)
 def bing(c):
-    k = c["k"]; word = WORD.get(k["sport"], k["sport"]).split()[CI[k["c"]]]
+    k = c["k"]; ws = WORD.get(k["sport"], k["sport"]).split(); word = ws[CI[k["c"]]] if len(ws) == 5 else k["sport"]  # idretter uten oversettelse (f.eks. Curling) søkes med navnet
     base = re.sub(r"\s+(Kvinner|dam|Dam|Kvinder|Naiset|kvenna)$", "", k["n"])
     q = f'"{base}" {word}' + (" " + {"NO": "kvinner", "SE": "dam", "DK": "kvinder", "FI": "naiset", "IS": "kvenna"}[k["c"]] if c["women"] else "")
     lang, cc = MKT[k["c"]]
