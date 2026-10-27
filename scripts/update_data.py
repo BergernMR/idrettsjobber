@@ -10,9 +10,12 @@ TZ = {"NO": "Europe/Oslo", "SE": "Europe/Stockholm", "DK": "Europe/Copenhagen", 
 DIV_LEAGUE = {"Eliteserien": 59, "OBOS-ligaen": 203, "PostNord-ligaen": 204, "Norsk Tipping-ligaen": 205, "Allsvenskan": 67, "Superettan": 168, "Ettan": 169,
   "Superligaen": 46, "1. division": 85, "2. division": 239, "3. division": 240, "Veikkausliiga": 51, "Ykkösliiga": 251, "Ykkönen": 8969,
   "Besta deildin": 215, "Lengjudeildin": 216, "2. deild": 10226}
+# Kvinnefotball (Noah 2026-10-27: tabeller også for kvinner). Holdes utenfor sjekken av at nok ligaer svarte.
+WOMEN_LEAGUE = {"Toppserien": 331, "1. divisjon kvinner": 332, "Damallsvenskan": 9089, "Elitettan": 10308, "A-Liga": 256, "Kansallinen Liiga": 10174}
+WSUF = r"\s+(Kvinner|kvinner|dam|Dam|Kvinder|Naiset|kvenna)$"
 COMP = {59: "Eliteserien", 203: "OBOS-ligaen", 204: "PostNord-ligaen", 205: "Norsk Tipping-ligaen", 67: "Allsvenskan", 168: "Superettan", 169: "Ettan",
   46: "Superligaen", 85: "1. division", 239: "2. division", 240: "3. division", 51: "Veikkausliiga", 251: "Ykkösliiga", 8969: "Ykkönen", 215: "Besta deildin",
-  216: "Lengjudeildin", 10226: "2. deild", 42: "Champions League", 73: "Europa League", 10216: "Conference League", 10076: "Ligacupen"}
+  216: "Lengjudeildin", 10226: "2. deild", 331: "Toppserien", 332: "1. divisjon", 9089: "Damallsvenskan", 10308: "Elitettan", 256: "A-Liga", 10174: "Kansallinen Liiga", 42: "Champions League", 73: "Europa League", 10216: "Conference League", 10076: "Ligacupen"}
 for i in (206, 171, 242, 143, 217): COMP[i] = "Cup"
 for i in (68, 172, 9634, 60, 9754, 52, 10713): COMP[i] = "Kvalifisering"
 def norm(s):
@@ -29,7 +32,7 @@ def fetch(url, tries=3, timeout=40):
         try: return json.loads(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=timeout).read())
         except Exception: time.sleep(3 + 5 * a)
     return None
-LEAGUE_IDS = list(DIV_LEAGUE.values()) + [206, 171, 242, 143, 217, 10076, 68, 172, 9634, 60, 9754, 52, 10713, 42, 73, 10216]
+LEAGUE_IDS = list(DIV_LEAGUE.values()) + list(WOMEN_LEAGUE.values()) + [206, 171, 242, 143, 217, 10076, 68, 172, 9634, 60, 9754, 52, 10713, 42, 73, 10216]
 T0 = time.time()
 def lap(what): print(f"[{time.time() - T0:5.0f} s] {what}", flush=True)
 leagues, ldata = {}, {}
@@ -40,10 +43,11 @@ with ThreadPoolExecutor(6) as pool:
         if d and d.get("fixtures"): leagues[lid] = d["fixtures"]["allMatches"]; ldata[lid] = d
 lap(f"FotMob: {len(leagues)} av {len(LEAGUE_IDS)} ligaer")
 if len(leagues) < len(DIV_LEAGUE): sys.exit("FotMob svarte ikke for nok ligaer, avbryter uten endringer")
+DIV_LEAGUE.update(WOMEN_LEAGUE)
 names = {}  # FotMob-id -> navn
 for lid, ms in leagues.items():
     for m in ms:
-        for side in ("home", "away"): names[m[side]["id"]] = m[side]["name"]
+        for side in ("home", "away"): m[side]["name"] = re.sub(r"\s*\(W\)$", "", m[side]["name"]); names[m[side]["id"]] = m[side]["name"]
 fm_of, unknown = {}, []
 for k in fan:
     if k["sport"] != "Fotball" or not k["div"]: continue
@@ -52,6 +56,7 @@ for k in fan:
     for m in leagues.get(lid, []):
         for side in ("home", "away"): cand[m[side]["id"]] = m[side]["name"]
     want = [k["n"]] + [a for a, b in ALIAS.items() if b == k["n"]]
+    if re.search(WSUF, k["n"]): want.append(re.sub(WSUF, "", k["n"]))
     hit = [i for i, n in cand.items() if any(norm(n) == norm(w) for w in want)] or \
           [i for i, n in cand.items() if any(core(n) == core(w) and core(w) for w in want)] or \
           [i for i, n in cand.items() if any(core(w) and (core(w) in core(n) or core(n) in core(w)) and min(len(core(w)), len(core(n))) >= 4 for w in want)]
@@ -96,7 +101,7 @@ TS_BUDGET, fails = 12 * 60, 0  # TheSportsDB kan være treg fra GitHub; da stopp
 t_ts = time.time()
 for fan_id, tid in TS.items():
     k = next((x for x in fan if x["id"] == fan_id), None)
-    if not k: continue
+    if not k or fan_id in out: continue
     if time.time() - t_ts > TS_BUDGET or fails >= 6:
         if fan_id in prev and prev[fan_id].get("s") == "TheSportsDB": out[fan_id] = prev[fan_id]
         continue
@@ -147,6 +152,9 @@ lap("Forbund og ligaer ferdig")
 def tables(html):
     i = html.index("const TABLES = "); j = html.index(";\n", i)
     T = json.loads(html[i + 15:j])
+    for div, lid in WOMEN_LEAGUE.items():
+        k = next((x for x in fan if x["div"] == div), None)
+        if k and div not in T: T[div] = {"c": k["c"], "src": "FotMob", "url": f"https://www.fotmob.com/leagues/{lid}/table", "rows": []}
     for key, tb in T.items():
         base, sub = (key.split(", ") + [""])[:2]
         d = ldata.get(DIV_LEAGUE.get(base)); 
@@ -157,6 +165,8 @@ def tables(html):
             if sub:
                 m = re.search(r"\d+", sub); idx = int(m.group()) - 1 if m else (0 if sub == "Norra" else 1)
                 parts = [tl[idx]] if idx < len(tl) else []
+            elif base in WOMEN_LEAGUE:
+                parts = [max(tl, key=lambda x: len(x["table"]["all"]))]
             else:
                 parts = [x for x in tl if re.search(r"Championship|Relegation", x["leagueName"])] or tl[-1:]
             rows = [r for p in parts for r in p["table"]["all"]]
@@ -176,9 +186,10 @@ def tables(html):
         out_rows = []
         for r in rows:
             gf, ga = [int(x) for x in r["scoresStr"].split("-")[:2]]
-            nm = fan_name.get(fan_by_fm.get(str(r["id"])), r["name"])
+            nm = fan_name.get(fan_by_fm.get(str(r["id"])), re.sub(r"\s*\(W\)$", "", r["name"]))
             out_rows.append([nm, r["played"], r["wins"], r["draws"], r["losses"], gf, ga, r["pts"]])
         tb["rows"] = out_rows; tb["src"] = "FotMob"; tb["at"] = datetime.date.today().isoformat()
+    T = {d: tb for d, tb in T.items() if tb["rows"]}
     return html[:i + 15] + json.dumps(T, ensure_ascii=False, separators=(",", ":")) + html[j:]
 html = tables(html)
 src = "FotMob og TheSportsDB, hentet {}".format(datetime.date.today().isoformat())
