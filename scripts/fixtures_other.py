@@ -14,10 +14,15 @@ from zoneinfo import ZoneInfo
 UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"}
 TZ = {"NO": "Europe/Oslo", "SE": "Europe/Stockholm", "DK": "Europe/Copenhagen", "FI": "Europe/Helsinki", "IS": "Atlantic/Reykjavik"}
 
-def get(url, tries=3):
+def get(url, tries=2):
+    t0 = time.time()
     for a in range(tries):
-        try: return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=40).read().decode("utf-8", "replace")
-        except Exception: time.sleep(3 + 5 * a)
+        try:
+            s = urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=20).read().decode("utf-8", "replace")
+            if time.time() - t0 > 15: print(f"  treg kilde ({time.time() - t0:.0f} s): {url}", flush=True)
+            return s
+        except Exception as ex:
+            print(f"  feil fra {url}: {ex}", flush=True); time.sleep(3)
     return None
 
 def norm(s):

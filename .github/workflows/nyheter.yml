@@ -1,0 +1,53 @@
+name: Oppdater nyheter og jobber
+# Egen jobb, så nyheter og jobber kommer hver time selv om kamphentingen tar lang tid
+on:
+  schedule:
+    - cron: "47 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: nyheter
+  cancel-in-progress: false
+env:
+  PYTHONUNBUFFERED: "1"
+jobs:
+  nyheter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Hent ferske sportsnyheter til forsiden
+        run: python3 scripts/gnews_rss.py index.html
+      - name: Hent klubbnyheter fra de siste 3 dagene (lokalaviser, NRK, SVT, Yle m.fl.)
+        env:
+          BING_PER_RUN: "150"
+        run: python3 scripts/club_news.py index.html
+      - name: Hent nye idrettsjobber
+        run: python3 scripts/jobs_fetch.py index.html
+      - name: Finn bilder til forsidenyhetene
+        run: python3 scripts/news_images.py index.html
+      - name: Sjekk at siden fortsatt er gyldig
+        run: |
+          awk '/<script>/{f=1;next}/<\/script>/{f=0}f' index.html > /tmp/chk.js
+          node --check /tmp/chk.js
+      - name: Lagre endringer
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then echo "Ingen endringer"; exit 0; fi
+          git config user.name "aurora-oppdatering"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Oppdater nyheter og jobber"
+          for i in 1 2 3; do
+            if git pull --rebase -q; then git push && exit 0
+            else
+              # Noen andre endret de samme linjene mens denne kjøringen pågikk (f.eks. en ny versjon av siden).
+              # Dataene hentes på nytt neste time, så denne runden hoppes over i stedet for å feile.
+              git rebase --abort || true
+              echo "Konflikt med nyere endringer på main, hopper over denne oppdateringen"; exit 0
+            fi
+            sleep 10
+          done; exit 1
