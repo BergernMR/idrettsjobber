@@ -7,8 +7,8 @@
 <link rel="apple-touch-icon" href="img/icon-180.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Aurora">
-<meta property="og:title" content="Aurora – Idretten i Norden">
-<meta property="og:description" content="Jobber, utdanning, arrangementer og klubber innen idrett i Norge, Sverige, Danmark, Finland og Island.">
+<meta property="og:title" content="Aurora – Din plass i nordisk idrett">
+<meta property="og:description" content="Din plass i nordisk idrett. Jobber, utdanning, arrangementer og idrettslag i Norge, Sverige, Danmark, Finland og Island.">
 <meta property="og:image" content="https://bergernmr.github.io/idrettsjobber/img/og.png">
 <meta property="og:url" content="https://bergernmr.github.io/idrettsjobber/">
 <meta name="twitter:card" content="summary_large_image">
@@ -2100,7 +2100,7 @@ const I18N = {
 "Slutt": ["Slut","Slut","Päättynyt","Lokið","Full time"],
 "Pause": ["Paus","Pause","Tauko","Hálfleikur","Half time"],
 "Dine klubber nå": ["Dina klubbar nu","Dine klubber nu","Seurasi nyt","Félögin þín núna","Your clubs now"],
-"Finn din plass i": ["Hitta din plats i","Find din plads i","Löydä paikkasi","Finndu þinn stað í","Find your place in"],
+"Din plass i": ["Din plats i","Din plads i","Paikkasi","Þinn staður í","Your place in"],
 "nordisk idrett": ["nordisk idrott","nordisk idræt","pohjoismaisessa urheilussa","norrænum íþróttum","Nordic sport"],
 "Finn en klubb": ["Hitta en klubb","Find en klub","Löydä seura","Finndu félag","Find a club"],
 "Se kalenderen": ["Se kalendern","Se kalenderen","Katso kalenteri","Sjá dagatalið","See the calendar"],
@@ -3856,21 +3856,10 @@ function setStage(k, rect) {
   const tail = k === "all" ? "i Norden" : NATION[k].h1;
   if (LANG === "nb") h.textContent = tail;
   else { $("h1pre").style.display = "none"; h.textContent = t("Idretten " + tail); }
-  h.classList.remove("swap"); void h.offsetWidth; h.classList.add("swap");
+  // Ingen fargeblink eller hopp når man velger land (Noah 2026-10-27: «blir litt mye»)
   if (cur === next) return;
   if (cur) cur.classList.remove("on");
-  if (next) { void next.offsetWidth; next.classList.add("on"); }
-  if (next && rect && !reduceMotion() && $("wipe").animate) {
-    const x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
-    const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-    const w = $("wipe");
-    w.style.background = k === "all" ? "var(--accent)" : NATION[k].wipe;
-    w.animate([
-      { clipPath: `circle(0px at ${x}px ${y}px)`, opacity: .55 },
-      { clipPath: `circle(${r}px at ${x}px ${y}px)`, opacity: .4, offset: .5 },
-      { clipPath: `circle(${r}px at ${x}px ${y}px)`, opacity: 0 }
-    ], { duration: 950, easing: "cubic-bezier(.3,.7,.2,1)" });
-  }
+  if (next) next.classList.add("on");
 }
 
 function chipRow(rowId, map, key, has) {
@@ -4494,7 +4483,7 @@ function renderTabs() {
   const home = state.tab === "forside";
   $("board").hidden = $("stamp").hidden = $("hlede").hidden = home || state.tab === "minside";
   if (home) startHero();
-  $("herohead").innerHTML = home ? `${t("Finn din plass i")} <em>${t("nordisk idrett")}</em>` : "";
+  $("herohead").innerHTML = home ? `${t("Din plass i")} <em>${t("nordisk idrett")}</em>` : "";
   document.body.classList.toggle("home", home);
   document.body.dataset.tab = state.tab;
   const hero = SECHERO[state.tab];
