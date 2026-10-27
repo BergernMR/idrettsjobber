@@ -188,7 +188,7 @@ def hockey_no(now):
     try: d = json.load(open(f, encoding="utf-8"))
     except Exception: return []
     out = []
-    for when, h, a, hs, as_ in d.get("games", []):
+    for when, h, a, hs, as_ in (g[:5] for g in d.get("games", [])):
         t = datetime.datetime.fromisoformat(when).replace(tzinfo=ZoneInfo("Europe/Oslo")).astimezone(datetime.timezone.utc)
         # Kamper som ikke har startet står med 0–0 på siden; de er ikke resultater ennå
         if t > now: hs = as_ = None

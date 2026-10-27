@@ -7,7 +7,10 @@
 #  - Svensk håndball (Handbollsligan herrer og damer): handbollsligan.se/<herr|dam>/tabell/
 #  - Dansk håndball (Herreligaen, Kvindeligaen, 1. division herrer og kvinder): tophaandbold.dk/stillinger/<liga>
 #  - Dansk volleyball (Volleyligaen herrer og kvinder): volleyligaen.dk/<herrer|kvinder>/stilling/
+#  - Norsk ishockey (EliteHockey Ligaen): regnet ut fra Norges Ishockeyforbunds egne kamper i data/hockey_no.json
+#    (3 poeng for seier på ordinær tid, 2 etter forlengning/straffer, 1 for tap etter forlengning/straffer)
 import datetime, html as H, json, os, re, sys
+from zoneinfo import ZoneInfo
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fixtures_other import get, matcher, SWEHOCKEY, TOPH, fix_enc
 
@@ -65,6 +68,22 @@ def volleyligaen(path):
         seen.add(r[0]); out.append(r)
     return out
 
+def hockey_no(now):
+    """Tabell regnet ut fra spilte kamper. Mangler en spilt kamp forlengningsflagg, lages ingen tabell (heller ingen enn feil)."""
+    try: games = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "hockey_no.json")))["games"]
+    except Exception: return []
+    T = {}
+    for g in games:
+        when, h, a, hs, as_ = g[:5]; ot = g[5] if len(g) > 5 else None
+        if hs is None or as_ is None or when > now: continue
+        if ot is None: print("  EliteHockey Ligaen: mangler forlengning for", when, h, a); return []
+        for team, gf, ga in ((h, hs, as_), (a, as_, hs)):
+            r = T.setdefault(team, [team, 0, 0, 0, 0, 0, 0, 0]); r[1] += 1; r[5] += gf; r[6] += ga
+            if ot: r[3] += 1; r[7] += 2 if gf > ga else 1
+            elif gf > ga: r[2] += 1; r[7] += 3
+            else: r[4] += 1
+    return sorted(T.values(), key=lambda r: (-r[7], -(r[5] - r[6]), -r[5], r[0]))
+
 COLS = {"Ishockey": "hockey", "Håndball": "handball", "Volleyball": "volley"}
 def put(T, fan, div, sport, c, rows, url):
     clubs = [k for k in fan if k["div"] == div and k["sport"] == sport and k["c"] == c]
@@ -94,6 +113,7 @@ if __name__ == "__main__":
         put(T, fan, div, "Håndball", "SE", handbollsligan(path), f"https://handbollsligan.se/{path}/tabell/")
     for div, slug in TOPH.items():
         put(T, fan, div, "Håndball", "DK", tophaandbold(slug), f"https://tophaandbold.dk/stillinger/{slug}")
+    put(T, fan, "EliteHockey Ligaen", "Ishockey", "NO", hockey_no(datetime.datetime.now(ZoneInfo("Europe/Oslo")).strftime("%Y-%m-%dT%H:%M")), "https://live.hockey.no/")
     for div, path in (("Volleyligaen", "herrer"), ("Volleyligaen kvinder", "kvinder")):
         put(T, fan, div, "Volleyball", "DK", volleyligaen(path), f"https://volleyligaen.dk/{path}/stilling/")
     page = page[:i + 15] + json.dumps(T, ensure_ascii=False, separators=(",", ":")) + page[j:]
