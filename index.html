@@ -221,14 +221,20 @@ body.home .track .path small { font-size: clamp(15px, 1.6vw, 18px); max-width: 3
 body[data-tab="utdanning"] { --accent: #0b7a76; --accent-soft: #d6eeec; }
 body[data-tab="arrangementer"] { --accent: #5b4bc4; --accent-soft: #e6e2f8; }
 body[data-tab="klubber"] { --accent: #2f5fb3; --accent-soft: #dfe7f6; }
+body[data-tab="frivillig"] { --accent: #b4532a; --accent-soft: #f6e4da; }
+body[data-tab="nyheter"] { --accent: #b3264f; --accent-soft: #f6dde4; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) body[data-tab="utdanning"] { --accent: #3cc4c8; --accent-soft: #123536; }
   :root:not([data-theme="light"]) body[data-tab="arrangementer"] { --accent: #a99bff; --accent-soft: #2a2546; }
   :root:not([data-theme="light"]) body[data-tab="klubber"] { --accent: #7fa6f5; --accent-soft: #1b2a45; }
+  :root:not([data-theme="light"]) body[data-tab="frivillig"] { --accent: #f0a074; --accent-soft: #3a2418; }
+  :root:not([data-theme="light"]) body[data-tab="nyheter"] { --accent: #f07a9b; --accent-soft: #3a1a24; }
 }
 :root[data-theme="dark"] body[data-tab="utdanning"] { --accent: #3cc4c8; --accent-soft: #123536; }
 :root[data-theme="dark"] body[data-tab="arrangementer"] { --accent: #a99bff; --accent-soft: #2a2546; }
 :root[data-theme="dark"] body[data-tab="klubber"] { --accent: #7fa6f5; --accent-soft: #1b2a45; }
+:root[data-theme="dark"] body[data-tab="frivillig"] { --accent: #f0a074; --accent-soft: #3a2418; }
+:root[data-theme="dark"] body[data-tab="nyheter"] { --accent: #f07a9b; --accent-soft: #3a1a24; }
 .sechero[hidden] { display: none; }
 .sechero { position: relative; overflow: hidden; display: grid; gap: 14px; padding: clamp(26px, 5vw, 52px); border-radius: 20px; border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow); text-shadow: none; }
 .sechero::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 70%; height: 160%; background: radial-gradient(closest-side, var(--accent), transparent); opacity: .22; pointer-events: none; }
@@ -654,8 +660,13 @@ table.league td.tform { padding-left: 10px; }
 .savedbtn .n { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--lane); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
 .savedbtn .n[hidden] { display: none; }
 #bellBtn .n { background: var(--urgent); }
-.nitem.new { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
-.nitem .nwhy { display: block; font-style: normal; font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+/* Varslene har fargen til kategorien sin: jobber grønt, arrangementer lilla (Noah 2026-10-27) */
+.nitem { --nc: #0f6b4f; } .nitem[data-k="ev"] { --nc: #5b4bc4; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nitem { --nc: #3fc99a; } :root:not([data-theme="light"]) .nitem[data-k="ev"] { --nc: #a99bff; } }
+:root[data-theme="dark"] .nitem { --nc: #3fc99a; } :root[data-theme="dark"] .nitem[data-k="ev"] { --nc: #a99bff; }
+.nitem.new { border-color: var(--nc); box-shadow: inset 3px 0 0 var(--nc); }
+.nitem .nwhy { display: block; font-style: normal; font-size: 12px; font-weight: 700; color: var(--nc); margin-bottom: 2px; }
+.mcitem.nitem .mcw { background: color-mix(in srgb, var(--nc) 16%, transparent); color: var(--nc); }
 .nitem b, .nitem small { display: block; }
 .nava { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; font-weight: 800; background: rgba(127,127,127,.18); }
 .nava img { width: 100%; height: 100%; object-fit: cover; }
@@ -1622,6 +1633,10 @@ a.fyev.fyedu { text-decoration: none; color: inherit; }
     <section id="evSec" aria-live="polite"><div class="count"><span id="evCount"></span><small>Neste først</small></div><div class="list" id="evList"></div></section>
   </div>
 
+  <div class="tab" id="tab-nyheter" hidden></div>
+  <div class="tab" id="tab-frivillig" hidden>
+    <section aria-live="polite"><div class="count"><span id="volCount"></span><small>Lenkene går til arrangørenes egne sider</small></div><div class="list" id="volList"></div></section>
+  </div>
   <div class="tab" id="tab-klubber" hidden>
     <section class="myclubs" aria-labelledby="myClubsH">
       <div class="count"><span id="myClubsH">Mine klubber</span><small id="myClubsN"></small></div>
@@ -2131,6 +2146,13 @@ const I18N = {
 "{x} er interessert": ["{x} är intresserad","{x} er interesseret","{x} on kiinnostunut","{x} hefur áhuga","{x} is interested"],
 "Logg inn for å få varsel om nye jobber som passer deg, og når noen du følger skal på et arrangement.": ["Logga in för att få aviseringar om nya jobb som passar dig och när någon du följer ska på ett evenemang.","Log ind for at få besked om nye job, der passer til dig, og når nogen, du følger, skal til et arrangement.","Kirjaudu sisään, niin saat ilmoituksen sinulle sopivista uusista työpaikoista ja kun joku seuraamasi osallistuu tapahtumaan.","Skráðu þig inn til að fá tilkynningu um ný störf sem henta þér og þegar einhver sem þú fylgir ætlar á viðburð.","Log in to get notified about new jobs that suit you, and when someone you follow is going to an event."],
 "Ingen varsler ennå. Velg hva du er interessert i på forsiden, og følg venner, så dukker nye jobber og arrangementer opp her.": ["Inga aviseringar än. Välj vad du är intresserad av på startsidan och följ vänner, så dyker nya jobb och evenemang upp här.","Ingen notifikationer endnu. Vælg, hvad du interesserer dig for på forsiden, og følg venner, så dukker nye job og arrangementer op her.","Ei vielä ilmoituksia. Valitse kiinnostuksesi etusivulla ja seuraa ystäviä, niin uudet työpaikat ja tapahtumat näkyvät täällä.","Engar tilkynningar enn. Veldu áhugamál á forsíðunni og fylgdu vinum, þá birtast ný störf og viðburðir hér.","No notifications yet. Pick your interests on the front page and follow friends, and new jobs and events will show up here."],
+"Frivillig": ["Ideell","Frivillig","Vapaaehtoinen","Sjálfboðaliði","Volunteer"],
+"Frivillig på {x}": ["Volontär på {x}","Frivillig ved {x}","Vapaaehtoiseksi: {x}","Sjálfboðaliði: {x}","Volunteer at {x}"],
+"Bli frivillig: {x}": ["Bli volontär: {x}","Bliv frivillig: {x}","Ryhdy vapaaehtoiseksi: {x}","Gerast sjálfboðaliði: {x}","Volunteer: {x}"],
+"{n} arrangementer søker frivillige": ["{n} evenemang söker volontärer","{n} arrangementer søger frivillige","{n} tapahtumaa hakee vapaaehtoisia","{n} viðburðir leita að sjálfboðaliðum","{n} events looking for volunteers"],
+"1 arrangement søker frivillige": ["1 evenemang söker volontärer","1 arrangement søger frivillige","1 tapahtuma hakee vapaaehtoisia","1 viðburður leitar að sjálfboðaliðum","1 event looking for volunteers"],
+"Ingen frivillige oppdrag i dette landet ennå.": ["Inga volontäruppdrag i det här landet än.","Ingen frivillige opgaver i dette land endnu.","Tässä maassa ei vielä ole vapaaehtoistehtäviä.","Engin sjálfboðaverkefni í þessu landi enn.","No volunteer roles in this country yet."],
+"ca.": ["ca.","ca.","n.","u.þ.b.","approx."],
 "Hva bruker du Aurora til?": ["Vad använder du Aurora till?","Hvad bruger du Aurora til?","Mihin käytät Auroraa?","Til hvers notar þú Aurora?","What do you use Aurora for?"],
 "Finne jobb": ["Hitta jobb","Finde job","Löytää työtä","Finna vinnu","Finding a job"],
 "Utdanning og kurs": ["Utbildning och kurser","Uddannelse og kurser","Koulutus ja kurssit","Nám og námskeið","Education and courses"],
@@ -3916,7 +3938,7 @@ function renderCats() {
 
 function render() {
   renderTabs(); renderBoard();
-  ({ forside: renderHome, minside: renderMine, jobber: renderJobs, utdanning: renderEdu, arrangementer: renderEvents, klubber: renderClubs })[state.tab]();
+  ({ forside: renderHome, minside: renderMine, nyheter: renderNewsTab, frivillig: renderVol, jobber: renderJobs, utdanning: renderEdu, arrangementer: renderEvents, klubber: renderClubs })[state.tab]();
   syncFlag(); if (typeof updBell === "function") updBell();
   if (typeof paintLive === "function" && Object.keys(LIVE).length) paintLive();
 }
@@ -4297,7 +4319,7 @@ const CLUBS = {
 };
 
 // ---------- Faner ----------
-const TABS = tmap({ forside: "Forside", minside: "Min side", jobber: "Jobber", utdanning: "Utdanning", arrangementer: "Arrangementer", klubber: "Klubber" });
+const TABS = tmap({ forside: "Forside", minside: "Min side", nyheter: "Nyheter", jobber: "Jobber", utdanning: "Utdanning", arrangementer: "Arrangementer", frivillig: "Frivillig", klubber: "Klubber" });
 const MONTHS = ["januar","februar","mars","april","mai","juni","juli","august","september","oktober","november","desember"];
 // Nøyaktige datoer for neste gang arrangementet går, hentet 23. oktober 2026 fra arrangørene, FIS, Ski Classics og løpskalendere.
 // Når datoen har passert, faller siden tilbake til måneden arrangementet pleier å gå.
@@ -4321,6 +4343,7 @@ const countFor = (tab, c) => {
   if (tab === "utdanning") return EDU.filter(inC).length;
   if (tab === "arrangementer") return EVENTS.filter(inC).length;
   if (tab === "klubber") return FAN.filter(inC).length;
+  if (tab === "frivillig") return VOL.filter(inC).length;
   return jobs + EDU.filter(inC).length + EVENTS.filter(inC).length;
 };
 const hiringClubs = c => {
@@ -4335,7 +4358,9 @@ const STAMP = {
   jobber: "Sist oppdatert <b>27. oktober 2026</b>. Noen annonser kan være borte når du klikker.",
   utdanning: "Et utvalg av de største stedene å studere idrett, ta trenerkurs eller gå på folkehøgskole.",
   arrangementer: "Store løp, turneringer og mesterskap. Sjekk alltid datoen hos arrangøren før du melder deg på.",
-  klubber: "Kjente klubber i hele Norden. Følg de du liker, så finner du dem igjen under Mine klubber."
+  klubber: "Kjente klubber i hele Norden. Følg de du liker, så finner du dem igjen under Mine klubber.",
+  frivillig: "Frivillige oppdrag ved idrettsarrangementer i Norden. Du melder deg på hos arrangøren.",
+  nyheter: ""
 };
 tmap(STAMP);
 
@@ -4344,6 +4369,8 @@ const SECHERO = {
   utdanning: ["Bli bedre i idretten", "Studier, trenerkurs og folkehøgskoler som gjør deg klar for neste steg."],
   arrangementer: ["Øyeblikkene du vil være med på", "Fra Birken til Gothia Cup. Store løp, turneringer og mesterskap gjennom hele året."],
   klubber: ["Lagene du heier på", "Følg klubbene dine i hele Norden og samle dem på ett sted."],
+  frivillig: ["Bli med og lag idretten", "Cuper, løp og mesterskap i hele Norden trenger frivillige. Her er arrangementene som søker folk."],
+  nyheter: ["Sportsnyheter fra hele Norden", "De viktigste sakene om nordisk idrett, hentet fra lokale og nasjonale aviser hver time."],
   minside: ["Din plass i idretten", "For deg som vil delta eller jobbe i idretten. Her samles klubbene, jobbene og arrangementene dine, og forslag som passer akkurat deg."]
 };
 // Filtrene ligger bak én knapp, så delene ser rolige ut
@@ -4517,7 +4544,7 @@ function renderTabs() {
   document.querySelectorAll(".tab").forEach(s => s.hidden = s.id !== "tab-" + state.tab);
   $("stamp").innerHTML = STAMP[state.tab];
   const home = state.tab === "forside";
-  $("board").hidden = $("stamp").hidden = $("hlede").hidden = home || state.tab === "minside";
+  $("board").hidden = $("stamp").hidden = $("hlede").hidden = home || state.tab === "minside" || state.tab === "nyheter";
   if (home) startHero();
   $("herohead").innerHTML = home ? `${t("Din plass i")} <em>${t("nordisk idrett")}</em>` : "";
   document.body.classList.toggle("home", home);
@@ -6875,8 +6902,50 @@ let gPicked = false;
 try { const r = localStorage.getItem("aurora-nyregion"); if (r && (r === "all" || COUNTRIES[r])) { gRegion = r; gPicked = true; } } catch (e) {}
 // Idrettsfilter på nyhetene; «Sport» er samlesekken for saker uten bestemt idrett
 let gSport = "all", gMore = 0, gOpen = false;
+function renderNewsTab() { renderGnews(); }
+// Frivillige oppdrag ved idrettsarrangementer: [id, arrangement-id (dato og sted derfra), land, navn, idrett, sted, måned, kort tekst, lenke]
+// Hver lenke er sjekket mot arrangørens egen side 27. oktober 2026. Bare idrett (Noah).
+const VOL = [
+  ["v1", "e3", "NO", "Norway Cup", "Fotball", "Oslo", 7, "Verdens største fotballturnering for barn og unge trenger frivillige på Ekebergsletta hver sommer.", "https://norwaycup.no/frivillig/"],
+  ["v2", "e2", "NO", "Holmenkollen skifestival", "Ski", "Oslo", 3, "Bli en del av frivillig-teamet under verdenscupen i Holmenkollen.", "https://holmenkollenskifestival.no/bli-frivillig/"],
+  ["v3", "e4", "NO", "Oslo Maraton", "Løping", "Oslo", 9, "Oslo Maraton søker frivillige langs løypa og på arenaen.", "https://oslomaraton.no/bli-frivillig/"],
+  ["v4", "e49", "NO", "Bergen City Marathon", "Løping", "Bergen", 4, "Bli frivillig under Bergen City Marathon.", "https://bergencitymarathon.no/bli-frivillig/"],
+  ["v5", "e44", "NO", "VM i bob og skeleton", "Bob og skeleton", "Lillehammer", 2, "Olympiaparken på Lillehammer søker frivillige til mesterskap og verdenscuper.", "https://www.olympiaparken.no/frivillig"],
+  ["v6", "e76", "NO", "Thallaug Cup Lillehammer", "Fotball", "Lillehammer", 1, "Cupen trenger sentrale frivillige til gjennomføringen.", "https://thallaugcuplillehammer.cupmanager.net/sentrale-frivillige"],
+  ["v7", "e87", "NO", "Tafjord Håndball Cup", "Håndball", "Ålesund", 1, "Jobb som frivillig under en av Norges største håndballcuper.", "https://www.tafjordhandballcup.no/jobbe-som-frivillig"],
+  ["v8", "e9", "SE", "Gothia Cup", "Fotball", "Göteborg", 7, "Bli en del av crewet i verdens største ungdomsturnering i fotball. Mat, klær og busskort er med.", "https://gothiacup.se/en/crew"],
+  ["v9", "e10", "SE", "Partille Cup", "Håndball", "Göteborg", 7, "Bli med i crewet på verdens største håndballturnering for ungdom. Mat, klær og busskort er med.", "https://partillecup.com/en/crew"],
+  ["v10", "e8", "SE", "Vasaloppet", "Langrenn", "Sälen–Mora", 3, "Tusenvis av funksjonærer gjør Vasaloppet mulig. Les hvordan du blir en av dem.", "https://vasaloppet.se/om-oss/organisation/funktionarer/"],
+  ["v11", "e11", "SE", "Göteborgsvarvet", "Løping", "Göteborg", 5, "Bli funksjonær eller frivillig på verdens største halvmaraton.", "https://www.goteborgsvarvet.se/funktionar-volontar"],
+  ["v12", "e29", "SE", "Vansbrosimningen", "Svømming", "Vansbro", 7, "Funksjonærer trengs til Sveriges største åpenvannssvømming.", "https://vansbrosimningen.se/funktionar/"],
+  ["v13", "e58", "SE", "Midnattsloppet", "Løping", "Stockholm", 8, "Bli funksjonær på Midnattsloppet.", "https://midnattsloppet.com/om-oss/funktionar/"],
+  ["v14", "e88", "SE", "ArosCupen", "Fotball", "Västerås", 1, "Cupen søker funksjonærer og dommere.", "https://aroscupen.se/information/"],
+  ["v15", "e14", "DK", "Copenhagen Marathon", "Løping", "København", 5, "Bli frivillig på Copenhagen Marathon.", "https://copenhagenmarathon.dk/bliv-frivillig/"],
+  ["v16", "e15", "DK", "Dana Cup", "Fotball", "Hjørring", 7, "Dana Cup har mange frivillige avdelinger du kan melde deg til.", "https://www.danacup.dk/frivillig-ved-dana-cup/"],
+  ["v17", "e67", "DK", "HCA Marathon", "Løping", "Odense", 9, "Bli frivillig på H.C. Andersen Marathon i Odense.", "https://hcamarathon.dk/bliv-frivillig/"],
+  ["v18", "e18", "FI", "Paavo Nurmi Games", "Friidrett", "Turku", 6, "Friidrettsstevnet i Turku trenger frivillige hvert år.", "https://paavonurmigames.fi/info/vapaaehtoiset/"],
+  ["v19", "e35", "FI", "Lahti Ski Games", "Ski", "Lahti", 3, "Søknaden om å bli frivillig i 2027 åpnet 1. oktober 2026.", "https://lahtiskigames.com/vapaaehtoiseksi/"],
+  ["v20", "e37", "FI", "Sulkavan Suursoudut", "Roing", "Sulkava", 7, "Bli dugnadsfrivillig på Finlands store robåtfestival.", "https://www.suursoudut.fi/ajankohtaista/talkoolaiseksi-sulkavan-suursoutuihin/"]
+].map(([id, ev, c, t, sport, place, m, sum, url]) => ({ id, ev, c, t, sport, place, m, sum, url }));
+const volEvent = v => EVENTS.find(e => e.id === v.ev);
+const volOrder = v => { const e = volEvent(v); return e ? evOrder(e) : v.m; };
+const volCard = v => { const e = volEvent(v), d = e && evDate(e);
+  return `<article class="job item"><a class="job-hit" href="${esc(v.url)}" target="_blank" rel="noopener" aria-label="${esc(t("Bli frivillig: {x}", { x: v.t }))}"></a>
+    ${d ? `<div class="bib"><div class="d">${+d[0].slice(8)}</div><div class="u">${monthName(+d[0].slice(5, 7)).slice(0, 3)}</div></div>` : `<div class="bib"><div class="d mon">${monthName(e ? evMonth(e) : v.m).slice(0, 3)}</div><div class="u">${t("ca.")}</div></div>`}
+    <div class="jbody"><div class="jtitle">${esc(t("Frivillig på {x}", { x: v.t }))}</div><div class="trans">${esc(t(v.sum))}</div>
+      <div class="meta"><span class="emp">${e ? esc(evWhen(e)) : esc(monthName(v.m))}</span><span class="where">${flag(v.c)}${esc(v.place)}</span></div>
+      <div class="tags"><span class="tag">${esc(t(v.sport))}</span><span class="tag">${t("Frivillig")}</span></div></div>${CHEVRON}</article>`; };
+function renderVol() {
+  const rows = VOL.filter(v => state.country === "all" || v.c === state.country).sort((a, b) => volOrder(a) - volOrder(b));
+  $("volCount").textContent = t(rows.length === 1 ? "1 arrangement søker frivillige" : "{n} arrangementer søker frivillige", { n: rows.length });
+  $("volList").innerHTML = rows.map(volCard).join("") || `<div class="empty">${t("Ingen frivillige oppdrag i dette landet ennå.")}</div>`;
+}
 function renderGnews() {
-  if (!$("gnews")) $("hub").querySelector(".welcome").insertAdjacentHTML("beforeend", `<section class="gnews" id="gnews" aria-labelledby="gnewsH"></section>`);
+  // Egen fane for nyheter (Noah 2026-10-27): samme nyheter, men flere om gangen. Seksjonen flyttes dit den vises
+  if (!$("gnews")) { const g = document.createElement("section"); g.className = "gnews"; g.id = "gnews"; g.setAttribute("aria-labelledby", "gnewsH"); $("tab-nyheter").appendChild(g); }
+  const host = state.tab === "nyheter" ? $("tab-nyheter") : $("hub") && $("hub").querySelector(".welcome");
+  if (host && $("gnews").parentElement !== host) host.appendChild($("gnews"));
+  const big = state.tab === "nyheter" ? 12 : 0;
   const region = gRegion, own = LANG_REGION[LANG], en = region !== own;
   // Sakene ligger etter relevans. Hele Norden: de viktigste fra hvert land, flettet
   const pool = region === "all"
@@ -6891,7 +6960,7 @@ function renderGnews() {
   // «Vis flere nyheter» legger til ni saker om gangen (tre fulle rader)
   const all = gSport !== "all" ? pool.filter(n => n[1] === gSport)
     : [...pool.slice(0, 1), ...fav, ...pool.slice(1).filter(n => !fav.includes(n))];
-  const items = all.slice(0, (gSport !== "all" ? 11 : 8) + gMore * 9);
+  const items = all.slice(0, (gSport !== "all" ? 11 : 8) + big + gMore * 9);
   // Toppsaken tar to ruter, så antallet tilpasses et fullt rutenett med tre kolonner
   if (gSport === "all" && items.length < all.length) while (items.length > 2 && (items.length + 1) % 3) items.pop();
   $("gnews").innerHTML = `<div class="gh"><h3 id="gnewsH">${t("Sportsnyheter")}</h3><small>${t("Hentet {d}", { d: esc(fxDate(GNEWS.at, "d")) })}</small></div>
