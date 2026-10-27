@@ -670,6 +670,8 @@ table.league td.tform { padding-left: 10px; }
 .chat .bub .mref em { display: block; font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #0f6b4f; }
 .chat .bub .mref[data-k="ev"] em { color: #5b4bc4; }
 .chat .bub .mref[data-k="club"] em { color: #2f5fb3; }
+.chat .bub .mref[data-k="vol"] em { color: #b4532a; }
+.chat .bub .mref[data-k="news"] em { color: #b3264f; }
 .chat .cday { align-self: center; font-size: 12px; color: var(--muted); margin: 6px 0 2px; }
 .chatform { display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid var(--line); padding-top: 10px; }
 .chatform textarea { flex: 1; resize: none; min-height: 42px; max-height: 140px; padding: 10px 14px; border-radius: 21px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-size: 15px; }
@@ -933,6 +935,7 @@ table.league td.tform { padding-left: 10px; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
 .tag { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
 .tag.new { background: var(--warm, #C2410C); color: #fff; }
+.nimg { display: block; width: 100%; max-height: 340px; object-fit: cover; border-radius: 16px; margin: 0 0 14px; background: rgba(127,127,127,.12); }
 .tag.rsvptag.going { background: #0f6b4f; color: #fff; }
 .tag.rsvptag.interested { background: rgba(91,75,196,.14); color: #5b4bc4; box-shadow: inset 0 0 0 1px #5b4bc4; }
 .tag.rsvptag.fr { background: rgba(15,107,79,.12); color: #0f6b4f; box-shadow: inset 0 0 0 1px #0f6b4f; }
@@ -2213,6 +2216,17 @@ const I18N = {
 "Åpne en profil og trykk «Send melding». Følger dere ikke hverandre, blir den første meldingen en forespørsel.": ["Öppna en profil och tryck «Skicka meddelande». Följer ni inte varandra blir det första meddelandet en förfrågan.","Åbn en profil og tryk «Send besked». Følger I ikke hinanden, bliver den første besked en anmodning.","Avaa profiili ja paina «Lähetä viesti». Jos ette seuraa toisianne, ensimmäinen viesti on pyyntö.","Opnaðu prófíl og ýttu á «Senda skilaboð». Ef þið fylgið ekki hvort öðru verða fyrstu skilaboðin beiðni.","Open a profile and tap «Send message». If you don't follow each other, the first message is a request."],
 "Jobb": ["Jobb","Job","Työ","Starf","Job"],
 "Idrettslag": ["Klubb","Klub","Seura","Félag","Club"],
+"Lønn": ["Lön","Løn","Palkka","Laun","Pay"],
+"Nyhet": ["Nyhet","Nyhed","Uutinen","Frétt","News"],
+"Kilde": ["Källa","Kilde","Lähde","Heimild","Source"],
+"Publisert": ["Publicerad","Udgivet","Julkaistu","Birt","Published"],
+"Tilgang": ["Åtkomst","Adgang","Pääsy","Aðgangur","Access"],
+"Les saken hos {x}": ["Läs artikeln hos {x}","Læs artiklen hos {x}","Lue juttu: {x}","Lestu fréttina hjá {x}","Read it on {x}"],
+"Aurora viser bare overskriften. Hele saken leser du hos {x}.": ["Aurora visar bara rubriken. Hela artikeln läser du hos {x}.","Aurora viser kun overskriften. Hele artiklen læser du hos {x}.","Aurora näyttää vain otsikon. Koko jutun voit lukea: {x}.","Aurora sýnir aðeins fyrirsögnina. Alla fréttina lestu hjá {x}.","Aurora only shows the headline. Read the full story on {x}."],
+"Bli frivillig": ["Bli volontär","Bliv frivillig","Ryhdy vapaaehtoiseksi","Gerast sjálfboðaliði","Volunteer"],
+"Se arrangementet": ["Se evenemanget","Se arrangementet","Katso tapahtuma","Sjá viðburðinn","See the event"],
+"Frivillig, uten lønn": ["Ideellt, utan lön","Frivilligt, uden løn","Vapaaehtoinen, palkaton","Sjálfboðið, ólaunað","Volunteer, unpaid"],
+"Arrangøren bestemmer hvilke oppgaver som finnes og når påmeldingen åpner. Sjekk alltid hos arrangøren.": ["Arrangören bestämmer vilka uppgifter som finns och när anmälan öppnar. Kolla alltid hos arrangören.","Arrangøren bestemmer, hvilke opgaver der findes, og hvornår tilmeldingen åbner. Tjek altid hos arrangøren.","Järjestäjä päättää tehtävistä ja ilmoittautumisen avautumisesta. Tarkista aina järjestäjältä.","Skipuleggjandinn ákveður verkefnin og hvenær skráning opnar. Athugaðu alltaf hjá honum.","The organiser decides which tasks exist and when sign-up opens. Always check with the organiser."],
 "Arrangement": ["Evenemang","Arrangement","Tapahtuma","Viðburður","Event"],
 "Logg inn for å sende meldinger.": ["Logga in för att skicka meddelanden.","Log ind for at sende beskeder.","Kirjaudu sisään lähettääksesi viestejä.","Skráðu þig inn til að senda skilaboð.","Log in to send messages."],
 "Mer": ["Mer","Mere","Lisää","Meira","More"],
@@ -7049,16 +7063,96 @@ const VOL = [
 ].map(([id, ev, c, t, sport, place, m, sum, url]) => ({ id, ev, c, t, sport, place, m, sum, url }));
 const volEvent = v => EVENTS.find(e => e.id === v.ev);
 const volOrder = v => { const e = volEvent(v); return e ? evOrder(e) : v.m; };
+// Bare oppdrag der arrangementet har en bekreftet dato fram i tid; utgåtte forsvinner av seg selv (Noah 2026-10-27)
+const volLive = v => { const e = volEvent(v); return !!(e && evDate(e)); };
 const volCard = v => { const e = volEvent(v), d = e && evDate(e);
-  return `<article class="job item"><a class="job-hit" href="${esc(v.url)}" target="_blank" rel="noopener" aria-label="${esc(t("Bli frivillig: {x}", { x: v.t }))}"></a>
+  return `<article class="job item"><button type="button" class="job-hit vol-hit" data-id="${v.id}" aria-label="${esc(t("Frivillig på {x}", { x: v.t }))}. ${t("Les mer")}"></button>
     ${d ? `<div class="bib"><div class="d">${+d[0].slice(8)}</div><div class="u">${monthName(+d[0].slice(5, 7)).slice(0, 3)}</div></div>` : `<div class="bib"><div class="d mon">${monthName(e ? evMonth(e) : v.m).slice(0, 3)}</div><div class="u">${t("ca.")}</div></div>`}
     <div class="jbody"><div class="jtitle">${esc(t("Frivillig på {x}", { x: v.t }))}</div><div class="trans">${esc(t(v.sum))}</div>
       <div class="meta"><span class="emp">${e ? esc(evWhen(e)) : esc(monthName(v.m))}</span><span class="where">${flag(v.c)}${esc(v.place)}</span></div>
       <div class="tags"><span class="tag">${esc(t(v.sport))}</span><span class="tag">${t("Frivillig")}</span></div></div>${CHEVRON}</article>`; };
 function renderVol() {
-  const rows = VOL.filter(v => state.country === "all" || v.c === state.country).sort((a, b) => volOrder(a) - volOrder(b));
+  const rows = VOL.filter(v => volLive(v) && (state.country === "all" || v.c === state.country)).sort((a, b) => volOrder(a) - volOrder(b));
   $("volCount").textContent = t(rows.length === 1 ? "1 arrangement søker frivillige" : "{n} arrangementer søker frivillige", { n: rows.length });
   $("volList").innerHTML = rows.map(volCard).join("") || `<div class="empty">${t("Ingen frivillige oppdrag i dette landet ennå.")}</div>`;
+  $("volList").querySelectorAll(".vol-hit").forEach(b => b.onclick = () => openVol(b.dataset.id));
+}
+// Egen side for et frivillig oppdrag, som jobber og arrangementer
+function openVol(id) {
+  const v = VOL.find(x => x.id === id); if (!v) return;
+  curSheet = () => openVol(id);
+  const e = volEvent(v);
+  $("sheetBody").innerHTML = `
+    <div class="sheet-top">
+      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="s-eyebrow">${flag(v.c)}${COUNTRIES[v.c]} · ${t("Frivillig")}</div>
+      <h2 class="s-title" id="s-title">${esc(t("Frivillig på {x}", { x: v.t }))}</h2>
+      <p class="s-emp">${esc(v.place)}</p>
+      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      <div class="facts">
+        <div class="fact"><span class="k">${t("Når")}</span><span class="v">${e ? esc(evWhen(e)) : esc(monthName(v.m))}</span></div>
+        <div class="fact"><span class="k">${t("Sted")}</span><span class="v">${esc(v.place)}</span></div>
+        <div class="fact"><span class="k">${t("Idrett")}</span><span class="v">${esc(t(v.sport))}</span></div>
+        <div class="fact"><span class="k">${t("Lønn")}</span><span class="v">${t("Frivillig, uten lønn")}</span></div>
+      </div>
+      <p class="s-sum" lang="no">${esc(t(v.sum))}</p>
+      <p class="s-note">${t("Arrangøren bestemmer hvilke oppgaver som finnes og når påmeldingen åpner. Sjekk alltid hos arrangøren.")}</p>
+      <div class="actions">
+        <div class="btns">
+          <a class="cta" href="${esc(v.url)}" target="_blank" rel="noopener">${t("Bli frivillig")} ${ARROW}</a>
+          ${e ? `<button type="button" class="share" id="volEv">${t("Se arrangementet")}</button>` : ""}
+          <button type="button" class="share" id="shareBtn">${SHARE_ICON}${t("Del")}</button>
+        </div>
+        <span class="src" id="shareMsg">${esc(new URL(v.url).hostname.replace(/^www\./, ""))}</span>
+      </div>
+    </div>`;
+  const dlg = $("sheet"); lastFocus = document.activeElement;
+  if (!dlg.open) dlg.showModal();
+  $("closeBtn").onclick = closeJob; $("closeBtn").focus();
+  if ($("volEv")) $("volEv").onclick = () => openEvent(e.id);
+  $("shareBtn").onclick = () => shareThing(t("Frivillig på {x}", { x: v.t }), `${SHARE_URL}#frivillig-${v.id}`, { k: "vol", id: v.id });
+  if (location.hash !== "#frivillig-" + v.id) history.replaceState(history.state, "", "#frivillig-" + v.id);
+}
+// Egen side for en nyhet: bilde, kilde og «Del» (Noah 2026-10-27). Lenken som deles utenfor Aurora er selve saken
+let gItems = [];
+const newsKey = u => { let h = 0; for (const c of u) h = (h * 31 + c.charCodeAt(0)) | 0; return (h >>> 0).toString(36); };
+const newsFind = key => { for (const c of Object.keys(GNEWS.r)) for (const n of GNEWS.r[c]) if (newsKey(n[3]) === key) return [...n, c]; return null; };
+function openNews(n) {
+  if (!n) return;
+  curSheet = () => openNews(n);
+  const [date, sport, title, url, src, pw, c] = n, img = (GNEWS.img || {})[url];
+  $("sheetBody").innerHTML = `
+    <div class="sheet-top">
+      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="s-eyebrow">${c ? flag(c) + (COUNTRIES[c] || "") + " · " : ""}${esc(sport === "Sport" ? t("Nyheter") : t(sport))}</div>
+      <h2 class="s-title" id="s-title"${c && c !== LANG_REGION[LANG] ? ` lang="${{ NO: "no", SE: "sv", DK: "da", FI: "fi", IS: "is" }[c] || ""}"` : ""}>${esc(title)}</h2>
+      <p class="s-emp">${esc(src)}${date ? " · " + esc(fxDate(date)) : ""}</p>
+      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      ${img ? `<img class="nimg" src="${esc(img)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}
+      <div class="facts">
+        <div class="fact"><span class="k">${t("Kilde")}</span><span class="v">${esc(src)}</span></div>
+        ${date ? `<div class="fact"><span class="k">${t("Publisert")}</span><span class="v">${esc(fxDate(date))}</span></div>` : ""}
+        <div class="fact"><span class="k">${t("Idrett")}</span><span class="v">${esc(sport === "Sport" ? t("Annet") : t(sport))}</span></div>
+        ${pw ? `<div class="fact"><span class="k">${t("Tilgang")}</span><span class="v">${pwBadge(pw)}</span></div>` : ""}
+      </div>
+      <p class="s-note">${t("Aurora viser bare overskriften. Hele saken leser du hos {x}.", { x: esc(src) })}</p>
+      <div class="actions">
+        <div class="btns">
+          <a class="cta" href="${esc(url)}" target="_blank" rel="noopener">${t("Les saken hos {x}", { x: esc(src) })} ${ARROW}</a>
+          <button type="button" class="share" id="shareBtn">${SHARE_ICON}${t("Del")}</button>
+        </div>
+        <span class="src" id="shareMsg">${esc(new URL(url).hostname.replace(/^www\./, ""))}</span>
+      </div>
+    </div>`;
+  const dlg = $("sheet"); lastFocus = document.activeElement;
+  if (!dlg.open) dlg.showModal();
+  $("closeBtn").onclick = closeJob; $("closeBtn").focus();
+  $("shareBtn").onclick = () => shareThing(title, url, { k: "news", u: url.slice(0, 300), t: title.slice(0, 160), s: src, sp: sport, d: date, c });
+  const h = "nyhet-" + newsKey(url); if (location.hash !== "#" + h) history.replaceState(history.state, "", "#" + h);
 }
 function renderGnews() {
   // Egen fane for nyheter (Noah 2026-10-27): samme nyheter, men flere om gangen. Seksjonen flyttes dit den vises
@@ -7088,7 +7182,7 @@ function renderGnews() {
     ${sports.length > 1 ? `<div class="regions gsports seg" data-seg="nyidrett" role="group" aria-label="${t("Velg idrett")}">${gOpen
       ? `<button type="button" class="chip" data-g="all" aria-pressed="${gSport === "all"}">${t("Alle idretter")}</button>${sports.map(sp => `<button type="button" class="chip" data-g="${esc(sp)}" aria-pressed="${sp === gSport}">${sp === "Sport" ? t("Annet") : icoOf(sp) + esc(t(sp))} <small>${cnt[sp]}</small></button>`).join("")}<button type="button" class="chip gexp" id="gExp" aria-expanded="true">${t("Vis færre")}</button>`
       : `<button type="button" class="chip gexp gcur" id="gExp" aria-expanded="false" aria-pressed="true">${gSport === "all" ? t("Alle idretter") : (gSport === "Sport" ? t("Annet") : icoOf(gSport) + esc(t(gSport)))} <svg class="gcaret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>`}</div>` : ""}
-    <ul class="glist">${items.map(n => `<li><a href="${esc(n[3])}" target="_blank" rel="noopener" data-s="${SPORT_KIND[n[1]] || "annet"}"${(GNEWS.img || {})[n[3]] ? ' class="hasimg"' : ""}>${(GNEWS.img || {})[n[3]] ? `<img class="gimg" src="${esc(GNEWS.img[n[3]])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('hasimg');this.remove()">` : ""}${sportIcon(n[1])}<span class="gs">${esc(t(n[1]))}</span><span class="gt"${n[6] !== own ? ` lang="${{ NO: "no", SE: "sv", DK: "da", FI: "fi", IS: "is" }[n[6]]}"` : ""}>${esc(n[2])}</span><span class="nm">${region === "all" ? flag(n[6]) : ""}<span>${esc(n[4])}${n[0] ? " · " + esc(fxDate(n[0])) : ""}</span>${pwBadge(n[5])}</span></a></li>`).join("")}</ul>
+    <ul class="glist">${items.map((n, i) => `<li><a href="${esc(n[3])}" target="_blank" rel="noopener" data-gi="${i}" data-s="${SPORT_KIND[n[1]] || "annet"}"${(GNEWS.img || {})[n[3]] ? ' class="hasimg"' : ""}>${(GNEWS.img || {})[n[3]] ? `<img class="gimg" src="${esc(GNEWS.img[n[3]])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('hasimg');this.remove()">` : ""}${sportIcon(n[1])}<span class="gs">${esc(t(n[1]))}</span><span class="gt"${n[6] !== own ? ` lang="${{ NO: "no", SE: "sv", DK: "da", FI: "fi", IS: "is" }[n[6]]}"` : ""}>${esc(n[2])}</span><span class="nm">${region === "all" ? flag(n[6]) : ""}<span>${esc(n[4])}${n[0] ? " · " + esc(fxDate(n[0])) : ""}</span>${pwBadge(n[5])}</span></a></li>`).join("")}</ul>
     ${items.length < all.length ? `<button type="button" class="abtn ghost gmore" id="gMore">${t("Vis flere nyheter")}</button>` : ""}
     ${en ? `<p class="s-note">${t("Overskriftene står på språket til avisen de kommer fra.")}</p>` : ""}`;
   $("gnews").querySelectorAll(".regions:not(.gsports) .chip").forEach(b => b.onclick = () => { gRegion = b.dataset.r; gPicked = true; gMore = 0; try { localStorage.setItem("aurora-nyregion", gRegion); } catch (e) {} renderGnews(); syncFlag(); });
@@ -7096,6 +7190,8 @@ function renderGnews() {
   // Idrettene ligger bak «Alle idretter» (Noah: mindre rotete); et valg lukker lista igjen
   $("gnews").querySelectorAll(".gsports .chip:not(.gexp)").forEach(b => b.onclick = () => { gSport = b.dataset.g; gMore = 0; gOpen = false; renderGnews(); });
   if ($("gMore")) $("gMore").onclick = () => { gMore++; renderGnews(); };
+  gItems = items;
+  $("gnews").querySelectorAll(".glist a[data-gi]").forEach(a => a.onclick = ev => { if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button) return; ev.preventDefault(); openNews(gItems[+a.dataset.gi]); });
   segPills($("gnews"));
 }
 
@@ -7933,6 +8029,8 @@ const showSheet = () => { const dlg = $("sheet"); if (!dlg.open) { lastFocus = d
 const refInfo = ref => { if (!ref) return null;
   if (ref.k === "job") { const j = JOBS.find(x => x.id === ref.id); return j && { k: "job", id: j.id, kind: t("Jobb"), title: j.t, sub: `${j.emp} · ${j.place}` }; }
   if (ref.k === "ev") { const e = EVENTS.find(x => x.id === ref.id); return e && { k: "ev", id: e.id, kind: t("Arrangement"), title: t(e.t), sub: `${evWhen(e)} · ${e.place}` }; }
+  if (ref.k === "vol") { const v = VOL.find(x => x.id === ref.id); return v && { k: "vol", id: v.id, kind: t("Frivillig"), title: t("Frivillig på {x}", { x: v.t }), sub: v.place }; }
+  if (ref.k === "news" && ref.u) return { k: "news", id: ref.u, kind: t("Nyhet"), title: ref.t || "", sub: ref.s || "", n: [ref.d || "", ref.sp || "Sport", ref.t || "", ref.u, ref.s || "", 0, ref.c] };
   if (ref.k === "club") { const k = FAN.find(x => x.id === ref.id); return k && { k: "club", id: k.id, kind: t("Idrettslag"), title: k.n, sub: `${t(k.sport)}${k.city ? " · " + k.city : ""}` }; }
   return null; };
 async function openInbox() {
@@ -7983,7 +8081,9 @@ async function openChat(u) {
       const head = d !== day ? `<div class="cday">${esc(fxDate(d))}</div>` : ""; day = d;
       return head + `<div class="bub${m.mine ? " me" : ""}">${ri ? `<button type="button" class="mref" data-k="${ri.k}" data-id="${ri.id}"><em>${esc(ri.kind)}</em><b>${esc(ri.title)}</b><small>${esc(ri.sub)}</small></button>` : ""}${m.body ? esc(m.body) : ""}<time>${new Date(m.at).toLocaleTimeString(LOCALE[LANG], { hour: "2-digit", minute: "2-digit" })}</time></div>`; }).join("")
       : `<div class="empty">${t("Ingen meldinger ennå.")}</div>`;
-    chat.querySelectorAll(".mref").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : b.dataset.k === "club" ? openClub(b.dataset.id) : openEvent(b.dataset.id));
+    chat.querySelectorAll(".mref").forEach(b => b.onclick = () => { const k = b.dataset.k, id = b.dataset.id;
+      if (k === "news") { const m = list.find(x => x.ref && x.ref.u === id); if (m) openNews(refInfo(m.ref).n); }
+      else k === "job" ? openJob(id) : k === "club" ? openClub(id) : k === "vol" ? openVol(id) : openEvent(id); });
     chat.scrollTop = chat.scrollHeight;
   };
   const load = async () => { if (!chat.isConnected) return clearInterval(chatTimer); const r = await sb.rpc("conversation", { with_user: u.id }); if (Array.isArray(r.data) && chat.isConnected) draw(r.data); loadUnread(); };
@@ -8302,12 +8402,16 @@ buildStage();
 const startId = location.hash.slice(1);
 const isJobLink = startId && JOBS.some(j => j.id === startId);
 const isEventLink = startId && EVENTS.some(e => e.id === startId);
+const volLink = startId.startsWith("frivillig-") && VOL.some(v => v.id === startId.slice(10)) ? startId.slice(10) : "";
+const newsLink = startId.startsWith("nyhet-") ? newsFind(startId.slice(6)) : null;
 const clubLink = startId.startsWith("klubb-") && FAN.some(k => k.id === startId.slice(6)) ? startId.slice(6) : "";
-state.tab = isJobLink ? "jobber" : isEventLink ? "arrangementer" : clubLink ? "klubber" : TABS[startId] ? startId : "forside";
+state.tab = isJobLink ? "jobber" : isEventLink ? "arrangementer" : clubLink ? "klubber" : volLink ? "frivillig" : newsLink ? "nyheter" : TABS[startId] ? startId : "forside";
 render();
 setStage(state.country);
 if (isJobLink) openJob(startId);
 if (isEventLink) openEvent(startId);
 if (clubLink) openClub(clubLink);
+if (volLink) openVol(volLink);
+if (newsLink) openNews(newsLink);
 pollLive();
 </script>
