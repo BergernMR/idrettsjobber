@@ -653,6 +653,13 @@ table.league td.tform { padding-left: 10px; }
 .savedbtn svg { fill: none; stroke: currentColor; stroke-width: 1.9; }
 .savedbtn .n { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--lane); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
 .savedbtn .n[hidden] { display: none; }
+#bellBtn .n { background: var(--urgent); }
+.nitem.new { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.nitem .nwhy { display: block; font-style: normal; font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+.nitem b, .nitem small { display: block; }
+.nava { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; font-weight: 800; background: rgba(127,127,127,.18); }
+.nava img { width: 100%; height: 100%; object-fit: cover; }
+.nitem .mcico svg.flag { width: 24px; height: 17px; fill: initial; stroke: none; border-radius: 3px; }
 .savedbtn.due .n { background: var(--urgent); }
 #clubsBtn .n { background: var(--accent); }
 .tbtns { display: inline-flex; gap: 8px; flex: none; }
@@ -1514,7 +1521,7 @@ a.fyev.fyedu { text-decoration: none; color: inherit; }
 <div class="wrap">
   <header>
     <div class="topline"><div class="eyebrow">Norge · Sverige · Danmark · Finland · Island</div>
-      <div class="langpick seg" data-seg="sprak" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn minebtn" id="mineBtn" aria-label="Min side" title="Min side"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span class="aini" id="mineIni" hidden></span><span class="n" id="mineN" hidden></span></button><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
+      <div class="langpick seg" data-seg="sprak" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn minebtn" id="mineBtn" aria-label="Min side" title="Min side"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span class="aini" id="mineIni" hidden></span><span class="n" id="mineN" hidden></span></button><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn savedbtn" id="bellBtn" aria-label="Varsler" title="Varsler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="n" id="bellN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
     <h1><b class="brand" id="brandHome" role="link" tabindex="0" aria-label="Aurora – forsiden"><svg class="mark" viewBox="0 0 40 32" aria-hidden="true"><defs><linearGradient id="ah0" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0f6b4f"/><stop offset=".55" stop-color="#2bd39a"/><stop offset="1" stop-color="#2bd39a" stop-opacity=".15"/></linearGradient><linearGradient id="ah1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0b7a76"/><stop offset=".55" stop-color="#22c9c0"/><stop offset="1" stop-color="#22c9c0" stop-opacity=".15"/></linearGradient><linearGradient id="ah2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2f5fb3"/><stop offset=".55" stop-color="#5b8ef0"/><stop offset="1" stop-color="#5b8ef0" stop-opacity=".15"/></linearGradient><linearGradient id="ah3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#5b4bc4"/><stop offset=".55" stop-color="#8f7dff"/><stop offset="1" stop-color="#8f7dff" stop-opacity=".15"/></linearGradient></defs><rect x="1.3" y="8" width="7.4" height="22" rx="3.7" fill="url(#ah0)"/><rect x="11.3" y="2" width="7.4" height="24" rx="3.7" fill="url(#ah1)"/><rect x="21.3" y="6" width="7.4" height="23" rx="3.7" fill="url(#ah2)"/><rect x="31.3" y="10" width="7.4" height="15" rx="3.7" fill="url(#ah3)"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
     <div class="heroslides" id="heroslides" aria-hidden="true"><i></i><i></i></div><a class="herocredit" id="herocredit" target="_blank" rel="noopener"></a>
@@ -2111,6 +2118,13 @@ const I18N = {
 "Se ledige jobber": ["Se lediga jobb","Se ledige job","Katso avoimet työpaikat","Sjá laus störf","See open jobs"],
 "Idretter": ["Idrotter","Idrætter","Urheilulajit","Íþróttir","Sports"],
 "Nyheter": ["Nyheter","Nyheder","Uutiset","Fréttir","News"],
+"Varsler": ["Aviseringar","Notifikationer","Ilmoitukset","Tilkynningar","Notifications"],
+"Passer det du liker": ["Passar det du gillar","Passer til det, du kan lide","Sopii kiinnostuksiisi","Passar við það sem þér líkar","Matches what you like"],
+"Ny jobb i {x}": ["Nytt jobb i {x}","Nyt job i {x}","Uusi työpaikka: {x}","Nýtt starf í {x}","New job in {x}"],
+"{x} skal på dette": ["{x} ska gå på detta","{x} skal med","{x} osallistuu tähän","{x} ætlar að mæta","{x} is going"],
+"{x} er interessert": ["{x} är intresserad","{x} er interesseret","{x} on kiinnostunut","{x} hefur áhuga","{x} is interested"],
+"Logg inn for å få varsel om nye jobber som passer deg, og når noen du følger skal på et arrangement.": ["Logga in för att få aviseringar om nya jobb som passar dig och när någon du följer ska på ett evenemang.","Log ind for at få besked om nye job, der passer til dig, og når nogen, du følger, skal til et arrangement.","Kirjaudu sisään, niin saat ilmoituksen sinulle sopivista uusista työpaikoista ja kun joku seuraamasi osallistuu tapahtumaan.","Skráðu þig inn til að fá tilkynningu um ný störf sem henta þér og þegar einhver sem þú fylgir ætlar á viðburð.","Log in to get notified about new jobs that suit you, and when someone you follow is going to an event."],
+"Ingen varsler ennå. Velg hva du er interessert i på forsiden, og følg venner, så dukker nye jobber og arrangementer opp her.": ["Inga aviseringar än. Välj vad du är intresserad av på startsidan och följ vänner, så dyker nya jobb och evenemang upp här.","Ingen notifikationer endnu. Vælg, hvad du interesserer dig for på forsiden, og følg venner, så dukker nye job og arrangementer op her.","Ei vielä ilmoituksia. Valitse kiinnostuksesi etusivulla ja seuraa ystäviä, niin uudet työpaikat ja tapahtumat näkyvät täällä.","Engar tilkynningar enn. Veldu áhugamál á forsíðunni og fylgdu vinum, þá birtast ný störf og viðburðir hér.","No notifications yet. Pick your interests on the front page and follow friends, and new jobs and events will show up here."],
 "Hva bruker du Aurora til?": ["Vad använder du Aurora till?","Hvad bruger du Aurora til?","Mihin käytät Auroraa?","Til hvers notar þú Aurora?","What do you use Aurora for?"],
 "Finne jobb": ["Hitta jobb","Finde job","Löytää työtä","Finna vinnu","Finding a job"],
 "Utdanning og kurs": ["Utbildning och kurser","Uddannelse og kurser","Koulutus ja kurssit","Nám og námskeið","Education and courses"],
@@ -3537,17 +3551,18 @@ async function cloudLoad() {
   if (data) { (data.clubs || []).forEach(id => follows.add(id)); (data.likes || []).forEach(k => likes.add(k)); splitBall(likes);
     if (data.home && typeof data.home.lat === "number") home = data.home;
     if (data.saved) { if (data.saved.priv) priv = Object.assign({ clubs: true, ev: true, jobs: false }, data.saved.priv);
+      if (Array.isArray(data.saved.nseen)) { data.saved.nseen.forEach(k => nSeen.add(k)); saveNSeen(true); }
       if (Array.isArray(data.saved.goals)) { data.saved.goals.forEach(k => goals.add(k)); try { localStorage.setItem("aurora-formal", JSON.stringify([...goals])); } catch (e) {} } (data.saved.jobs || []).forEach(id => favs.add(id)); (data.saved.ev || []).forEach(id => evSaved.add(id));
       if (Array.isArray(data.saved.seen)) { seen = [...new Set([...seen, ...data.saved.seen])].slice(0, 40); try { localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); } catch (e) {} }
       try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); localStorage.setItem(EVSAVE_KEY, JSON.stringify([...evSaved])); } catch (e) {} updSaved(); }
     try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); localStorage.setItem("aurora-idretter", JSON.stringify([...likes])); localStorage.setItem("idrettsjobber-hjem", JSON.stringify(home)); } catch (e) {} }
-  await cloudSave(true); updClubs(); redrawAuth(); if (typeof render === "function") render();
+  await cloudSave(true); updClubs(); loadFriendRsvps(); redrawAuth(); if (typeof render === "function") render();
 }
 let cloudTimer;
 function cloudSave(now) {
   if (!sb || !authUser) return;
   clearTimeout(cloudTimer);
-  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes, ...(likes.has("ski") ? ["ski2"] : [])], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved], seen, priv, goals: [...goals] } } : {});
+  const row = () => Object.assign({ id: authUser.id, clubs: [...follows], likes: [...likes, ...(likes.has("ski") ? ["ski2"] : [])], home, updated_at: new Date().toISOString() }, savedCol ? { saved: { jobs: [...favs], ev: [...evSaved], seen, priv, goals: [...goals], nseen: [...nSeen].slice(-300) } } : {});
   const go = () => sb.from("profiles").upsert(row()).then(r => {
     if (r.error && savedCol && /saved/i.test(r.error.message)) { savedCol = false; return go(); }
     if (r.error) console.warn("Aurora lagring:", r.error.message); });
@@ -3556,8 +3571,8 @@ function cloudSave(now) {
 // Ved utlogging: klubbene, idrettene, hjemstedet og det du har lagret ligger trygt på kontoen, så de fjernes fra denne nettleseren
 function clearLocalPrefs() {
   avatarUrl = "";
-  follows.clear(); likes.clear(); goals.clear(); favs.clear(); evSaved.clear(); seen = []; home = { name: "Oslo", lat: 59.91, lon: 10.75 };
-  try { [FOLLOW_KEY, "aurora-idretter", "aurora-formal", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY, SEEN_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  follows.clear(); likes.clear(); goals.clear(); nSeen.clear(); friendRsvps = []; favs.clear(); evSaved.clear(); seen = []; home = { name: "Oslo", lat: 59.91, lon: 10.75 };
+  try { [FOLLOW_KEY, "aurora-idretter", "aurora-formal", "aurora-varsler-sett", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY, SEEN_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
   updSaved(); updClubs();
 }
 let redrawAuth = () => {};
@@ -3896,7 +3911,7 @@ function renderCats() {
 function render() {
   renderTabs(); renderBoard();
   ({ forside: renderHome, minside: renderMine, jobber: renderJobs, utdanning: renderEdu, arrangementer: renderEvents, klubber: renderClubs })[state.tab]();
-  syncFlag();
+  syncFlag(); if (typeof updBell === "function") updBell();
   if (typeof paintLive === "function" && Object.keys(LIVE).length) paintLive();
 }
 // Forsiden bruker nyhetsregionen eller landet til språket, resten av sidene landet som er valgt
@@ -7616,6 +7631,59 @@ function openClubs() {
   $("mcAll").onclick = () => { closeJob(); setTab("klubber", true); scrollTo({ top: 0, behavior: "smooth" }); };
 }
 $("clubsBtn").onclick = openClubs;
+// ---------- Varsler (Noah 2026-10-27): nye jobber som passer deg, og arrangementer folk du følger skal på ----------
+let nSeen = new Set(), friendRsvps = [];
+try { nSeen = new Set(JSON.parse(localStorage.getItem("aurora-varsler-sett") || "[]")); } catch (e) {}
+const saveNSeen = local => { try { localStorage.setItem("aurora-varsler-sett", JSON.stringify([...nSeen].slice(-300))); } catch (e) {} if (!local) cloudSave(); };
+async function loadFriendRsvps() {
+  if (!sb || !authUser) { friendRsvps = []; return updBell(); }
+  const r = await sb.rpc("friend_rsvps"); friendRsvps = Array.isArray(r.data) ? r.data : []; updBell();
+}
+// Jobber lagt til de siste 7 dagene som passer det du liker, har lagret eller sa du var her for
+function notifs() {
+  const out = [], since = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10), hc = homeCountry(), words = likedWords();
+  const fit = authUser && taste().any;
+  for (const j of JOBS) { const d = ADDED_AT[j.id]; if (!d || d < since || daysLeft(j.dl) < 0 || favs.has(j.id)) continue;
+    const why = fit ? jobFit(j).why : (words.some(w => (j.t + " " + (j.d || "")).toLowerCase().includes(w)) ? t("Passer det du liker") : goals.has("jobb") && j.c === hc ? t("Ny jobb i {x}", { x: COUNTRIES[hc] }) : "");
+    if (why) out.push({ key: "j" + j.id, at: d + "T06:00", kind: "job", id: j.id, title: j.t, sub: `${j.emp} · ${j.place}`, why, c: j.c }); }
+  for (const r of friendRsvps) { const e = EVENTS.find(x => x.id === r.event); if (!e) continue;
+    out.push({ key: "r" + r.id + r.event + r.status, at: String(r.at || "").slice(0, 16), kind: "ev", id: e.id, user: r, title: t(e.t),
+      why: t(r.status === "going" ? "{x} skal på dette" : "{x} er interessert", { x: "@" + r.username }), sub: `${t(e.sport)} · ${t(e.place)}` }); }
+  return out.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 30);
+}
+function updBell() {
+  const b = $("bellBtn"); if (!b) return;
+  const n = notifs().filter(x => !nSeen.has(x.key)).length;
+  $("bellN").hidden = !n; $("bellN").textContent = n > 9 ? "9+" : n;
+  b.setAttribute("aria-label", t("Varsler") + (n ? ` (${n})` : "")); b.title = t("Varsler");
+}
+function openBell() {
+  curSheet = openBell;
+  const list = notifs(), fresh = new Set(list.filter(x => !nSeen.has(x.key)).map(x => x.key));
+  const ava = u => `<span class="mcico nava">${u.avatar ? `<img src="${esc(u.avatar)}" alt="">` : esc((u.username || "?")[0].toUpperCase())}</span>`;
+  const row = x => `<button type="button" class="mcitem nitem${fresh.has(x.key) ? " new" : ""}" data-k="${x.kind}" data-id="${x.id}">${x.kind === "job" ? `<span class="mcico">${flag(x.c)}</span>` : ava(x.user)}
+      <span><em class="nwhy">${esc(x.why)}</em><b>${esc(x.title)}</b><small>${esc(x.sub)}</small></span><span class="mcw">${esc(fxDate(x.at.slice(0, 10)))}</span></button>`;
+  $("sheetBody").innerHTML = `
+    <div class="sheet-top">
+      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="s-eyebrow">Aurora</div>
+      <h2 class="s-title" id="s-title">${t("Varsler")}</h2>
+      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      ${!authUser && SUPA.key ? `<div class="empty">${t("Logg inn for å få varsel om nye jobber som passer deg, og når noen du følger skal på et arrangement.")}</div><div class="actions"><div class="btns"><button type="button" class="share" id="nLogin">${t("Logg inn")}</button></div></div>`
+        : list.length ? `<div class="svlist">${list.map(row).join("")}</div>`
+        : `<div class="empty">${t("Ingen varsler ennå. Velg hva du er interessert i på forsiden, og følg venner, så dukker nye jobber og arrangementer opp her.")}</div>`}
+    </div>`;
+  const dlg = $("sheet");
+  if (!dlg.open) { lastFocus = document.activeElement; dlg.showModal(); }
+  $("closeBtn").onclick = closeJob; $("closeBtn").focus();
+  const lg = $("nLogin"); if (lg) lg.onclick = () => { closeJob(); askLogin(""); };
+  $("sheetBody").querySelectorAll(".nitem").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
+  if (fresh.size) { fresh.forEach(k => nSeen.add(k)); saveNSeen(); updBell(); }
+}
+$("bellBtn").onclick = openBell;
+setInterval(() => { if (!document.hidden && authUser) loadFriendRsvps(); }, 5 * 60e3);
 
 // ---------- Smak: det du lagrer, følger og åpner blir til en profil som jobber og arrangementer måles mot ----------
 // Bare for innloggede. Lagrede ting teller mest, klubber og idretter du har valgt litt mindre, og det du bare har åpnet minst.
