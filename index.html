@@ -1632,13 +1632,6 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
   </div>
 
   <nav class="sitefoot" id="sitefoot" aria-label="Sider"></nav>
-  <footer class="credits" id="credits">
-    <details>
-    <summary>Bilder og lisenser</summary>
-    <p>Bildene av idrettsstjernene kommer fra Wikimedia Commons og brukes under frie lisenser (Creative Commons). Bildene er beskåret og fargetonet. Trykk på et navn for å se originalbildet, og på lisensen for å lese vilkårene. Utøverne har ingen tilknytning til denne siden.</p>
-    <div class="credit-grid" id="creditGrid"></div>
-    </details>
-  </footer>
 </div>
 
 <dialog id="sheet" aria-labelledby="s-title">
@@ -3457,7 +3450,8 @@ const TILTS = [-6, 3, 0, -2, 5, -4, 2, 0, -8, 4, 1, -3];
 const reduceMotion = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Bilder fra Wikimedia Commons: navn -> [fil, fotograf, lisens, lisenslenke, bildeside]
-const PHOTOS = {"Erling Haaland": ["img/no-erling-haaland.jpg", "Jacek Stanislawek", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Erling_Haaland_2023_(fullcropped-v2).jpg"], "Marit Bjørgen": ["img/no-marit-bjrgen.jpg", "Kjetil Eggen", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Marit_Bjørgen_under_blomsterseremonien_etter_30km_kvinner_VM_i_Lahti_2017.jpg"], "Karsten Warholm": ["img/no-karsten-warholm.jpg", "Quejaytee", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Karsten_Warholm_at_a_Media_Conference_at_the_2026_Wanda_Diamond_League’s_Weltklasse_Zürich_athletics_competition_02.jpg"], "Johannes Høsflot Klæbo": ["img/no-johannes-hsflot-klbo.jpg", "Andreaze", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:2020-02-15_Johannes_Høsflot_Klæbo_Skitour_2020.jpg"], "Ada Hegerberg": ["img/no-ada-hegerberg.jpg", "DOMINIQUE MALLEN", "CC BY-SA 2.0", "https://creativecommons.org/licenses/by-sa/2.0", "https://commons.wikimedia.org/wiki/File:Ada_Hegerberg_2017_cropped.jpg"], "Ole Einar Bjørndalen": ["img/no-ole-einar-bjrndalen.jpg", "Peter Porai-Koshits", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:Ole_Einar_Bjørndalen_Kontiolahti_2012_09.jpg"], "Jakob Ingebrigtsen": ["img/no-jakob-ingebrigtsen.jpg", "filip bossuyt from Kortrijk, Belgium", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0", "https://commons.wikimedia.org/wiki/File:1205_300m_steeple_ingebrigtsen_(35691682091).jpg"], "Zlatan Ibrahimović": ["img/se-zlatan-ibrahimovic.jpg", "Frankie Fouganthin", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:Zlatan_Ibrahimović-13_(cropped).jpg"], "Armand Duplantis": ["img/se-armand-duplantis.jpg", "Frankie Fouganthin", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Armand_Duplantis_after_his_6.0_m_jump-6cropped.jpg"], "Peter Forsberg": ["img/se-peter-forsberg.jpg", "Magnus Ragnvid / Kanal 5", "CC BY 3.0", "https://creativecommons.org/licenses/by/3.0", "https://commons.wikimedia.org/wiki/File:Peter_Forsberg_2016-03-17_001_(cropped).jpg"], "Björn Borg": ["img/se-bjorn-borg.jpg", "Rob Croes for Anefo", "CC0", "http://creativecommons.org/publicdomain/zero/1.0/deed.en", "https://commons.wikimedia.org/wiki/File:Björn_Borg_in_aktie,_Bestanddeelnr_930-2092.jpg"], "Annika Sörenstam": ["img/se-annika-sorenstam.jpg", "Wojciech Migda", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:WBO2008_Annika_Sorenstam_on_the_1st_fairway_(2).jpg"], "Ingemar Stenmark": ["img/se-ingemar-stenmark.jpg", "Bengt Nyman", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Ingemar_Stenmark,_June_2014-P6170012-1.jpg"], "Sarah Sjöström": ["img/se-sarah-sjostrom.jpg", "Larske", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Sarah_Sjöström_2013_(cropped).jpg"], "Peter Schmeichel": ["img/dk-peter-schmeichel.jpg", "Russian Presidential Press and Information Office", "CC BY 4.0", "https://creativecommons.org/licenses/by/4.0", "https://commons.wikimedia.org/wiki/File:Peter_Schmeichel_in_2018.jpg"], "Michael Laudrup": ["img/dk-michael-laudrup.jpg", "Doha Stadium Plus Qatar from Doha, Qatar", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0", "https://commons.wikimedia.org/wiki/File:Michael_Laudrup_2016c_(cropped).jpg"], "Caroline Wozniacki": ["img/dk-caroline-wozniacki.jpg", "si.robi", "CC BY-SA 2.0", "https://creativecommons.org/licenses/by-sa/2.0", "https://commons.wikimedia.org/wiki/File:Caroline_Wozniacki_WM17_(26)_(35379203863).jpg"], "Viktor Axelsen": ["img/dk-viktor-axelsen.jpg", "Nardisoero", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Viktor_Axelsen_(2010_Dutch_Open)_(cropped).jpg"], "Jonas Vingegaard": ["img/dk-jonas-vingegaard.jpg", "Gavin Anderson from Bagneres de bigorre, Australia", "CC BY-SA 2.0", "https://creativecommons.org/licenses/by-sa/2.0", "https://commons.wikimedia.org/wiki/File:Jonas_Vingegaard_(2022-07-20;_cropped2).jpeg"], "Mikkel Hansen": ["img/dk-mikkel-hansen.jpg", "Wenflou", "CC0", "http://creativecommons.org/publicdomain/zero/1.0/deed.en", "https://commons.wikimedia.org/wiki/File:Mikkel_Hansen_20180304.jpg"], "Christian Eriksen": ["img/dk-christian-eriksen.jpg", "Дмитрий Голубович", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:EriksenTottenham2016(cropped).jpg"], "Kimi Räikkönen": ["img/fi-kimi-raikkonen.jpg", "Antigorky , cropped and improved by RanZag", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:Kimi_Räikkönen_Moscow_2013_cropped.jpg"], "Teemu Selänne": ["img/fi-teemu-selanne.jpg", "mark6mauno", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0", "https://commons.wikimedia.org/wiki/File:Teemu_Selänne_(2008)_(cropped).jpg"], "Mika Häkkinen": ["img/fi-mika-hakkinen.jpg", "André Zehetbauer", "CC BY-SA 2.0", "https://creativecommons.org/licenses/by-sa/2.0", "https://commons.wikimedia.org/wiki/File:Mika_Hakkinen_DTM_Norisring_2009_(cropped).jpg"], "Jari Litmanen": ["img/fi-jari-litmanen.jpg", "Chensiyuan", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:1_jari_litmanen_2017.jpg"], "Lasse Virén": ["img/fi-lasse-viren.jpg", "LasseViren1976.jpg : Plenz derivative work: MachoCarioca ( talk )", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:LasseViren1976_cropped.jpg"], "Saku Koivu": ["img/fi-saku-koivu.jpg", "mark6mauno", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0", "https://commons.wikimedia.org/wiki/File:Saku_Koivu_(2320532814).jpg"], "Gylfi Sigurðsson": ["img/is-gylfi-sigursson.jpg", "Chensiyuan", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:1_Gylfi_Sigurðsson_2017.jpg"], "Eiður Guðjohnsen": ["img/is-eiur-gujohnsen.jpg", "Светлана Бекетова", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:Eiður_Guðjohnsen_2018.jpg"], "Hafþór Júlíus Björnsson": ["img/is-hafor-julius-bjornsson.jpg", "Paula R. Lively from Zanesville", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0", "https://commons.wikimedia.org/wiki/File:Björnsson_Arnold_Classic_2017_(cropped).jpg"], "Annie Mist Þórisdóttir": ["img/is-annie-mist-orisdottir.jpg", "Anthony Topper ( photos · photo sets )", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0", "https://commons.wikimedia.org/wiki/File:Annie_Thorisdottir_Pushing_the_Sled_in_2011_(cropped).jpg"], "Ólafur Stefánsson": ["img/is-olafur-stefansson.jpg", "Kuebi = Armin Kübelbeck", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:Olafur_Stefansson_02_crop.jpg"]};
+// Bildene av idrettsstjerner er fjernet (Noah 2026-10-27: ingen lisenser for bilder vi ikke bruker)
+const PHOTOS = {};
 const sportOf = (k, name) => (NATION[k].stars.find(s => s[0] === name) || [])[1] || "";
 
 function buildStage() {
@@ -3853,18 +3847,6 @@ function renderFoot() {
   f.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { if (b.dataset.l === LANG) return; try { localStorage.setItem("aurora-sprak", b.dataset.l); } catch (x) {} location.reload(); });
   f.querySelector(".ftop").onclick = () => scrollTo({ top: 0, behavior: reduceMotion() ? "auto" : "smooth" });
 }
-function renderCredits() {
-  $("creditGrid").innerHTML = Object.keys(NATION).map(k => {
-    const items = NATION[k].stars.filter(([name]) => PHOTOS[name]);
-    if (!items.length) return "";
-    return `<div><h3>${flag(k)}${COUNTRIES[k]}</h3><ul>${items.map(([name]) => {
-      const [, artist, lic, licUrl, page] = PHOTOS[name];
-      return `<li><a href="${page}" target="_blank" rel="noopener">${esc(name)}</a>. ${t("Foto")}: ${esc(artist)}, ${licUrl ? `<a class="lic" href="${licUrl}" target="_blank" rel="noopener">${esc(lic)}</a>` : `<span class="lic">${esc(lic)}</span>`}</li>`;
-    }).join("")}</ul></div>`;
-  }).join("");
-  if (!$("creditGrid").innerHTML) $("credits").hidden = true;
-}
-
 function setStage(k, rect) {
   const cur = $("stage").querySelector(".layer.on");
   const next = fillLayer(k);
@@ -7903,7 +7885,6 @@ setTimeout(checkReminders, 1500);
 setupAuth();
 setupFilters();
 buildStage();
-renderCredits();
 const startId = location.hash.slice(1);
 const isJobLink = startId && JOBS.some(j => j.id === startId);
 const isEventLink = startId && EVENTS.some(e => e.id === startId);
