@@ -903,6 +903,12 @@ table.league td.tform { padding-left: 10px; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
 .tag { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
 .tag.new { background: var(--warm, #C2410C); color: #fff; }
+.tag.rsvptag.going { background: #0f6b4f; color: #fff; }
+.tag.rsvptag.interested { background: rgba(91,75,196,.14); color: #5b4bc4; box-shadow: inset 0 0 0 1px #5b4bc4; }
+.tag.rsvptag.fr { background: rgba(15,107,79,.12); color: #0f6b4f; box-shadow: inset 0 0 0 1px #0f6b4f; }
+:root[data-theme="dark"] .tag.rsvptag.interested { color: #a89cff; box-shadow: inset 0 0 0 1px #a89cff; }
+:root[data-theme="dark"] .tag.rsvptag.fr { color: #2bd39a; box-shadow: inset 0 0 0 1px #2bd39a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tag.rsvptag.interested { color: #a89cff; box-shadow: inset 0 0 0 1px #a89cff; } :root:not([data-theme="light"]) .tag.rsvptag.fr { color: #2bd39a; box-shadow: inset 0 0 0 1px #2bd39a; } }
 .tag.req-start { background: var(--accent); color: var(--accent-fg); }
 .tag.req-erfaring, .tag.req-utdanning { background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); }
 .arrow { width: 20px; height: 20px; stroke: var(--muted); fill: none; stroke-width: 2; }
@@ -2426,6 +2432,7 @@ const I18N = {
 "Nytt brukernavn": ["Nytt användarnamn","Nyt brugernavn","Uusi käyttäjänimi","Nýtt notandanafn","New username"],
 "Du kan endre brukernavnet én gang i måneden.": ["Du kan ändra användarnamnet en gång i månaden.","Du kan skifte brugernavn én gang om måneden.","Voit vaihtaa käyttäjänimen kerran kuukaudessa.","Þú getur breytt notandanafninu einu sinni í mánuði.","You can change your username once a month."],
 "Du kan endre brukernavnet igjen {d}.": ["Du kan ändra användarnamnet igen {d}.","Du kan skifte brugernavn igen {d}.","Voit vaihtaa käyttäjänimen uudelleen {d}.","Þú getur breytt notandanafninu aftur {d}.","You can change your username again on {d}."],
+"{n} du følger skal": ["{n} du följer ska","{n} du følger skal med","{n} seuraamaasi menee","{n} sem þú fylgir mæta","{n} you follow are going"],
 "Passer deg": ["Passar dig","Passer dig","Sopii sinulle","Hentar þér","For you"],
 "Passer deg best": ["Passar dig bäst","Passer bedst til dig","Sopivimmat ensin","Hentar þér best","Best match for you"],
 "Jobber for deg": ["Jobb för dig","Job til dig","Työpaikkoja sinulle","Störf fyrir þig","Jobs for you"],
@@ -3616,7 +3623,7 @@ function cloudSave(now) {
 // Ved utlogging: klubbene, idrettene, hjemstedet og det du har lagret ligger trygt på kontoen, så de fjernes fra denne nettleseren
 function clearLocalPrefs() {
   avatarUrl = "";
-  follows.clear(); likes.clear(); goals.clear(); nSeen.clear(); friendRsvps = []; favs.clear(); evSaved.clear(); seen = []; home = { name: "Oslo", lat: 59.91, lon: 10.75 };
+  follows.clear(); likes.clear(); goals.clear(); nSeen.clear(); friendRsvps = []; myRsvp.clear(); favs.clear(); evSaved.clear(); seen = []; home = { name: "Oslo", lat: 59.91, lon: 10.75 };
   try { [FOLLOW_KEY, "aurora-idretter", "aurora-formal", "aurora-varsler-sett", "idrettsjobber-hjem", FAV_KEY, EVSAVE_KEY, SEEN_KEY].forEach(k => localStorage.removeItem(k)); } catch (e) {}
   updSaved(); updClubs();
 }
@@ -7583,6 +7590,7 @@ async function rsvpBox(id) {
     busy = true; const off = info.me === k;
     if (info.me) info[info.me] = Math.max(0, (info[info.me] || 0) - 1);
     info.me = off ? null : k; if (!off) info[k] = (info[k] || 0) + 1; draw();
+    if (off) myRsvp.delete(id); else myRsvp.set(id, k); markRsvp();
     const r = off ? await sb.from("event_rsvp").delete().eq("user_id", authUser.id).eq("event_id", id)
       : await sb.from("event_rsvp").upsert({ user_id: authUser.id, event_id: id, status: k });
     if (!off && !evSaved.has(id)) { toggleEvSave(id); const s = $("saveTog"); if (s) { s.setAttribute("aria-pressed", "true"); s.innerHTML = HEART + t("Lagret"); } }
@@ -7764,12 +7772,25 @@ function openClubs() {
 }
 $("clubsBtn").onclick = openClubs;
 // ---------- Varsler (Noah 2026-10-27): nye jobber som passer deg, og arrangementer folk du følger skal på ----------
-let nSeen = new Set(), friendRsvps = [];
+let nSeen = new Set(), friendRsvps = [], myRsvp = new Map();
 try { nSeen = new Set(JSON.parse(localStorage.getItem("aurora-varsler-sett") || "[]")); } catch (e) {}
 const saveNSeen = local => { try { localStorage.setItem("aurora-varsler-sett", JSON.stringify([...nSeen].slice(-300))); } catch (e) {} if (!local) cloudSave(); };
 async function loadFriendRsvps() {
   if (!sb || !authUser) { friendRsvps = []; return updBell(); }
-  const r = await sb.rpc("friend_rsvps"); friendRsvps = Array.isArray(r.data) ? r.data : []; updBell();
+  const [r, m] = await Promise.all([sb.rpc("friend_rsvps"), sb.from("event_rsvp").select("event_id,status").eq("user_id", authUser.id)]);
+  friendRsvps = Array.isArray(r.data) ? r.data : []; myRsvp = new Map((m.data || []).map(x => [x.event_id, x.status])); updBell();
+}
+// Lite merke på arrangementskort: «Skal» / «Interessert» for deg, og hvor mange du følger som skal (Noah 2026-10-27)
+function markRsvp() {
+  const fr = {}; for (const r of friendRsvps) if (r.status === "going") fr[r.event] = (fr[r.event] || 0) + 1;
+  document.querySelectorAll("article .ev-hit[data-id]").forEach(b => {
+    const tags = b.closest("article").querySelector(".tags"); if (!tags) return;
+    tags.querySelectorAll(".rsvptag").forEach(x => x.remove());
+    const id = b.dataset.id, me = myRsvp.get(id), n = fr[id];
+    let h = me ? `<span class="tag rsvptag ${me}">${me === "going" ? "✓ " + t("Skal") : "★ " + t("Interessert")}</span>` : "";
+    if (n) h += `<span class="tag rsvptag fr">${t("{n} du følger skal", { n })}</span>`;
+    if (h) tags.insertAdjacentHTML("afterbegin", h);
+  });
 }
 // Jobber lagt til de siste 7 dagene som passer det du liker, har lagret eller sa du var her for
 function notifs() {
@@ -7784,6 +7805,7 @@ function notifs() {
   return out.sort((a, b) => b.at.localeCompare(a.at)).slice(0, 30);
 }
 function updBell() {
+  markRsvp();
   const b = $("bellBtn"); if (!b) return;
   const n = notifs().filter(x => !nSeen.has(x.key)).length;
   $("bellN").hidden = !n; $("bellN").textContent = n > 9 ? "9+" : n;
