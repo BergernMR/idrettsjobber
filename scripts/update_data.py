@@ -160,8 +160,19 @@ def tables(html):
             else:
                 parts = [x for x in tl if re.search(r"Championship|Relegation", x["leagueName"])] or tl[-1:]
             rows = [r for p in parts for r in p["table"]["all"]]
-        else: rows = dd["table"]["all"]
+        else: parts = [dd]; rows = dd["table"]["all"]
         if not rows: continue
+        # Nedrykk og nedrykkskvalifisering slik FotMob oppgir dem (plassene telles fra 0 i hele tabellen).
+        # Seks plasser eller flere er bare delingen av ligaen i to grupper, ikke nedrykk, og hoppes over.
+        z, off = {"r": [], "q": []}, 0
+        for p in parts:
+            for lg in p.get("legend") or []:
+                kind = {"Relegation": "r", "Relegation qualification": "q"}.get(lg.get("title"))
+                ix = lg.get("indices") or []
+                if kind and len(ix) < 6: z[kind] += [off + i for i in ix]
+            off += len(p["table"]["all"])
+        if z["r"] or z["q"]: tb["z"] = z
+        else: tb.pop("z", None)
         out_rows = []
         for r in rows:
             gf, ga = [int(x) for x in r["scoresStr"].split("-")[:2]]
