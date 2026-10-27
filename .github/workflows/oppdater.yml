@@ -19,6 +19,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Hent terminlisten til Norges Ishockeyforbund (live.hockey.no)
+        continue-on-error: true
+        timeout-minutes: 6
+        run: |
+          npm i --silent --prefix /tmp/pw playwright@1.48.2
+          /tmp/pw/node_modules/.bin/playwright install --with-deps chromium > /dev/null
+          NODE_PATH=/tmp/pw/node_modules node scripts/hockey_no.js
       - name: Hent nye kamper og tabeller
         run: python3 scripts/update_data.py index.html
       - name: Hent verdenscup og VM i vintersport (FIS og IBU)

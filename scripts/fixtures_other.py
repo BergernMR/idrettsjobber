@@ -5,6 +5,7 @@
 #  - Finsk ishockey (Liiga): liiga.fi sitt eget kampprogram
 #  - Dansk håndball (Herreligaen, Kvindeligaen, 1. division herrer og kvinder): tophaandbold.dk, ligaenes egen side
 #  - Svensk håndball (Handbollsligan herrer og damer): handbollsligan.se (bare kommende kamper; resultatene kommer fra TheSportsDB der laget finnes)
+#  - Norsk ishockey (EliteHockey Ligaen): Norges Ishockeyforbunds terminliste på live.hockey.no, lest av scripts/hockey_no.js til data/hockey_no.json
 #  - Finsk innebandy (F-liiga menn og kvinner): fliiga.com, ligaens egen side
 #  - Dansk innebandy (Unihoc Floorball Liga): resultater.floorball.dk, forbundets resultatservice (TMS)
 #  - Dansk volleyball (Volleyligaen herrer og kvinder): volleyligaen.dk, ligaens egen kampside. Resultatet er antall vunne sett
@@ -29,7 +30,7 @@ def norm(s):
     s = s.lower().replace("æ", "ae").replace("ø", "o").replace("å", "a").replace("þ", "th").replace("ð", "d")
     s = "".join(ch for ch in unicodedata.normalize("NFKD", s) if not unicodedata.combining(ch))
     return re.sub(r"[^a-z0-9]", "", s)
-AFF = r"\b(if|ik|hc|hf|hk|bk|sk|aif|is|soss|gois|bois|hockey|hockeyklubb|forening|dam|naiset|kvinner|kvinder|kvenna|ry|håndbold|håndboldklub|herrehåndbold|herrer|hh|fh|kh|handboll|hbk|team)\b"
+AFF = r"\b(if|ik|hc|hf|hk|bk|sk|aif|is|soss|gois|bois|hockey|ishockey|elite|hockeyklubb|forening|dam|naiset|kvinner|kvinder|kvenna|ry|håndbold|håndboldklub|herrehåndbold|herrer|hh|fh|kh|handboll|hbk|team)\b"
 def core(s): return norm(re.sub(AFF, " ", s.lower()))
 
 ALIAS = {"Aarhus FK": "Århus Floorball Klub", "Pirkkalan Pirkat": "Pirkat", "Kiekko-Espoo": "K-Espoo", "Skanderborg AGF": "SAH", "NFH": "Nykøbing F. Håndboldklub", "H65 Höör": "Höörs HK H 65"}
@@ -179,6 +180,20 @@ def volleyligaen(path, comp, now):
         out.append((t, tn[0], tn[1], int(sc[0]) if len(sc) == 2 else None, int(sc[1]) if len(sc) == 2 else None, comp, bool(d.group(3))))
     return out
 
+# ---------- Norsk ishockey ----------
+def hockey_no(now):
+    import os
+    f = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "hockey_no.json")
+    try: d = json.load(open(f, encoding="utf-8"))
+    except Exception: return []
+    out = []
+    for when, h, a, hs, as_ in d.get("games", []):
+        t = datetime.datetime.fromisoformat(when).replace(tzinfo=ZoneInfo("Europe/Oslo")).astimezone(datetime.timezone.utc)
+        # Kamper som ikke har startet står med 0–0 på siden; de er ikke resultater ennå
+        if t > now: hs = as_ = None
+        out.append((t, h, a, hs, as_, "EliteHockey Ligaen", True))
+    return out
+
 def collect(fan, now):
     out = {}
     def add(games, clubs, src, url):
@@ -197,6 +212,8 @@ def collect(fan, now):
         clubs = [k for k in se if bool(re.search(r"\bdam$", k["n"])) == women and (k["div"] or "").split(",")[0] == comp]
         n = add(swehockey(sid, comp), clubs, "Svenska Ishockeyförbundet", f"https://stats.swehockey.se/ScheduleAndResults/Schedule/{sid}")
         print(f"  {comp}: {n} av {len(clubs)} lag")
+    clubs = [k for k in fan if k["sport"] == "Ishockey" and k["c"] == "NO" and (k["div"] or "").startswith("EliteHockey")]
+    print(f"  EliteHockey Ligaen: {add(hockey_no(now), clubs, 'Norges Ishockeyforbund', 'https://live.hockey.no/')} av {len(clubs)} lag")
     for div, slug in TOPH.items():
         clubs = [k for k in fan if k["sport"] == "Håndball" and k["c"] == "DK" and k["div"] == div]
         comp = div.replace(" (håndbold)", "")
