@@ -368,7 +368,7 @@ a.item { color: inherit; text-decoration: none; grid-template-columns: 72px 1fr 
 .mbar i { display: block; border-radius: 3px; background: var(--accent, #2f6fdc); }
 .mbar i + i { background: var(--muted); opacity: .45; }
 .chip.gexp { font-weight: 700; }
-.chip.gcur .gcaret { font-size: .8em; margin-left: 2px; opacity: .75; }
+.gnews .gsports .chip.gcur svg.gcaret { width: 20px; height: 20px; margin-left: 4px; stroke-width: 2.6; }
 .fxlist .d { color: var(--muted); font-size: 13px; }
 .fxlist .c { display: block; color: var(--muted); font-size: 12px; }
 .news { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; }
@@ -1459,7 +1459,9 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 .eyebrow { color: var(--accent); }
 .sechero { border-top: 5px solid var(--accent); }
 .sechero.slim { gap: 8px; padding: clamp(18px, 3vw, 28px) clamp(20px, 4vw, 36px); border-top-width: 4px; }
-.tag.foryoutag { background: var(--accent-soft); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.tag.foryoutag { background: rgba(47,111,220,.14); color: #2f6fdc; box-shadow: inset 0 0 0 1px #2f6fdc; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tag.foryoutag { background: rgba(95,150,245,.16); color: #7fa8f5; box-shadow: inset 0 0 0 1px #7fa8f5; } }
+:root[data-theme="dark"] .tag.foryoutag { background: rgba(95,150,245,.16); color: #7fa8f5; box-shadow: inset 0 0 0 1px #7fa8f5; }
 .fywhy { display: block; font-style: normal; font-size: 12px; font-weight: 600; color: #7fe0b7; margin-top: 3px; }
 .mp-learn { display: grid; gap: 8px; padding: 14px 16px; margin-bottom: 14px; border-radius: 14px; background: var(--accent-soft); }
 .mp-learn p { margin: 0; font-weight: 700; }
@@ -6732,7 +6734,7 @@ function renderGnews() {
     ${`<div class="regions seg" data-seg="nyregion" role="group" aria-label="${t("Velg region")}">${["all", ...Object.keys(COUNTRIES)].map(c => `<button type="button" class="chip" data-r="${c}" aria-pressed="${c === region}">${c === "all" ? t("Hele Norden") : flag(c) + COUNTRIES[c]}</button>`).join("")}</div>`}
     ${sports.length > 1 ? `<div class="regions gsports seg" data-seg="nyidrett" role="group" aria-label="${t("Velg idrett")}">${gOpen
       ? `<button type="button" class="chip" data-g="all" aria-pressed="${gSport === "all"}">${t("Alle idretter")}</button>${sports.map(sp => `<button type="button" class="chip" data-g="${esc(sp)}" aria-pressed="${sp === gSport}">${sp === "Sport" ? t("Annet") : icoOf(sp) + esc(t(sp))} <small>${cnt[sp]}</small></button>`).join("")}<button type="button" class="chip gexp" id="gExp" aria-expanded="true">${t("Vis færre")}</button>`
-      : `<button type="button" class="chip gexp gcur" id="gExp" aria-expanded="false" aria-pressed="true">${gSport === "all" ? t("Alle idretter") : (gSport === "Sport" ? t("Annet") : icoOf(gSport) + esc(t(gSport)))} <span class="gcaret" aria-hidden="true">▾</span></button>`}</div>` : ""}
+      : `<button type="button" class="chip gexp gcur" id="gExp" aria-expanded="false" aria-pressed="true">${gSport === "all" ? t("Alle idretter") : (gSport === "Sport" ? t("Annet") : icoOf(gSport) + esc(t(gSport)))} <svg class="gcaret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>`}</div>` : ""}
     <ul class="glist">${items.map(n => `<li><a href="${esc(n[3])}" target="_blank" rel="noopener" data-s="${SPORT_KIND[n[1]] || "annet"}"${(GNEWS.img || {})[n[3]] ? ' class="hasimg"' : ""}>${(GNEWS.img || {})[n[3]] ? `<img class="gimg" src="${esc(GNEWS.img[n[3]])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('hasimg');this.remove()">` : ""}${sportIcon(n[1])}<span class="gs">${esc(t(n[1]))}</span><span class="gt"${n[6] !== own ? ` lang="${{ NO: "no", SE: "sv", DK: "da", FI: "fi", IS: "is" }[n[6]]}"` : ""}>${esc(n[2])}</span><span class="nm">${region === "all" ? flag(n[6]) : ""}<span>${esc(n[4])}${n[0] ? " · " + esc(fxDate(n[0])) : ""}</span>${pwBadge(n[5])}</span></a></li>`).join("")}</ul>
     ${items.length < all.length ? `<button type="button" class="abtn ghost gmore" id="gMore">${t("Vis flere nyheter")}</button>` : ""}
     ${en ? `<p class="s-note">${t("Overskriftene står på språket til avisen de kommer fra.")}</p>` : ""}`;

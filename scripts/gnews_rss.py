@@ -11,10 +11,14 @@ FEEDS = {
     "NO": [("NRK", "https://www.nrk.no/sport/toppsaker.rss", 0), ("NRK", "https://www.nrk.no/sport/siste.rss", 0),
            ("NRK", "https://www.nrk.no/sport/handball/toppsaker.rss", 0), ("TV 2", "https://www.tv2.no/rss/sport", 0),
            ("TV 2", "https://www.tv2.no/rss/sport/fotball", 0), ("TV 2", "https://www.tv2.no/rss/sport/vintersport", 0),
-           ("TV 2", "https://www.tv2.no/rss/sport/handball", 0), ("VG", "https://www.vg.no/rss/feed/?categories=1072", 1),
+           ("TV 2", "https://www.tv2.no/rss/sport/handball", 0),
+           ("NRK", "https://www.nrk.no/sport/skiskyting/toppsaker.rss", 0), ("NRK", "https://www.nrk.no/sport/alpint/toppsaker.rss", 0),
+           ("NRK", "https://www.nrk.no/sport/hopp/toppsaker.rss", 0), ("VG", "https://www.vg.no/rss/feed/?categories=1072", 1),
            ("Aftenposten", "https://www.aftenposten.no/rss/sport", 1)],
     "SE": [("SVT", "https://www.svt.se/sport/rss.xml", 0), ("SVT", "https://www.svt.se/sport/fotboll/rss.xml", 0),
            ("SVT", "https://www.svt.se/sport/ishockey/rss.xml", 0), ("SVT", "https://www.svt.se/sport/vintersport/rss.xml", 0),
+           ("SVT", "https://www.svt.se/sport/langdskidor/rss.xml", 0), ("SVT", "https://www.svt.se/sport/skidskytte/rss.xml", 0),
+           ("SVT", "https://www.svt.se/sport/alpint/rss.xml", 0), ("SVT", "https://www.svt.se/sport/backhoppning/rss.xml", 0),
            ("Aftonbladet", "https://www.aftonbladet.se/sportbladet/rss.xml", 1), ("Expressen", "https://www.expressen.se/rss/sport", 1),
            ("DN", "https://www.dn.se/rss/sport/", 1)],  # Sydsvenskan sin «sport»-feed ga alle slags nyheter, derfor ute
     "DK": [("DR", "https://www.dr.dk/nyheder/service/feeds/sporten", 0), ("TV 2 Sport", "https://feeds.services.tv2.dk/api/feeds/sport/rss", 0),
@@ -29,8 +33,8 @@ FEEDS = {
 # Siden viser 8 saker først og flere med «Vis flere»; resten er reserver slik at de som har valgt en favorittidrett får saker om den.
 PER_LAND, MAKS_PER_IDRETT = 36, 12
 # Idretter folk flest i hvert land bryr seg mest om, gir litt høyere relevans.
-STORE = {"NO": {"Fotball", "Langrenn", "Skiskyting", "Hopp", "Alpint", "Håndball"}, "SE": {"Fotball", "Ishockey", "Langrenn", "Skiskyting"},
-         "DK": {"Fotball", "Håndball", "Sykling", "Badminton"}, "FI": {"Ishockey", "Fotball", "Formel 1", "Langrenn"},
+STORE = {"NO": {"Fotball", "Langrenn", "Skiskyting", "Hopp", "Alpint", "Kombinert", "Håndball"}, "SE": {"Fotball", "Ishockey", "Langrenn", "Skiskyting", "Alpint"},
+         "DK": {"Fotball", "Håndball", "Sykling", "Badminton"}, "FI": {"Ishockey", "Fotball", "Formel 1", "Langrenn", "Hopp", "Skiskyting"},
          "IS": {"Fotball", "Håndball", "Basketball"}}
 OSLO = ZoneInfo("Europe/Oslo")
 
@@ -110,10 +114,13 @@ def nordisk(x, ekstra=""):
 
 # Idrett (norsk navn, som på siden) og ord som avslører den, på alle språkene. Rekkefølgen teller: det spesifikke først.
 IDRETTER = [
-    ("Skiskyting", "skiskyting skidskytte skiskydning ampumahiihto skíðaskotfimi biathlon"),
-    ("Hopp", "skihopp backhopp mäkihyppy skihop skíðastökk"),
-    ("Alpint", "alpint alpin alppihiihto slalåm slalom utförsåkning"),
-    ("Langrenn", "langrenn längdskid langrend hiihto skíðaganga"),
+    ("Skiskyting", "skiskyting skiskytter skidskytt skiskydning ampumahiihto skíðaskotfimi biathlon"),
+    ("Kombinert", "kombinert kombinertløper nordisk kombination kombineret yhdistetty nordic combined"),
+    ("Hopp", "skihopp hoppuka backhopp mäkihyppy mäkihyppääjä skihop skíðastökk hoppbakke"),
+    ("Freestyle", "snowboard freestyle freeski skicross slopestyle lumilautailu kumpareet puckelpist"),
+    ("Alpint", "alpint alpinist alpin alppihiihto slalåm slalom storslalåm utförsåkning utforrenn super-g"),
+    ("Langrenn", "langrenn langrennsløper längdskid langdskid längdåk langrend hiihto hiihtäjä skíðaganga tour de ski "
+                 "vasaloppet birkebeinerrennet holmenkollen skiforbund skidförbund skiforbundet skidlandslag skilandslaget"),
     ("Bordtennis", "bordtennis pingis pöytätennis borðtennis"),
     ("Innebandy", "innebandy salibandy floorball"),
     ("Bandy", "bandy jääpallo"),
@@ -135,7 +142,7 @@ IDRETTER = [
     ("Golf", "golf"),
     ("Turn", "gymnastik telinevoimistelu fimleik turning"),
     ("Kunstløp", "kunstløp konståkning kunstskøjte taitoluistelu listdans"),
-    ("Skøyter", "skøyte skridsko pikaluistelu skautahlaup"),
+    ("Skøyter", "skøyte skøyteløper skridsko pikaluistelu skautahlaup"),
     ("Boksing", "boksing boksning boxning nyrkkeily hnefaleik"),
     ("Kampsport", "mma ufc kampsport judo karate taekwondo bryting brottning"),
     ("Sjakk", "sjakk schack skak shakki skák"),
@@ -152,7 +159,7 @@ IDRETTER = [
 
 # Flerordsuttrykk som må holdes samlet.
 FRASER = {"metal ligaen", "besta deild", "premier league", "champions league", "europa league", "conference league",
-          "la liga", "serie a", "real madrid", "ligue 1", "tour de france", "formel 1", "formula 1", "landsliðið í fótbolta"}
+          "la liga", "serie a", "real madrid", "tour de ski", "nordisk kombination", "nordic combined", "ligue 1", "tour de france", "formel 1", "formula 1", "landsliðið í fótbolta"}
 def ordliste(tekst):
     t = " " + tekst + " "; ut = []
     for f in FRASER:
