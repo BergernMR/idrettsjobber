@@ -1349,8 +1349,8 @@ body.home header .gsearch input { font-size: 16px; padding-block: 14px; }
 body.home .welcome { padding: 0; }
 body.home header { padding-bottom: 84px; }
 body.home .hub { margin-top: -86px; position: relative; z-index: 3; }
-/* Fotokreditten står over kortene som stikker opp i bildet */
-body.home .herocredit { bottom: 96px; }
+/* Fotokreditten står helt nede i høyre hjørne av bildet (Noah 2026-10-27), over kortene som stikker opp i bildet */
+body.home .herocredit { bottom: 6px; right: calc(50% - 50vw + 14px); z-index: 4; }
 /* Live-kampene ligger under snarveiene, så de ikke dekker bildet, kreditten eller menyen */
 body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 12px; gap: 6px; box-shadow: 0 6px 24px -14px rgba(20,33,29,.25); }
 @media (max-width: 560px) { body.home .livestrip:not([hidden]) { padding: 10px; } .livestrip .live { padding: 7px 10px; font-size: 13px; } .livestrip .live .ls b { font-size: 14px; } .livestrip .lbl { font-size: 11px; } }
@@ -1484,7 +1484,7 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
 @media (max-width: 900px) { .glist { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) {
   body.home header { min-height: 0; padding: 18px 0 26px; }
-  body.home .hub { margin-top: 8px; } body.home .herocredit { bottom: 8px; }
+  body.home .hub { margin-top: 8px; } body.home .herocredit { bottom: 6px; }
   body.home header .topline { margin-bottom: 40px; }
   .glist { grid-template-columns: 1fr; } .glist li:first-child a { min-height: 220px; }
 }
