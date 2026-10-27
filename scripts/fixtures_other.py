@@ -9,6 +9,7 @@
 #  - Finsk innebandy (F-liiga menn og kvinner): fliiga.com, ligaens egen side
 #  - Dansk innebandy (Unihoc Floorball Liga): resultater.floorball.dk, forbundets resultatservice (TMS)
 #  - Dansk volleyball (Volleyligaen herrer og kvinder): volleyligaen.dk, ligaens egen kampside. Resultatet er antall vunne sett
+#  - Curling (Sparebank 1 Gudbrandsdal-serien, Lillehammer): curlingresultater.no, Curlingforbundets resultatside med alle kampene
 # Tabellene for de samme ligaene hentes av scripts/tables_other.py
 import datetime, html as H, json, re, time, unicodedata, urllib.request
 from zoneinfo import ZoneInfo
@@ -195,6 +196,24 @@ def hockey_no(now):
         out.append((t, h, a, hs, as_, "EliteHockey Ligaen", True))
     return out
 
+# ---------- Curling ----------
+MND = {m: i + 1 for i, m in enumerate("januar februar mars april mai juni juli august september oktober november desember".split())}
+def curling_gbs(now):
+    s = get("https://www.curlingresultater.no/nb/tournaments/sparebank-1-gudbrandsdal-serien/matches")
+    if not s: return {}
+    season = now.year if now.month >= 7 else now.year - 1
+    out = {}
+    for r in re.findall(r"<tr[^>]*>(.*?)</tr>", s, re.S):
+        c = [" ".join(H.unescape(re.sub(r"<[^>]+>", " ", x)).split()) for x in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", r, re.S)]
+        if len(c) < 5: continue
+        dv = re.search(r"(\d)\.\s*divisjon", c[0]); d = re.match(r"(\d+)\. (\w+), (\d{2}:\d{2})", c[1])
+        if not dv or not d or d.group(2) not in MND: continue
+        mon = MND[d.group(2)]; yr = season if mon >= 7 else season + 1
+        t = datetime.datetime.fromisoformat(f"{yr}-{mon:02d}-{int(d.group(1)):02d}T{d.group(3)}").replace(tzinfo=ZoneInfo("Europe/Oslo")).astimezone(datetime.timezone.utc)
+        sc = re.match(r"(\d+)\s*[–-]\s*(\d+)$", c[5]) if len(c) > 5 else None
+        out.setdefault(dv.group(1), []).append((t, c[3], c[4], int(sc.group(1)) if sc else None, int(sc.group(2)) if sc else None, "Gudbrandsdal-serien", True))
+    return out
+
 def collect(fan, now):
     out = {}
     def add(games, clubs, src, url):
@@ -231,6 +250,9 @@ def collect(fan, now):
     for div, path in (("Volleyligaen", "herrer"), ("Volleyligaen kvinder", "kvinder")):
         clubs = [k for k in fan if k["sport"] == "Volleyball" and k["c"] == "DK" and k["div"] == div]
         print(f"  {div}: {add(volleyligaen(path, 'Volleyligaen', now), clubs, 'Volleyligaen', f'https://volleyligaen.dk/{path}/kampe/')} av {len(clubs)} lag")
+    for n, games in curling_gbs(now).items():
+        clubs = [k for k in fan if k["sport"] == "Curling" and k["div"] == f"Gudbrandsdal-serien, {n}. divisjon"]
+        print(f"  Gudbrandsdal-serien {n}. div: {add(games, clubs, 'Norges Curlingforbund', 'https://www.curlingresultater.no/nb/tournaments/sparebank-1-gudbrandsdal-serien/matches')} av {len(clubs)} lag")
     fi = [k for k in fan if k["sport"] == "Ishockey" and k["c"] == "FI" and k["div"] == "Liiga"]
     print(f"  Liiga: {add(liiga(now), fi, 'Liiga', 'https://liiga.fi/fi/ohjelma')} av {len(fi)} lag")
     return out
