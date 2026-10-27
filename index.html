@@ -1119,6 +1119,7 @@ body.home .hello { font-size: 14px; }
 .chip { padding: 6px 14px; font-weight: 600; background: var(--surface-2); border-color: transparent; }
 .chip:hover { border-color: var(--accent); }
 .bib { border-radius: 14px; }
+.bib .d.sm { font-size: .74em; }
 .bib .d { font-family: var(--font-display); letter-spacing: -.02em; }
 .mapcard { box-shadow: 0 1px 2px rgba(15,28,34,.04); }
 body.home .path { border-radius: 24px; }
@@ -1370,6 +1371,8 @@ body.home .herocredit { bottom: 6px; right: calc(50% - 50vw + 14px); z-index: 4;
 /* Uten toppbilder (Noah 2026-10-27): mørk nordlysflate bak overskriften i stedet for foto */
 body.home .heroslides, body.home .herocredit { display: none; }
 body.home header { min-height: 0; padding-top: 40px; }
+/* Søkeforslagene legger seg over innholdet under toppen (Noah 2026-10-27) */
+header { z-index: 6; }
 /* Nordlys i de fire delfargene (jobber, utdanning, idrettslag, arrangementer) bak toppen (Noah 2026-10-27) */
 body.home header::before { background: linear-gradient(90deg, rgba(5,11,20,.7) 0%, rgba(5,11,20,.25) 50%, rgba(5,11,20,0) 75%), url("img/nordlys.svg") center 70% / cover no-repeat, #050b14; }
 /* Live-kampene ligger under snarveiene, så de ikke dekker bildet, kreditten eller menyen */
@@ -1833,6 +1836,9 @@ const I18N = {
 "Master i ansvarlig ledelse og forretningsdrift i idretten, på engelsk.": ["Master i ansvarsfullt ledarskap och affärer inom idrotten, på engelska.","Kandidat i ansvarlig ledelse og forretning i idrætten, på engelsk.","Maisteriohjelma vastuullisesta urheilujohtamisesta ja -liiketoiminnasta, englanniksi.","Meistaranám í ábyrgri stjórnun og viðskiptum í íþróttum, á ensku.","Master's in responsible management and business of sport, in English."],
 "Master for deg som vil utvikle og lede idrettsorganisasjoner.": ["Master för dig som vill utveckla och leda idrottsorganisationer.","Kandidat for dig, der vil udvikle og lede idrætsorganisationer.","Ylempi AMK-tutkinto urheiluorganisaatioiden kehittämiseen ja johtamiseen.","Meistaranám fyrir þau sem vilja þróa og stýra íþróttasamtökum.","Master's for those who want to develop and lead sports organisations."],
 "Master i idrettsvitenskap og trening, med idrettsledelse.": ["Master i idrottsvetenskap och träning, med idrottsledarskap.","Kandidat i idrætsvidenskab og træning, med idrætsledelse.","Maisteriohjelma liikuntatieteestä ja valmennuksesta sekä urheilujohtamisesta.","Meistaranám í íþróttavísindum og þjálfun ásamt íþróttastjórnun.","Master's in sport science and coaching, with sports management."],
+"Bachelor": ["Kandidat","Bachelor","Kandidaatti","BS/BA","Bachelor"],
+"Master": ["Master","Kandidat","Maisteri","Meistari","Master"],
+"Årsstudium": ["Ettårig","Etårig","Vuosiopinnot","Ársnám","One year"],
 "Ledelse": ["Ledning","Ledelse","Johtaminen","Stjórnun","Mgmt"],
 "{n} divisjoner": ["{n} divisioner","{n} divisioner","{n} sarjatasoa","{n} deildir","{n} divisions"],
 "PostNord-ligaen": ["PostNord-ligaen (division 2)","PostNord-ligaen (2. division)","PostNord-ligaen (3. taso)","PostNord-ligaen (3. deild)","PostNord League (tier 3)"],
@@ -3984,7 +3990,10 @@ function bindJobCards(root) {
 
 // ---------- Utdanning: [id, land, type, navn, skole/organisasjon, sted, beskrivelse, lenke] ----------
 const EDU_KINDS = tmap({ uni: "Universitet og høgskole", ledelse: "Sport management og ledelse", trener: "Trenerkurs", dommer: "Dommerkurs", leder: "Lederkurs", folk: "Folkehøgskole", topp: "Toppidrett for unge" });
-const EDU_BIB = tmap({ uni: "Studie", ledelse: "Ledelse", trener: "Kurs", dommer: "Kurs", leder: "Kurs", folk: "Ett år", topp: "VGS" });
+const EDU_BIB = tmap({ uni: "Studie", ledelse: "Studie", trener: "Kurs", dommer: "Kurs", leder: "Kurs", folk: "Ett år", topp: "VGS" });
+// Studier viser nivået (Bachelor, Master, Årsstudium) i stedet for bare «Studie» (Noah 2026-10-27)
+const eduBib = u => { if (u.kind !== "uni" && u.kind !== "ledelse") return EDU_BIB[u.kind];
+  const x = u.t + " " + (u.sum || ""); return /master/i.test(u.t) ? t("Master") : /bachelor/i.test(u.t) ? t("Bachelor") : /årsstudi|ettårig|1-årig/i.test(x) ? t("Årsstudium") : /bachelor/i.test(x) ? t("Bachelor") : EDU_BIB[u.kind]; };
 const EDU = [
   ["u1","NO","uni","Bachelorstudier i idrett","Norges idrettshøgskole (NIH)","Oslo","Landets eget idrettsuniversitet. Bachelor i blant annet trening, helse og prestasjon, trenerrollen og idrettspsykologi, og sport management.","https://www.nih.no/studier/"],
   ["u2","NO","uni","Idrett, kroppsøving og friluftsliv","Universitetet i Innlandet","Elverum","Årsstudium i idrett, bachelor med spesialisering i trenerrollen (deltid) og lærerutdanning i kroppsøving og idrettsfag.","https://www.inn.no"],
@@ -4537,7 +4546,7 @@ function simpleChips(rowId, map, key, count) {
 }
 const CHEVRON = `<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`;
 const eduCard = u => `<a class="job item" href="${u.url}" target="_blank" rel="noopener">
-    <div class="bib open"><div class="d">${EDU_BIB[u.kind]}</div><div class="u">${esc(COUNTRIES[u.c])}</div></div>
+    <div class="bib open"><div class="d${eduBib(u).length > 8 ? " sm" : ""}">${eduBib(u)}</div><div class="u">${esc(COUNTRIES[u.c])}</div></div>
     <div class="jbody"><div class="jtitle">${esc(u.t)}</div><div class="trans">${esc(t(u.sum))}</div>
       <div class="meta"><span class="emp">${esc(u.org)}</span><span class="where">${flag(u.c)}${esc(t(u.place))}</span></div>
       <div class="tags"><span class="tag">${EDU_KINDS[u.kind]}</span>${eduFacts(u).map(x => `<span class="tag">${esc(x)}</span>`).join("")}</div></div>${CHEVRON}</a>`;
