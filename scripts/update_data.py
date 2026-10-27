@@ -24,17 +24,21 @@ def core(s): return norm(re.sub(AFF, " ", s.lower()))
 ALIAS = {"Hamarkameratene": "HamKam", "Fredrikstad": "Fredrikstad FK", "Kristiansund": "Kristiansund BK", "Molde": "Molde FK", "Tromsø": "Tromsø IL",
   "Start": "IK Start", "KFUM": "KFUM Oslo", "Víkingur Reykjavík": "Víkingur", "KR Reykjavík": "KR", "Fram Reykjavík": "Fram", "ÍA Akranes": "ÍA",
   "FH Hafnarfjörður": "FH", "Odds Ballklubb": "Odd", "Odds Ballklubb 2": "Odd 2", "Eidsvold TF": "Eidsvold Turn", "Ull/Kisa": "Ullensaker/Kisa", "KFUM 2": "KFUM Oslo 2", "HK Kópavogs": "HK", "ÍR Reykjavík": "ÍR", "Throttur Vogar": "Þróttur Vogum", "Thór Akureyri": "Þór Akureyri", "KA Akureyri": "KA", "ÍBV Vestmannaeyjar": "ÍBV"}
-def fetch(url, tries=3):
+def fetch(url, tries=3, timeout=40):
     for a in range(tries):
-        try: return json.loads(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=40).read())
+        try: return json.loads(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=timeout).read())
         except Exception: time.sleep(3 + 5 * a)
     return None
 LEAGUE_IDS = list(DIV_LEAGUE.values()) + [206, 171, 242, 143, 217, 10076, 68, 172, 9634, 60, 9754, 52, 10713, 42, 73, 10216]
+T0 = time.time()
+def lap(what): print(f"[{time.time() - T0:5.0f} s] {what}", flush=True)
 leagues, ldata = {}, {}
-for lid in LEAGUE_IDS:
-    d = fetch(f"https://www.fotmob.com/api/data/leagues?id={lid}")
-    if d and d.get("fixtures"): leagues[lid] = d["fixtures"]["allMatches"]; ldata[lid] = d
-    time.sleep(0.5)
+# Ligaene hentes noen om gangen i stedet for én og én, så timesjobben holder seg kort
+from concurrent.futures import ThreadPoolExecutor
+with ThreadPoolExecutor(6) as pool:
+    for lid, d in zip(LEAGUE_IDS, pool.map(lambda l: fetch(f"https://www.fotmob.com/api/data/leagues?id={l}"), LEAGUE_IDS)):
+        if d and d.get("fixtures"): leagues[lid] = d["fixtures"]["allMatches"]; ldata[lid] = d
+lap(f"FotMob: {len(leagues)} av {len(LEAGUE_IDS)} ligaer")
 if len(leagues) < len(DIV_LEAGUE): sys.exit("FotMob svarte ikke for nok ligaer, avbryter uten endringer")
 names = {}  # FotMob-id -> navn
 for lid, ms in leagues.items():
@@ -84,12 +88,26 @@ for k in fan:
     if len(e) > 2: out[k["id"]] = e
 # Andre lagidretter fra TheSportsDB
 TS = json.load(open(os.path.join(os.path.dirname(__file__), "tsdb_teams.json")))
+# Forrige kjørings kamper, brukes for lag som ikke rekkes eller ikke svarer denne gangen
+m = re.search(r"^const FIXTURES = (.*);$", html, re.M)
+try: prev = json.loads(m.group(1))["teams"] if m else {}
+except Exception: prev = {}
+TS_BUDGET, fails = 12 * 60, 0  # TheSportsDB kan være treg fra GitHub; da stopper vi heller enn å vente i en halvtime
+t_ts = time.time()
 for fan_id, tid in TS.items():
     k = next((x for x in fan if x["id"] == fan_id), None)
     if not k: continue
+    if time.time() - t_ts > TS_BUDGET or fails >= 6:
+        if fan_id in prev and prev[fan_id].get("s") == "TheSportsDB": out[fan_id] = prev[fan_id]
+        continue
     B = "https://www.thesportsdb.com/api/v1/json/123/"
-    nx = (fetch(B + f"eventsnext.php?id={tid}") or {}).get("events"); time.sleep(2.1)
-    ls = (fetch(B + f"eventslast.php?id={tid}") or {}).get("results"); time.sleep(2.1)
+    nx = fetch(B + f"eventsnext.php?id={tid}", 2, 15); time.sleep(2.1)
+    ls = fetch(B + f"eventslast.php?id={tid}", 2, 15); time.sleep(2.1)
+    fails = fails + 1 if nx is None and ls is None else 0
+    if nx is None and ls is None:
+        if fan_id in prev and prev[fan_id].get("s") == "TheSportsDB": out[fan_id] = prev[fan_id]
+        continue
+    nx, ls = (nx or {}).get("events"), (ls or {}).get("results")
     d = {"team": tid, "next": nx, "last": ls}
     tz = ZoneInfo(TZ[k["c"]]); tid = d["team"]; e = {"s": "TheSportsDB"}
     def info(ev):
@@ -114,6 +132,7 @@ for fan_id, tid in TS.items():
     L.sort(key=lambda x: x[0], reverse=True)
     if L: e["l"] = L[:5]
     if len(e) > 1: out[k["id"]] = e
+lap(f"TheSportsDB ferdig ({fails} feil på rad til slutt)")
 # Ishockey og andre idretter fra forbundenes og ligaenes egne kampoppsett (går foran TheSportsDB)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fixtures_other
@@ -123,6 +142,7 @@ try:
         if "l" not in v and "l" in out.get(fid, {}): v["l"] = out[fid]["l"]
         out[fid] = v
 except Exception as ex: print("fixtures_other feilet:", ex)
+lap("Forbund og ligaer ferdig")
 # Fotballtabeller fra de samme FotMob-filene; lagnavn byttes til navnene siden bruker
 def tables(html):
     i = html.index("const TABLES = "); j = html.index(";\n", i)
