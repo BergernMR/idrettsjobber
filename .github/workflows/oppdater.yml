@@ -28,6 +28,10 @@ jobs:
           NODE_PATH=/tmp/pw/node_modules node scripts/hockey_no.js
       - name: Hent nye kamper og tabeller
         run: python3 scripts/update_data.py index.html
+      - name: Hent tabeller i ishockey, håndball og volleyball (ligaenes egne sider)
+        continue-on-error: true
+        timeout-minutes: 5
+        run: python3 scripts/tables_other.py index.html
       - name: Hent verdenscup og VM i vintersport (FIS og IBU)
         continue-on-error: true
         timeout-minutes: 8
