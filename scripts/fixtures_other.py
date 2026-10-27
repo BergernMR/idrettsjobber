@@ -9,6 +9,7 @@
 #  - Finsk innebandy (F-liiga menn og kvinner): fliiga.com, ligaens egen side
 #  - Dansk innebandy (Unihoc Floorball Liga): resultater.floorball.dk, forbundets resultatservice (TMS)
 #  - Dansk volleyball (Volleyligaen herrer og kvinder): volleyligaen.dk, ligaens egen kampside. Resultatet er antall vunne sett
+# Tabellene for de samme ligaene hentes av scripts/tables_other.py
 import datetime, html as H, json, re, time, unicodedata, urllib.request
 from zoneinfo import ZoneInfo
 
