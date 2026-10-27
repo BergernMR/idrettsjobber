@@ -1358,11 +1358,8 @@ body.home .herocredit { bottom: 6px; right: calc(50% - 50vw + 14px); z-index: 4;
 /* Uten toppbilder (Noah 2026-10-27): mørk nordlysflate bak overskriften i stedet for foto */
 body.home .heroslides, body.home .herocredit { display: none; }
 body.home header { min-height: 0; padding-top: 40px; }
-body.home header::before { background:
-  radial-gradient(60% 90% at 85% 10%, rgba(63,211,158,.32), transparent 70%),
-  radial-gradient(50% 80% at 60% 0%, rgba(110,160,255,.28), transparent 70%),
-  radial-gradient(40% 70% at 100% 80%, rgba(155,110,255,.18), transparent 70%),
-  linear-gradient(160deg, #0d1f1a 0%, #12302a 55%, #0f2233 100%); }
+/* Nordlys i de fire delfargene (jobber, utdanning, idrettslag, arrangementer) bak toppen (Noah 2026-10-27) */
+body.home header::before { background: linear-gradient(90deg, rgba(5,11,20,.7) 0%, rgba(5,11,20,.25) 50%, rgba(5,11,20,0) 75%), url("img/nordlys.svg") center 70% / cover no-repeat, #050b14; }
 /* Live-kampene ligger under snarveiene, så de ikke dekker bildet, kreditten eller menyen */
 body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 12px; gap: 6px; box-shadow: 0 6px 24px -14px rgba(20,33,29,.25); }
 @media (max-width: 560px) { body.home .livestrip:not([hidden]) { padding: 10px; } .livestrip .live { padding: 7px 10px; font-size: 13px; } .livestrip .live .ls b { font-size: 14px; } .livestrip .lbl { font-size: 11px; } }
