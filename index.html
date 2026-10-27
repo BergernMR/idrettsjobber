@@ -1161,6 +1161,8 @@ body.gfloat .gres { left: 0; right: auto; width: 100%; }
 /* Søkefeltet legger seg under menyen når menyen vises */
 .controls { transition: top .25s ease; }
 body.dockon .controls { top: calc(env(safe-area-inset-top, 0px) + 66px); }
+/* Søk og filter følger ikke med når man scroller (Noah 2026-10-27) */
+.controls, body.dockon .controls { position: relative; top: auto; }
 @media (max-width: 640px) { body.dockon .controls { top: calc(env(safe-area-inset-top, 0px) + 70px); } }
 @media (prefers-reduced-motion: reduce) { .dock { transition: none; } }
 .tabbtn[aria-current="page"], .dock button[aria-current="page"] { cursor: grab; touch-action: pan-y; }
@@ -4663,7 +4665,7 @@ function renderEvents() {
   // Vintersport (verdenscup og VM) er ett valg blant de andre typene, ikke en egen boks over listen
   const wUp = ((typeof WINTER === "object" && WINTER.r) || []).filter(r => !r[7] && new Date(r[1]) > Date.now() - 3 * 36e5).length;
   simpleChips("sportRow", { ...EV_TYPES, vinter: t("Vintersport") }, "sport", k => k === "vinter" ? wUp : EVENTS.filter(e => evMatch(e, "sport") && (k === "all" || (EV_INFO[e.id] || {}).type === k)).length);
-  $("evSec").hidden = state.sport === "vinter";
+  $("evSec").hidden = state.sport === "vinter"; $("evRow").style.display = state.sport === "vinter" ? "none" : "";
   const rows = EVENTS.filter(e => evMatch(e)).sort((a, b) => evOrder(a) - evOrder(b));
   drawMap({ id: "mapEv", key: "vplace", items: EVENTS.filter(e => evMatch(e, "place")), geo: evGeo, one: "arrangement", many: "arrangementer", list: "evCount" });
   renderEvMine(); renderWinter();
