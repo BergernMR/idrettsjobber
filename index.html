@@ -1586,8 +1586,7 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
       <div class="row" id="evRow"><span class="row-label">Vis</span></div>
       <div class="row" id="sportRow"><span class="row-label">Type</span></div>
     </section>
-    <section class="winter" id="winterBox" aria-labelledby="wH" hidden>
-      <div class="count"><span id="wH">Vintersport</span><small id="wSub">Verdenscup og VM</small></div>
+    <section class="winter" id="winterBox" aria-label="Vintersport" hidden>
       <div class="row" id="wRow"><span class="row-label">Idrett</span></div>
       <div id="wRes"></div>
       <div id="wNext"></div>
@@ -4643,7 +4642,6 @@ function renderWinter() {
   const box = $("winterBox"); if (!box) return;
   const all = (typeof WINTER === "object" && WINTER.r) || [];
   box.hidden = !all.length || state.sport !== "vinter"; if (box.hidden) return;
-  $("wH").textContent = t("Vintersport"); $("wSub").textContent = t("Verdenscup og VM");
   simpleChips("wRow", tmap({ ...W_SPORTS }), "wsport", k => all.filter(r => k === "all" || r[0] === k).length);
   const rs = all.filter(r => state.wsport === "all" || r[0] === state.wsport), now = Date.now();
   const done = rs.filter(r => r[7]).slice(-4).reverse();
