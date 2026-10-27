@@ -669,6 +669,7 @@ table.league td.tform { padding-left: 10px; }
 .chat .bub .mref small { display: block; color: var(--muted); font-size: 12px; }
 .chat .bub .mref em { display: block; font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #0f6b4f; }
 .chat .bub .mref[data-k="ev"] em { color: #5b4bc4; }
+.chat .bub .mref[data-k="club"] em { color: #2f5fb3; }
 .chat .cday { align-self: center; font-size: 12px; color: var(--muted); margin: 6px 0 2px; }
 .chatform { display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid var(--line); padding-top: 10px; }
 .chatform textarea { flex: 1; resize: none; min-height: 42px; max-height: 140px; padding: 10px 14px; border-radius: 21px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-size: 15px; }
@@ -2211,6 +2212,7 @@ const I18N = {
 "Du har allerede sendt {x} en forespørsel. Vent til den blir godtatt.": ["Du har redan skickat {x} en förfrågan. Vänta tills den godkänns.","Du har allerede sendt {x} en anmodning. Vent til den bliver godkendt.","Olet jo lähettänyt pyynnön käyttäjälle {x}. Odota hyväksyntää.","Þú hefur þegar sent {x} beiðni. Bíddu eftir samþykki.","You already sent {x} a request. Wait for it to be accepted."],
 "Åpne en profil og trykk «Send melding». Følger dere ikke hverandre, blir den første meldingen en forespørsel.": ["Öppna en profil och tryck «Skicka meddelande». Följer ni inte varandra blir det första meddelandet en förfrågan.","Åbn en profil og tryk «Send besked». Følger I ikke hinanden, bliver den første besked en anmodning.","Avaa profiili ja paina «Lähetä viesti». Jos ette seuraa toisianne, ensimmäinen viesti on pyyntö.","Opnaðu prófíl og ýttu á «Senda skilaboð». Ef þið fylgið ekki hvort öðru verða fyrstu skilaboðin beiðni.","Open a profile and tap «Send message». If you don't follow each other, the first message is a request."],
 "Jobb": ["Jobb","Job","Työ","Starf","Job"],
+"Idrettslag": ["Klubb","Klub","Seura","Félag","Club"],
 "Arrangement": ["Evenemang","Arrangement","Tapahtuma","Viðburður","Event"],
 "Logg inn for å sende meldinger.": ["Logga in för att skicka meddelanden.","Log ind for at sende beskeder.","Kirjaudu sisään lähettääksesi viestejä.","Skráðu þig inn til að senda skilaboð.","Log in to send messages."],
 "Mer": ["Mer","Mere","Lisää","Meira","More"],
@@ -6656,8 +6658,9 @@ function openClub(id) {
           <a class="cta" href="${web}" target="_blank" rel="noopener">${k.url ? t("Klubbens nettside") : t("Søk opp klubbens nettside")} ${ARROW}</a>
           ${followBtn(k).replace('class="follow"', 'class="follow big" id="sheetFollow"')}
           ${standing(k) ? `<button type="button" class="share" id="sheetTable">${t("Se tabellen")}</button>` : ""}
+          <button type="button" class="share" id="shareBtn">${SHARE_ICON}${t("Del")}</button>
         </div>
-        <span class="src">${k.url ? esc(new URL(k.url).hostname.replace(/^www\./, "")) : t("Vi har ikke sjekket nettsiden ennå")}</span>
+        <span class="src" id="shareMsg">${k.url ? esc(new URL(k.url).hostname.replace(/^www\./, "")) : t("Vi har ikke sjekket nettsiden ennå")}</span>
       </div>
     </div>`;
   const dlg = $("sheet");
@@ -6665,6 +6668,7 @@ function openClub(id) {
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
   $("sheetFollow").onclick = () => { if (toggleFollow(id) === false) return; render(); openClub(id); };
+  $("shareBtn").onclick = () => shareThing(k.n, `${SHARE_URL}#klubb-${k.id}`, { k: "club", id: k.id });
   if ($("logoZoom")) $("logoZoom").onclick = () => lightbox({ img: `img/logo/big/${k.id}.webp`, fallback: `img/logo/${k.id}.webp`, name: esc(k.n), sub: `${flag(k.c)} ${esc(t(k.sport))}${k.city ? " · " + esc(k.city) : ""}` });
   if (location.hash !== "#klubb-" + id) history.replaceState(history.state, "", "#klubb-" + id);
   if ($("sheetTable")) $("sheetTable").onclick = () => openTable(k.div);
@@ -7929,6 +7933,7 @@ const showSheet = () => { const dlg = $("sheet"); if (!dlg.open) { lastFocus = d
 const refInfo = ref => { if (!ref) return null;
   if (ref.k === "job") { const j = JOBS.find(x => x.id === ref.id); return j && { k: "job", id: j.id, kind: t("Jobb"), title: j.t, sub: `${j.emp} · ${j.place}` }; }
   if (ref.k === "ev") { const e = EVENTS.find(x => x.id === ref.id); return e && { k: "ev", id: e.id, kind: t("Arrangement"), title: t(e.t), sub: `${evWhen(e)} · ${e.place}` }; }
+  if (ref.k === "club") { const k = FAN.find(x => x.id === ref.id); return k && { k: "club", id: k.id, kind: t("Idrettslag"), title: k.n, sub: `${t(k.sport)}${k.city ? " · " + k.city : ""}` }; }
   return null; };
 async function openInbox() {
   clearInterval(chatTimer); curSheet = openInbox;
@@ -7978,7 +7983,7 @@ async function openChat(u) {
       const head = d !== day ? `<div class="cday">${esc(fxDate(d))}</div>` : ""; day = d;
       return head + `<div class="bub${m.mine ? " me" : ""}">${ri ? `<button type="button" class="mref" data-k="${ri.k}" data-id="${ri.id}"><em>${esc(ri.kind)}</em><b>${esc(ri.title)}</b><small>${esc(ri.sub)}</small></button>` : ""}${m.body ? esc(m.body) : ""}<time>${new Date(m.at).toLocaleTimeString(LOCALE[LANG], { hour: "2-digit", minute: "2-digit" })}</time></div>`; }).join("")
       : `<div class="empty">${t("Ingen meldinger ennå.")}</div>`;
-    chat.querySelectorAll(".mref").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
+    chat.querySelectorAll(".mref").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : b.dataset.k === "club" ? openClub(b.dataset.id) : openEvent(b.dataset.id));
     chat.scrollTop = chat.scrollHeight;
   };
   const load = async () => { if (!chat.isConnected) return clearInterval(chatTimer); const r = await sb.rpc("conversation", { with_user: u.id }); if (Array.isArray(r.data) && chat.isConnected) draw(r.data); loadUnread(); };
