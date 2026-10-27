@@ -659,7 +659,36 @@ table.league td.tform { padding-left: 10px; }
 .savedbtn svg { fill: none; stroke: currentColor; stroke-width: 1.9; }
 .savedbtn .n { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--lane); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
 .savedbtn .n[hidden] { display: none; }
-#bellBtn .n { background: var(--urgent); }
+#bellBtn .n, #msgBtn .n { background: var(--urgent); }
+/* Meldinger (Noah 2026-10-27): bare mellom folk som følger hverandre */
+.chat { display: flex; flex-direction: column; gap: 6px; min-height: 200px; max-height: 55vh; overflow-y: auto; padding: 4px 2px 10px; }
+.chat .bub { max-width: 78%; padding: 8px 12px; border-radius: 18px; background: var(--chip, rgba(127,127,127,.12)); color: var(--fg); align-self: flex-start; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.35; }
+.chat .bub.me { align-self: flex-end; background: #0f6b4f; color: #fff; }
+.chat .bub time { display: block; font-size: 11px; opacity: .65; margin-top: 3px; }
+.chat .bub .mref { display: block; width: 100%; text-align: left; margin: 2px 0 4px; padding: 8px 10px; border-radius: 12px; border: 0; background: var(--surface, #fff); color: var(--fg); font: inherit; cursor: pointer; box-shadow: inset 0 0 0 1px var(--line); }
+.chat .bub .mref small { display: block; color: var(--muted); font-size: 12px; }
+.chat .bub .mref em { display: block; font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #0f6b4f; }
+.chat .bub .mref[data-k="ev"] em { color: #5b4bc4; }
+.chat .cday { align-self: center; font-size: 12px; color: var(--muted); margin: 6px 0 2px; }
+.chatform { display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid var(--line); padding-top: 10px; }
+.chatform textarea { flex: 1; resize: none; min-height: 42px; max-height: 140px; padding: 10px 14px; border-radius: 21px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-size: 15px; }
+.chatform button { height: 42px; padding: 0 18px; border-radius: 21px; border: 0; background: #0f6b4f; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.chatform button:disabled { opacity: .5; }
+.cvitem .cvn { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; background: var(--urgent); color: #fff; font-size: 12px; font-weight: 700; line-height: 20px; text-align: center; }
+.cvitem.unread b { font-weight: 800; }
+.mfpick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; width: 100%; }
+.mfpick button { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 4px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-size: 13px; cursor: pointer; }
+.mfpick button:hover { border-color: #0f6b4f; }
+.mfpick .gava, .u-msg .gava { width: 26px; height: 26px; border-radius: 50%; overflow: hidden; display: inline-grid; place-items: center; font-size: 12px; font-weight: 700; background: rgba(127,127,127,.2); flex: none; }
+.u-msg .gava { width: 36px; height: 36px; font-size: 16px; }
+.mfpick .gava img, .u-msg .gava img { width: 100%; height: 100%; object-fit: cover; }
+.pfbtn.msg { margin-left: 4px; display: inline-flex; align-items: center; gap: 6px; }
+.pfbtn.msg svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.creq { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; margin-bottom: 8px; border-radius: 14px; background: rgba(91,75,196,.1); font-size: 14px; }
+.creq b { flex-basis: 100%; }
+.creq button { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-weight: 700; cursor: pointer; }
+.creq button.ok { background: #0f6b4f; color: #fff; border-color: transparent; }
+.inboxh { margin: 14px 2px 6px; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
 /* Varslene har fargen til kategorien sin: jobber grønt, arrangementer lilla (Noah 2026-10-27) */
 .nitem { --nc: #0f6b4f; } .nitem[data-k="ev"] { --nc: #5b4bc4; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nitem { --nc: #3fc99a; } :root:not([data-theme="light"]) .nitem[data-k="ev"] { --nc: #a99bff; } }
@@ -1558,7 +1587,7 @@ a.fyev.fyedu { text-decoration: none; color: inherit; }
 <div class="wrap">
   <header>
     <div class="topline"><div class="eyebrow">Norge · Sverige · Danmark · Finland · Island</div>
-      <div class="langpick seg" data-seg="sprak" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn minebtn" id="mineBtn" aria-label="Min side" title="Min side"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span class="aini" id="mineIni" hidden></span><span class="n" id="mineN" hidden></span></button><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn savedbtn" id="bellBtn" aria-label="Varsler" title="Varsler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="n" id="bellN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
+      <div class="langpick seg" data-seg="sprak" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn minebtn" id="mineBtn" aria-label="Min side" title="Min side"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span class="aini" id="mineIni" hidden></span><span class="n" id="mineN" hidden></span></button><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn savedbtn" id="msgBtn" aria-label="Meldinger" title="Meldinger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10.5H9.5L5 19.5V16H4z"/></svg><span class="n" id="msgN" hidden></span></button><button type="button" class="setbtn savedbtn" id="bellBtn" aria-label="Varsler" title="Varsler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="n" id="bellN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
     <h1><b class="brand" id="brandHome" role="link" tabindex="0" aria-label="Aurora – forsiden"><svg class="mark" viewBox="0 0 40 32" aria-hidden="true"><defs><linearGradient id="ah0" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0f6b4f"/><stop offset=".55" stop-color="#2bd39a"/><stop offset="1" stop-color="#2bd39a" stop-opacity=".15"/></linearGradient><linearGradient id="ah1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0b7a76"/><stop offset=".55" stop-color="#22c9c0"/><stop offset="1" stop-color="#22c9c0" stop-opacity=".15"/></linearGradient><linearGradient id="ah2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2f5fb3"/><stop offset=".55" stop-color="#5b8ef0"/><stop offset="1" stop-color="#5b8ef0" stop-opacity=".15"/></linearGradient><linearGradient id="ah3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#5b4bc4"/><stop offset=".55" stop-color="#8f7dff"/><stop offset="1" stop-color="#8f7dff" stop-opacity=".15"/></linearGradient></defs><rect x="1.3" y="8" width="7.4" height="22" rx="3.7" fill="url(#ah0)"/><rect x="11.3" y="2" width="7.4" height="24" rx="3.7" fill="url(#ah1)"/><rect x="21.3" y="6" width="7.4" height="23" rx="3.7" fill="url(#ah2)"/><rect x="31.3" y="10" width="7.4" height="15" rx="3.7" fill="url(#ah3)"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
     <div class="heroslides" id="heroslides" aria-hidden="true"><i></i><i></i></div><a class="herocredit" id="herocredit" target="_blank" rel="noopener"></a>
@@ -2162,6 +2191,30 @@ const I18N = {
 "Se ledige jobber": ["Se lediga jobb","Se ledige job","Katso avoimet työpaikat","Sjá laus störf","See open jobs"],
 "Idretter": ["Idrotter","Idrætter","Urheilulajit","Íþróttir","Sports"],
 "Nyheter": ["Nyheter","Nyheder","Uutiset","Fréttir","News"],
+"Meldinger": ["Meddelanden","Beskeder","Viestit","Skilaboð","Messages"],
+"Send melding": ["Skicka meddelande","Send besked","Lähetä viesti","Senda skilaboð","Send message"],
+"Send til venn": ["Skicka till vän","Send til ven","Lähetä kaverille","Senda á vin","Send to a friend"],
+"Send": ["Skicka","Send","Lähetä","Senda","Send"],
+"Skriv en melding …": ["Skriv ett meddelande …","Skriv en besked …","Kirjoita viesti …","Skrifaðu skilaboð …","Write a message …"],
+"Sendt til {x}": ["Skickat till {x}","Sendt til {x}","Lähetetty: {x}","Sent til {x}","Sent to {x}"],
+"Ingen meldinger ennå.": ["Inga meddelanden ännu.","Ingen beskeder endnu.","Ei viestejä vielä.","Engin skilaboð enn.","No messages yet."],
+"Du kan sende meldinger til folk som følger deg tilbake. Åpne en profil og trykk «Send melding».": ["Du kan skicka meddelanden till personer som följer dig tillbaka. Öppna en profil och tryck «Skicka meddelande».","Du kan sende beskeder til folk, der følger dig tilbage. Åbn en profil og tryk «Send besked».","Voit lähettää viestejä ihmisille, jotka seuraavat sinua takaisin. Avaa profiili ja paina «Lähetä viesti».","Þú getur sent skilaboð til fólks sem fylgir þér til baka. Opnaðu prófíl og ýttu á «Senda skilaboð».","You can message people who follow you back. Open a profile and tap «Send message»."],
+"Ingen venner å sende til ennå. Dere må følge hverandre.": ["Du följer ingen ännu. Följ någon för att skicka till dem.","Du følger ingen endnu. Følg nogen for at sende til dem.","Et seuraa vielä ketään. Seuraa jotakuta lähettääksesi heille.","Þú fylgir engum enn. Fylgdu einhverjum til að senda þeim.","You don't follow anyone yet. Follow someone to send to them."],
+"Forespørsler": ["Förfrågningar","Anmodninger","Pyynnöt","Beiðnir","Requests"],
+"Godta": ["Godkänn","Godkend","Hyväksy","Samþykkja","Accept"],
+"Avslå": ["Avböj","Afvis","Hylkää","Hafna","Decline"],
+"Blir en forespørsel": ["Blir en förfrågan","Bliver en anmodning","Lähtee pyyntönä","Verður beiðni","Sent as a request"],
+"{x} vil sende deg meldinger": ["{x} vill skicka meddelanden till dig","{x} vil sende dig beskeder","{x} haluaa lähettää sinulle viestejä","{x} vill senda þér skilaboð","{x} wants to message you"],
+"Svar for å godta. Da kan dere skrive fritt.": ["Svara för att godkänna. Sedan kan ni skriva fritt.","Svar for at godkende. Så kan I skrive frit.","Vastaa hyväksyäksesi. Sitten voitte kirjoittaa vapaasti.","Svaraðu til að samþykkja. Þá getið þið skrifast á.","Reply to accept. Then you can chat freely."],
+"Forespørselen er sendt. Du kan skrive mer når {x} har svart.": ["Förfrågan är skickad. Du kan skriva mer när {x} har svarat.","Anmodningen er sendt. Du kan skrive mere, når {x} har svaret.","Pyyntö on lähetetty. Voit kirjoittaa lisää, kun {x} on vastannut.","Beiðnin er send. Þú getur skrifað meira þegar {x} hefur svarað.","Request sent. You can write more once {x} replies."],
+"Dere følger ikke hverandre, så den første meldingen blir en forespørsel. {x} kan godta eller avslå den.": ["Ni följer inte varandra, så det första meddelandet blir en förfrågan. {x} kan godkänna eller avböja den.","I følger ikke hinanden, så den første besked bliver en anmodning. {x} kan godkende eller afvise den.","Ette seuraa toisianne, joten ensimmäinen viesti on pyyntö. {x} voi hyväksyä tai hylätä sen.","Þið fylgið ekki hvort öðru, svo fyrstu skilaboðin verða beiðni. {x} getur samþykkt eða hafnað henni.","You don't follow each other, so your first message is a request. {x} can accept or decline it."],
+"Du har allerede sendt {x} en forespørsel. Vent til den blir godtatt.": ["Du har redan skickat {x} en förfrågan. Vänta tills den godkänns.","Du har allerede sendt {x} en anmodning. Vent til den bliver godkendt.","Olet jo lähettänyt pyynnön käyttäjälle {x}. Odota hyväksyntää.","Þú hefur þegar sent {x} beiðni. Bíddu eftir samþykki.","You already sent {x} a request. Wait for it to be accepted."],
+"Åpne en profil og trykk «Send melding». Følger dere ikke hverandre, blir den første meldingen en forespørsel.": ["Öppna en profil och tryck «Skicka meddelande». Följer ni inte varandra blir det första meddelandet en förfrågan.","Åbn en profil og tryk «Send besked». Følger I ikke hinanden, bliver den første besked en anmodning.","Avaa profiili ja paina «Lähetä viesti». Jos ette seuraa toisianne, ensimmäinen viesti on pyyntö.","Opnaðu prófíl og ýttu á «Senda skilaboð». Ef þið fylgið ekki hvort öðru verða fyrstu skilaboðin beiðni.","Open a profile and tap «Send message». If you don't follow each other, the first message is a request."],
+"Jobb": ["Jobb","Job","Työ","Starf","Job"],
+"Arrangement": ["Evenemang","Arrangement","Tapahtuma","Viðburður","Event"],
+"Logg inn for å sende meldinger.": ["Logga in för att skicka meddelanden.","Log ind for at sende beskeder.","Kirjaudu sisään lähettääksesi viestejä.","Skráðu þig inn til að senda skilaboð.","Log in to send messages."],
+"Mer": ["Mer","Mere","Lisää","Meira","More"],
+"Du": ["Du","Du","Sinä","Þú","You"],
 "Varsler": ["Aviseringar","Notifikationer","Ilmoitukset","Tilkynningar","Notifications"],
 "Passer det du liker": ["Passar det du gillar","Passer til det, du kan lide","Sopii kiinnostuksiisi","Passar við það sem þér líkar","Matches what you like"],
 "Ny jobb i {x}": ["Nytt jobb i {x}","Nyt job i {x}","Uusi työpaikka: {x}","Nýtt starf í {x}","New job in {x}"],
@@ -3895,8 +3948,10 @@ async function openProfile(p) {
   });
   const draw = f => {
     const self = p.id === authUser.id;
-    box.innerHTML = countsHtml(f, p.id) + (self ? "" : `<button type="button" class="pfbtn${f.me ? " on" : ""}" id="pfBtn" aria-pressed="${f.me}">${t(f.me ? "Følger ✓" : f.back ? "Følg tilbake" : "Følg")}</button>`) + (!self && f.back ? `<small class="pback">${t("Følger deg")}</small>` : "");
+    box.innerHTML = countsHtml(f, p.id) + (self ? "" : `<button type="button" class="pfbtn${f.me ? " on" : ""}" id="pfBtn" aria-pressed="${f.me}">${t(f.me ? "Følger ✓" : f.back ? "Følg tilbake" : "Følg")}</button>`) + (!self && f.back ? `<small class="pback">${t("Følger deg")}</small>` : "")
+      + (!self ? `<button type="button" class="pfbtn msg" id="pfMsg">${MSG_ICON}${t("Send melding")}</button>` : "");
     bindCounts(box, p.username);
+    const mb = $("pfMsg"); if (mb) mb.onclick = () => openChat(p);
     const b = $("pfBtn"); if (!b) return;
     b.onclick = async () => {
       b.disabled = true;
@@ -7493,7 +7548,7 @@ function openJob(id) {
   lastFocus = document.activeElement;
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
-  $("shareBtn").onclick = () => shareThing(j.t, `${SHARE_URL}#${j.id}`);
+  $("shareBtn").onclick = () => shareThing(j.t, `${SHARE_URL}#${j.id}`, { k: "job", id: j.id });
   $("cmpBtn").onclick = () => {
     const open = $("cmpBtn").getAttribute("aria-expanded") === "true";
     $("cmpBtn").setAttribute("aria-expanded", String(!open));
@@ -7508,20 +7563,39 @@ function openJob(id) {
 }
 // Del: bruker mobilens egen delemeny når den finnes, ellers knapper for lenke, e-post, WhatsApp og SMS
 const CMP_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h7v12H4zM13 6h7v12h-7z"/></svg>`;
+const MSG_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10.5H9.5L5 19.5V16H4z"/></svg>`;
 const SHARE_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 12v7h14v-7"/></svg>`;
-function shareThing(title, link) {
+function shareThing(title, link, ref) {
   const msg = $("shareMsg"), text = title + " – Aurora";
+  const native = navigator.share && matchMedia("(pointer: coarse)").matches;
   const opts = () => {
     const enc = encodeURIComponent;
-    msg.innerHTML = `<span class="shareopts"><b>${t("Del med")}</b><button type="button" data-k="copy">${LINK}${t("Kopier lenke")}</button><a href="mailto:?subject=${enc(text)}&body=${enc(link)}">${t("E-post")}</a><a href="https://wa.me/?text=${enc(text + " " + link)}" target="_blank" rel="noopener">WhatsApp</a><a href="sms:?&body=${enc(text + " " + link)}">SMS</a></span>`;
+    msg.innerHTML = `<span class="shareopts"><b>${t("Del med")}</b>${ref && SUPA.key ? `<button type="button" data-k="friend">${MSG_ICON}${t("Send til venn")}</button>` : ""}${native ? `<button type="button" data-k="native">${SHARE_ICON}${t("Mer")}</button>` : ""}<button type="button" data-k="copy">${LINK}${t("Kopier lenke")}</button><a href="mailto:?subject=${enc(text)}&body=${enc(link)}">${t("E-post")}</a><a href="https://wa.me/?text=${enc(text + " " + link)}" target="_blank" rel="noopener">WhatsApp</a><a href="sms:?&body=${enc(text + " " + link)}">SMS</a></span>`;
     msg.querySelector('[data-k="copy"]').onclick = () => {
       const done = () => { msg.innerHTML = `<span class="copied">${t("Lenken er kopiert")}</span>`; };
       const fallback = () => { msg.textContent = link; const r = document.createRange(); r.selectNodeContents(msg); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
       try { navigator.clipboard.writeText(link).then(done, fallback); } catch (e) { fallback(); }
     };
+    const nb = msg.querySelector('[data-k="native"]'); if (nb) nb.onclick = () => navigator.share({ title: text, url: link }).catch(() => {});
+    const fb = msg.querySelector('[data-k="friend"]'); if (fb) fb.onclick = () => pickFriend(msg, ref);
   };
-  if (navigator.share && matchMedia("(pointer: coarse)").matches) navigator.share({ title: text, url: link }).catch(err => { if (err && err.name !== "AbortError") opts(); });
+  // Innlogget: vis alltid valgene, så «Send til venn» er med også på mobil
+  if (native && !(ref && authUser)) navigator.share({ title: text, url: link }).catch(err => { if (err && err.name !== "AbortError") opts(); });
   else opts();
+}
+// Velg en venn (dere følger hverandre) og send jobben eller arrangementet som melding
+async function pickFriend(msg, ref) {
+  if (needLogin(t("Logg inn for å sende meldinger."))) return;
+  const old = msg.querySelector(".mfpick"); if (old) { old.remove(); return; }
+  const box = document.createElement("span"); box.className = "mfpick"; box.textContent = t("Vent litt …"); msg.appendChild(box);
+  const r = await sb.rpc("mutual_friends"), fr = Array.isArray(r.data) ? r.data : [];
+  if (!fr.length) { box.textContent = t("Ingen venner å sende til ennå. Dere må følge hverandre."); return; }
+  box.innerHTML = fr.map((f, i) => `<button type="button" data-i="${i}" title="${f.mutual ? "" : t("Blir en forespørsel")}">${avaHtml(f)}${esc(f.username)}${f.mutual ? "" : " ✉︎"}</button>`).join("");
+  box.querySelectorAll("button").forEach(b => b.onclick = async () => {
+    const f = fr[+b.dataset.i]; b.disabled = true;
+    const s = await sb.rpc("send_message", { to_user: f.id, body: "", ref });
+    msg.innerHTML = s.error ? `<span>${t(/pending|declined/.test(s.error.message || "") ? "Du har allerede sendt {x} en forespørsel. Vent til den blir godtatt." : "Fikk ikke kontakt. Prøv igjen senere.", { x: esc(f.username) })}</span>` : `<span class="copied">${t("Sendt til {x}", { x: esc(f.username) })}</span>`;
+  });
 }
 // Egen side for et arrangement, i samme ark som jobbene
 function openEvent(id) {
@@ -7566,7 +7640,7 @@ function openEvent(id) {
   lastFocus = document.activeElement;
   if (!dlg.open) dlg.showModal();
   $("closeBtn").onclick = closeJob;
-  $("shareBtn").onclick = () => shareThing(t(e.t), `${SHARE_URL}#${e.id}`);
+  $("shareBtn").onclick = () => shareThing(t(e.t), `${SHARE_URL}#${e.id}`, { k: "ev", id: e.id });
   bindSheetSave("ev", e.id);
   if ($("rsvp")) rsvpBox(e.id);
   $("closeBtn").focus();
@@ -7776,9 +7850,9 @@ let nSeen = new Set(), friendRsvps = [], myRsvp = new Map();
 try { nSeen = new Set(JSON.parse(localStorage.getItem("aurora-varsler-sett") || "[]")); } catch (e) {}
 const saveNSeen = local => { try { localStorage.setItem("aurora-varsler-sett", JSON.stringify([...nSeen].slice(-300))); } catch (e) {} if (!local) cloudSave(); };
 async function loadFriendRsvps() {
-  if (!sb || !authUser) { friendRsvps = []; return updBell(); }
+  if (!sb || !authUser) { friendRsvps = []; loadUnread(); return updBell(); }
   const [r, m] = await Promise.all([sb.rpc("friend_rsvps"), sb.from("event_rsvp").select("event_id,status").eq("user_id", authUser.id)]);
-  friendRsvps = Array.isArray(r.data) ? r.data : []; myRsvp = new Map((m.data || []).map(x => [x.event_id, x.status])); updBell();
+  friendRsvps = Array.isArray(r.data) ? r.data : []; myRsvp = new Map((m.data || []).map(x => [x.event_id, x.status])); updBell(); loadUnread();
 }
 // Lite merke på arrangementskort: «Skal» / «Interessert» for deg, og hvor mange du følger som skal (Noah 2026-10-27)
 function markRsvp() {
@@ -7837,6 +7911,92 @@ function openBell() {
   if (fresh.size) { fresh.forEach(k => nSeen.add(k)); saveNSeen(); updBell(); }
 }
 $("bellBtn").onclick = openBell;
+// ---------- Meldinger (Noah 2026-10-27): bare mellom folk som følger hverandre; alt går via sikre funksjoner i databasen ----------
+let unreadMsg = 0, chatTimer = 0;
+async function loadUnread() {
+  if (!sb || !authUser) unreadMsg = 0;
+  else { const r = await sb.rpc("unread_messages"); if (typeof r.data === "number") unreadMsg = r.data; }
+  const n = $("msgN"); if (!n) return; n.hidden = !unreadMsg; n.textContent = unreadMsg > 9 ? "9+" : unreadMsg;
+  $("msgBtn").setAttribute("aria-label", t("Meldinger") + (unreadMsg ? ` (${unreadMsg})` : "")); $("msgBtn").title = t("Meldinger");
+}
+const sheetTop = (title, eyebrow) => `<div class="sheet-top">
+      <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="s-eyebrow">${eyebrow}</div>
+      <h2 class="s-title" id="s-title">${title}</h2>
+      <button type="button" class="close" id="closeBtn" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>`;
+const showSheet = () => { const dlg = $("sheet"); if (!dlg.open) { lastFocus = document.activeElement; dlg.showModal(); } $("closeBtn").onclick = closeJob; };
+const refInfo = ref => { if (!ref) return null;
+  if (ref.k === "job") { const j = JOBS.find(x => x.id === ref.id); return j && { k: "job", id: j.id, kind: t("Jobb"), title: j.t, sub: `${j.emp} · ${j.place}` }; }
+  if (ref.k === "ev") { const e = EVENTS.find(x => x.id === ref.id); return e && { k: "ev", id: e.id, kind: t("Arrangement"), title: t(e.t), sub: `${evWhen(e)} · ${e.place}` }; }
+  return null; };
+async function openInbox() {
+  clearInterval(chatTimer); curSheet = openInbox;
+  $("sheetBody").innerHTML = sheetTop(t("Meldinger"), "Aurora") + `<div class="sheet-body" id="inbox"><p class="mload">${t("Vent litt …")}</p></div>`;
+  showSheet(); $("closeBtn").focus();
+  const box = $("inbox");
+  if (!authUser || !sb) { box.innerHTML = `<div class="empty">${t("Logg inn for å sende meldinger.")}</div><div class="actions"><div class="btns"><button type="button" class="share" id="nLogin">${t("Logg inn")}</button></div></div>`;
+    $("nLogin").onclick = () => { closeJob(); askLogin(""); }; return; }
+  const r = await sb.rpc("my_conversations"), list = Array.isArray(r.data) ? r.data : [];
+  if (!box.isConnected) return;
+  const row = (c, i) => { const ri = refInfo(c.ref), last = (c.mine ? t("Du") + ": " : "") + (c.body || (ri ? ri.title : ""));
+    return `<button type="button" class="mcitem cvitem${c.unread ? " unread" : ""}" data-i="${i}"><span class="mcico nava">${avaHtml(c)}</span><span><b>${esc(c.username)}</b><small>${esc(last.slice(0, 80))}</small></span>${c.unread ? `<span class="cvn">${c.unread}</span>` : `<span class="mcw">${esc(fxDate(c.at.slice(0, 10)))}</span>`}</button>`; };
+  // Forespørsler (fra folk du ikke følger tilbake, som du ikke har svart) står for seg selv øverst
+  const reqs = list.map((c, i) => [c, i]).filter(([c]) => c.request && !c.mine), rest = list.map((c, i) => [c, i]).filter(([c]) => !(c.request && !c.mine));
+  box.innerHTML = list.length ? (reqs.length ? `<h3 class="inboxh">${t("Forespørsler")} (${reqs.length})</h3><div class="svlist">${reqs.map(([c, i]) => row(c, i)).join("")}</div>` : "")
+    + (rest.length ? `${reqs.length ? `<h3 class="inboxh">${t("Meldinger")}</h3>` : ""}<div class="svlist">${rest.map(([c, i]) => row(c, i)).join("")}</div>` : "")
+    : `<div class="empty">${t("Ingen meldinger ennå.")} ${t("Åpne en profil og trykk «Send melding». Følger dere ikke hverandre, blir den første meldingen en forespørsel.")}</div>`;
+  box.querySelectorAll(".cvitem").forEach(b => b.onclick = () => openChat(list[+b.dataset.i]));
+}
+async function openChat(u) {
+  if (needLogin(t("Logg inn for å sende meldinger."))) return;
+  clearInterval(chatTimer); curSheet = () => openChat(u);
+  $("sheetBody").innerHTML = sheetTop(`<button type="button" class="u-msg" id="chatWho" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px">${avaHtml(u)}${esc(u.username)}</button>`, `<a href="#" id="chatBack" style="color:inherit">← ${t("Meldinger")}</a>`)
+    + `<div class="sheet-body"><div class="chat" id="chat"><p class="mload">${t("Vent litt …")}</p></div>
+      <form class="chatform" id="chatForm"><textarea id="chatIn" rows="1" maxlength="1000" placeholder="${t("Skriv en melding …")}" aria-label="${t("Skriv en melding …")}"></textarea><button type="submit">${t("Send")}</button></form></div>`;
+  showSheet();
+  $("chatBack").onclick = e => { e.preventDefault(); openInbox(); };
+  $("chatWho").onclick = () => openProfile(u);
+  const chat = $("chat"), inp = $("chatIn"), form = $("chatForm");
+  let sig = "", state = "open";
+  // Forespørsler: følger dere ikke hverandre, kan du sende én melding til den andre svarer
+  const drawState = async () => {
+    const r = await sb.rpc("chat_state", { with_user: u.id }); state = r.data || "open";
+    let bar = $("creq"); if (!bar) { bar = document.createElement("div"); bar.id = "creq"; chat.before(bar); }
+    bar.className = state === "open" ? "" : "creq"; form.hidden = false; inp.disabled = false;
+    if (state === "new") bar.innerHTML = `<span>${t("Dere følger ikke hverandre, så den første meldingen blir en forespørsel. {x} kan godta eller avslå den.", { x: `<b style="flex-basis:auto">${esc(u.username)}</b>` })}</span>`;
+    else if (state === "pending" || state === "declined") { bar.innerHTML = `<span>${t("Forespørselen er sendt. Du kan skrive mer når {x} har svart.", { x: esc(u.username) })}</span>`; form.hidden = true; }
+    else if (state === "request_in") { bar.innerHTML = `<b>${t("{x} vil sende deg meldinger", { x: esc(u.username) })}</b><button type="button" class="ok" id="reqOk">${t("Godta")}</button><button type="button" id="reqNo">${t("Avslå")}</button>`;
+      $("reqOk").onclick = () => { bar.innerHTML = `<span>${t("Svar for å godta. Da kan dere skrive fritt.")}</span>`; inp.focus(); };
+      $("reqNo").onclick = async () => { await sb.rpc("decline_chat", { with_user: u.id }); loadUnread(); openInbox(); }; }
+    else bar.innerHTML = "";
+  };
+  const draw = list => {
+    const s = JSON.stringify(list.map(m => m.id)); if (s === sig) return; sig = s;
+    let day = "";
+    chat.innerHTML = list.length ? list.map(m => { const d = m.at.slice(0, 10), ri = refInfo(m.ref);
+      const head = d !== day ? `<div class="cday">${esc(fxDate(d))}</div>` : ""; day = d;
+      return head + `<div class="bub${m.mine ? " me" : ""}">${ri ? `<button type="button" class="mref" data-k="${ri.k}" data-id="${ri.id}"><em>${esc(ri.kind)}</em><b>${esc(ri.title)}</b><small>${esc(ri.sub)}</small></button>` : ""}${m.body ? esc(m.body) : ""}<time>${new Date(m.at).toLocaleTimeString(LOCALE[LANG], { hour: "2-digit", minute: "2-digit" })}</time></div>`; }).join("")
+      : `<div class="empty">${t("Ingen meldinger ennå.")}</div>`;
+    chat.querySelectorAll(".mref").forEach(b => b.onclick = () => b.dataset.k === "job" ? openJob(b.dataset.id) : openEvent(b.dataset.id));
+    chat.scrollTop = chat.scrollHeight;
+  };
+  const load = async () => { if (!chat.isConnected) return clearInterval(chatTimer); const r = await sb.rpc("conversation", { with_user: u.id }); if (Array.isArray(r.data) && chat.isConnected) draw(r.data); loadUnread(); };
+  await Promise.all([load(), drawState()]); if (!form.hidden) inp.focus();
+  chatTimer = setInterval(() => { if (!document.hidden) load(); }, 8000);
+  inp.oninput = () => { inp.style.height = "auto"; inp.style.height = Math.min(inp.scrollHeight, 140) + "px"; };
+  inp.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey && !matchMedia("(pointer: coarse)").matches) { e.preventDefault(); $("chatForm").requestSubmit(); } };
+  $("chatForm").onsubmit = async e => {
+    e.preventDefault(); const body = inp.value.trim(); if (!body) return;
+    const btn = e.target.querySelector("button"); btn.disabled = true;
+    const r = await sb.rpc("send_message", { to_user: u.id, body });
+    btn.disabled = false;
+    if (r.error) { inp.setCustomValidity(t("Fikk ikke kontakt. Prøv igjen senere.")); inp.reportValidity(); setTimeout(() => inp.setCustomValidity(""), 3000); return; }
+    inp.value = ""; inp.oninput(); load(); if (state !== "open") drawState();
+  };
+}
+$("msgBtn").onclick = openInbox;
+setInterval(() => { if (!document.hidden && authUser) loadUnread(); }, 60e3);
 setInterval(() => { if (!document.hidden && authUser) loadFriendRsvps(); }, 5 * 60e3);
 
 // ---------- Smak: det du lagrer, følger og åpner blir til en profil som jobber og arrangementer måles mot ----------
