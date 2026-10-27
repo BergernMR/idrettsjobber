@@ -368,6 +368,7 @@ a.item { color: inherit; text-decoration: none; grid-template-columns: 72px 1fr 
 .mbar i { display: block; border-radius: 3px; background: var(--accent, #2f6fdc); }
 .mbar i + i { background: var(--muted); opacity: .45; }
 .chip.gexp { font-weight: 700; }
+.chip.gcur .gcaret { font-size: .8em; margin-left: 2px; opacity: .75; }
 .fxlist .d { color: var(--muted); font-size: 13px; }
 .fxlist .c { display: block; color: var(--muted); font-size: 12px; }
 .news { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; }
@@ -6729,13 +6730,16 @@ function renderGnews() {
   if (gSport === "all" && items.length < all.length) while (items.length > 2 && (items.length + 1) % 3) items.pop();
   $("gnews").innerHTML = `<div class="gh"><h3 id="gnewsH">${t("Sportsnyheter")}</h3><small>${t("Hentet {d}", { d: esc(fxDate(GNEWS.at, "d")) })}</small></div>
     ${`<div class="regions seg" data-seg="nyregion" role="group" aria-label="${t("Velg region")}">${["all", ...Object.keys(COUNTRIES)].map(c => `<button type="button" class="chip" data-r="${c}" aria-pressed="${c === region}">${c === "all" ? t("Hele Norden") : flag(c) + COUNTRIES[c]}</button>`).join("")}</div>`}
-    ${sports.length > 1 ? `<div class="regions gsports seg" data-seg="nyidrett" role="group" aria-label="${t("Velg idrett")}"><button type="button" class="chip" data-g="all" aria-pressed="${gSport === "all"}">${t("Alle idretter")}</button>${sports.filter((sp, i) => gOpen || i < 5 || sp === gSport).map(sp => `<button type="button" class="chip" data-g="${esc(sp)}" aria-pressed="${sp === gSport}">${sp === "Sport" ? t("Annet") : icoOf(sp) + esc(t(sp))} <small>${cnt[sp]}</small></button>`).join("")}${sports.length > 5 ? `<button type="button" class="chip gexp" id="gExp" aria-expanded="${gOpen}">${gOpen ? t("Vis færre") : t("Utvid") + ` <small>+${sports.filter((sp, i) => i >= 5 && sp !== gSport).length}</small>`}</button>` : ""}</div>` : ""}
+    ${sports.length > 1 ? `<div class="regions gsports seg" data-seg="nyidrett" role="group" aria-label="${t("Velg idrett")}">${gOpen
+      ? `<button type="button" class="chip" data-g="all" aria-pressed="${gSport === "all"}">${t("Alle idretter")}</button>${sports.map(sp => `<button type="button" class="chip" data-g="${esc(sp)}" aria-pressed="${sp === gSport}">${sp === "Sport" ? t("Annet") : icoOf(sp) + esc(t(sp))} <small>${cnt[sp]}</small></button>`).join("")}<button type="button" class="chip gexp" id="gExp" aria-expanded="true">${t("Vis færre")}</button>`
+      : `<button type="button" class="chip gexp gcur" id="gExp" aria-expanded="false" aria-pressed="true">${gSport === "all" ? t("Alle idretter") : (gSport === "Sport" ? t("Annet") : icoOf(gSport) + esc(t(gSport)))} <span class="gcaret" aria-hidden="true">▾</span></button>`}</div>` : ""}
     <ul class="glist">${items.map(n => `<li><a href="${esc(n[3])}" target="_blank" rel="noopener" data-s="${SPORT_KIND[n[1]] || "annet"}"${(GNEWS.img || {})[n[3]] ? ' class="hasimg"' : ""}>${(GNEWS.img || {})[n[3]] ? `<img class="gimg" src="${esc(GNEWS.img[n[3]])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('hasimg');this.remove()">` : ""}${sportIcon(n[1])}<span class="gs">${esc(t(n[1]))}</span><span class="gt"${n[6] !== own ? ` lang="${{ NO: "no", SE: "sv", DK: "da", FI: "fi", IS: "is" }[n[6]]}"` : ""}>${esc(n[2])}</span><span class="nm">${region === "all" ? flag(n[6]) : ""}<span>${esc(n[4])}${n[0] ? " · " + esc(fxDate(n[0])) : ""}</span>${pwBadge(n[5])}</span></a></li>`).join("")}</ul>
     ${items.length < all.length ? `<button type="button" class="abtn ghost gmore" id="gMore">${t("Vis flere nyheter")}</button>` : ""}
     ${en ? `<p class="s-note">${t("Overskriftene står på språket til avisen de kommer fra.")}</p>` : ""}`;
   $("gnews").querySelectorAll(".regions:not(.gsports) .chip").forEach(b => b.onclick = () => { gRegion = b.dataset.r; gPicked = true; gMore = 0; try { localStorage.setItem("aurora-nyregion", gRegion); } catch (e) {} renderGnews(); syncFlag(); });
   if ($("gExp")) $("gExp").onclick = e => { e.stopPropagation(); gOpen = !gOpen; renderGnews(); };
-  $("gnews").querySelectorAll(".gsports .chip:not(.gexp)").forEach(b => b.onclick = () => { gSport = b.dataset.g; gMore = 0; renderGnews(); });
+  // Idrettene ligger bak «Alle idretter» (Noah: mindre rotete); et valg lukker lista igjen
+  $("gnews").querySelectorAll(".gsports .chip:not(.gexp)").forEach(b => b.onclick = () => { gSport = b.dataset.g; gMore = 0; gOpen = false; renderGnews(); });
   if ($("gMore")) $("gMore").onclick = () => { gMore++; renderGnews(); };
   segPills($("gnews"));
 }
