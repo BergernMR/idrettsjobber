@@ -1234,6 +1234,7 @@ header .gsearch { position: relative; justify-self: end; width: min(100%, 340px)
 .gres .gnone { margin: 10px; color: var(--muted); }
 @media (max-width: 640px) { header .gsearch { justify-self: stretch; width: 100%; margin-top: 0; } .gres { left: 0; right: 0; width: auto; } }
 h1 .brand, .sitefoot .fb b { text-transform: uppercase; letter-spacing: -.02em; }
+#brandHome, .sitefoot .fb b { cursor: pointer; }
 .slider .track { cursor: grab; }
 .slider .track.dragging { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; user-select: none; }
 .slider .track.dragging .path { pointer-events: none; }
@@ -1490,7 +1491,7 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
     <div class="topline"><div class="eyebrow">Norge · Sverige · Danmark · Finland · Island</div>
       <div class="langpick seg" data-seg="sprak" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn minebtn" id="mineBtn" aria-label="Min side" title="Min side"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span class="aini" id="mineIni" hidden></span><span class="n" id="mineN" hidden></span></button><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
-    <h1><b class="brand"><svg class="mark" viewBox="1.5 13.5 37 21" aria-hidden="true"><path d="M4 32a16 16 0 0 1 32 0" fill="none" stroke="#2f6fdc" stroke-width="5" stroke-linecap="round"/><path d="M11 32a9 9 0 0 1 18 0" fill="none" stroke="#1fae7c" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="31" r="2.6" fill="currentColor"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
+    <h1><b class="brand" id="brandHome" role="link" tabindex="0" aria-label="Aurora – forsiden"><svg class="mark" viewBox="1.5 13.5 37 21" aria-hidden="true"><path d="M4 32a16 16 0 0 1 32 0" fill="none" stroke="#2f6fdc" stroke-width="5" stroke-linecap="round"/><path d="M11 32a9 9 0 0 1 18 0" fill="none" stroke="#1fae7c" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="31" r="2.6" fill="currentColor"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
     <div class="heroslides" id="heroslides" aria-hidden="true"><i></i><i></i></div><a class="herocredit" id="herocredit" target="_blank" rel="noopener"></a>
     <p class="herohead" id="herohead"></p>
     <p class="lede" id="hlede">Jobber, utdanning, arrangementer og klubber i Norge, Sverige, Danmark, Finland og Island, samlet på ett sted.</p>
@@ -1584,7 +1585,7 @@ body.home .livestrip:not([hidden]) { margin: 18px 0 0; background: var(--surface
       <div id="wNext"></div>
     </section>
     <section class="evmine" id="evMine" aria-labelledby="evMineH" hidden><div class="count"><span id="evMineH"></span><small id="evMineN"></small></div><div class="list" id="evMineList"></div></section>
-    <section aria-live="polite"><div class="count"><span id="evCount"></span><small>Neste først</small></div><div class="list" id="evList"></div></section>
+    <section id="evSec" aria-live="polite"><div class="count"><span id="evCount"></span><small>Neste først</small></div><div class="list" id="evList"></div></section>
   </div>
 
   <div class="tab" id="tab-klubber" hidden>
@@ -4370,6 +4371,10 @@ function setTab(t, push) {
     if (i >= 0 && i < keys.length) setTab(keys[i]);
   }, { passive: true });
 })();
+// Trykk på Aurora-logoen (øverst eller i bunnen) for å komme til forsiden
+function goHome() { setTab("forside"); scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+document.addEventListener("click", e => { if (e.target.closest("#brandHome, .sitefoot .fb b")) goHome(); });
+document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.id === "brandHome") { e.preventDefault(); goHome(); } });
 const HOME_ICON = '<path d="M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5"/>';
 const UP_ICON = '<path d="M12 19V5M6 11l6-6 6 6"/>';
 function renderDock() {
@@ -4615,7 +4620,7 @@ const wName = (p, nat) => `<span class="${NAT3[nat] ? "wnord" : ""}">${esc(p)}</
 function renderWinter() {
   const box = $("winterBox"); if (!box) return;
   const all = (typeof WINTER === "object" && WINTER.r) || [];
-  box.hidden = !all.length; if (!all.length) return;
+  box.hidden = !all.length || state.sport !== "vinter"; if (box.hidden) return;
   $("wH").textContent = t("Vintersport"); $("wSub").textContent = t("Verdenscup og VM");
   simpleChips("wRow", tmap({ ...W_SPORTS }), "wsport", k => all.filter(r => k === "all" || r[0] === k).length);
   const rs = all.filter(r => state.wsport === "all" || r[0] === state.wsport), now = Date.now();
@@ -4635,7 +4640,10 @@ function renderWinter() {
 }
 function renderEvents() {
   simpleChips("evRow", EV_KINDS, "ev", k => EVENTS.filter(e => evMatch(e, "kind") && (k === "all" || e.kind === k)).length);
-  simpleChips("sportRow", EV_TYPES, "sport", k => EVENTS.filter(e => evMatch(e, "sport") && (k === "all" || (EV_INFO[e.id] || {}).type === k)).length);
+  // Vintersport (verdenscup og VM) er ett valg blant de andre typene, ikke en egen boks over listen
+  const wUp = ((typeof WINTER === "object" && WINTER.r) || []).filter(r => !r[7] && new Date(r[1]) > Date.now() - 3 * 36e5).length;
+  simpleChips("sportRow", { ...EV_TYPES, vinter: t("Vintersport") }, "sport", k => k === "vinter" ? wUp : EVENTS.filter(e => evMatch(e, "sport") && (k === "all" || (EV_INFO[e.id] || {}).type === k)).length);
+  $("evSec").hidden = state.sport === "vinter";
   const rows = EVENTS.filter(e => evMatch(e)).sort((a, b) => evOrder(a) - evOrder(b));
   drawMap({ id: "mapEv", key: "vplace", items: EVENTS.filter(e => evMatch(e, "place")), geo: evGeo, one: "arrangement", many: "arrangementer", list: "evCount" });
   renderEvMine(); renderWinter();
