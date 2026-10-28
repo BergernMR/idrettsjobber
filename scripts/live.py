@@ -8,6 +8,8 @@ html = open(sys.argv[1], encoding="utf-8").read()
 FM = {fm: fan for fan, fm in re.findall(r'"([a-z0-9-]+)":\{"s":"FotMob","u":"https://www\.fotmob\.com/teams/(\d+)/', html)}
 NAME = {m[0]: m[1] for m in re.findall(r'^\s*\["([^"]+)","(?:NO|SE|DK|FI|IS)","([^"]+)"', html, re.M)}
 LOOP_MIN, STEP = 24, 60
+# Cupene med samme navn som i FIXTURES (update_data.py), så kampkortet viser turneringen
+CUPN = {206: "NM-cupen", 171: "Svenska cupen", 242: "Pokalturneringen", 143: "Suomen Cup", 217: "Mjólkurbikarinn"}
 def fetch(url):
     for a in range(3):
         try: return json.loads(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=30).read())
@@ -29,7 +31,8 @@ def snapshot():
                 t = datetime.datetime.fromisoformat(st["utcTime"].replace("Z", "+00:00"))
                 # Kamper fra 75 min før avspark til 4 timer etter: siden viser kampkort med lagoppstilling og diskusjon
                 if t - now <= datetime.timedelta(minutes=75) and now - t <= datetime.timedelta(hours=4):
-                    x[str(m["id"])] = {"ko": st["utcTime"], "f": [FM[i] for i in ids if i in FM], "t": [m["home"]["name"], m["away"]["name"]]}
+                    x[str(m["id"])] = {"ko": st["utcTime"], "f": [FM[i] for i in ids if i in FM], "t": [m["home"]["name"], m["away"]["name"]],
+                                       "c": CUPN.get(lg.get("primaryId"), lg.get("name") or ""), "h": 1 if ids[0] in FM else 0}
                 if not st.get("started"):
                     if datetime.timedelta(0) <= t - now <= datetime.timedelta(minutes=8): soon = True
                     continue

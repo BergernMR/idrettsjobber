@@ -691,6 +691,14 @@ table.league td.tform { padding-left: 10px; }
 .creq b { flex-basis: 100%; }
 .creq button { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; font-weight: 700; cursor: pointer; }
 .creq button.ok { background: #0f6b4f; color: #fff; border-color: transparent; }
+.newmsg { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 16px; border: 0; border-radius: 99px; background: var(--accent); color: #fff; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
+.newmsg svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.nmback { display: inline-block; margin-bottom: 12px; color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none; }
+.nmfind { display: flex; align-items: center; gap: 10px; padding: 0 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); }
+.nmfind svg { width: 18px; height: 18px; flex: none; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
+.nmfind input { flex: 1; min-width: 0; padding: 12px 0; border: 0; background: none; font: inherit; font-size: 16px; color: var(--fg); outline: none; }
+.nmfind:focus-within { border-color: var(--accent); }
+.nmlist small { display: block; color: var(--muted); font-size: 12.5px; font-weight: 500; }
 .inboxh { margin: 14px 2px 6px; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
 /* Varslene har fargen til kategorien sin: jobber grønt, arrangementer lilla (Noah 2026-10-27) */
 .nitem { --nc: #0f6b4f; } .nitem[data-k="ev"] { --nc: #5b4bc4; }
@@ -1582,6 +1590,91 @@ a.fyev.fyedu { text-decoration: none; color: inherit; }
   body.home header .topline { margin-bottom: 40px; }
   .glist { grid-template-columns: 1fr; } .glist li:first-child a { min-height: 220px; }
 }
+/* Turnering på kampene; cupkamper får pokal (Noah 2026-10-28) */
+.comptag { display: inline-flex; align-items: center; gap: 4px; width: fit-content; padding: 2px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 700; letter-spacing: .02em; background: color-mix(in srgb, currentColor 10%, transparent); color: inherit; opacity: .85; }
+.comptag.cup { background: #f4c542; color: #3d2c00; opacity: 1; }
+.comptag svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.foryou .fyclub .comptag { margin-top: 2px; }
+/* I dag for deg */
+.brief { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin: -4px 0 2px; padding-bottom: 2px; }
+.brief::-webkit-scrollbar { display: none; }
+@media (min-width: 900px) { .brief { flex-wrap: wrap; overflow: visible; } }
+.bri { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; max-width: 300px; padding: 10px 14px 10px 10px; border-radius: 16px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.08); color: #fff; font: inherit; text-align: left; cursor: pointer; transition: background .2s, border-color .2s; }
+.bri:hover { background: rgba(255,255,255,.14); border-color: #7fe0b7; }
+.bri.live { border-color: #ff6b6b; background: rgba(255,80,80,.14); }
+.bri.urgent { border-color: #ffb347; }
+.brico { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: rgba(255,255,255,.1); }
+.brico img { width: 26px; height: 26px; object-fit: contain; }
+.brico svg { width: 19px; height: 19px; fill: none; stroke: #7fe0b7; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.brico .clogo.mono { width: 28px; height: 28px; font-size: 11px; }
+.brtx { display: grid; gap: 1px; min-width: 0; }
+.brtx b { font-size: 14px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brtx small { font-size: 12.5px; color: rgba(255,255,255,.7); }
+.bri.live small { color: #ffb3b3; font-weight: 700; }
+/* Kamper i dag */
+.today { display: grid; gap: 12px; margin-top: 30px; }
+.today[hidden] { display: none; }
+.tdh { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 14px; }
+.tdh h3 { margin: 0; font-family: "Barlow Condensed", var(--font-display); font-weight: 800; text-transform: uppercase; font-size: clamp(28px, 3.6vw, 36px); line-height: 1; }
+.tdh small { color: var(--muted); font-size: 13px; }
+.tdlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px; }
+.tdg { display: grid; gap: 10px; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); font: inherit; text-align: left; cursor: pointer; transition: border-color .2s, transform .2s; }
+.tdg:hover { border-color: var(--accent); transform: translateY(-2px); }
+.tdg.mine { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); box-shadow: inset 4px 0 0 var(--accent); }
+.tdtop { display: flex; align-items: center; gap: 8px; min-height: 22px; }
+.tdtop .flag { width: 18px; height: 13px; }
+.tdst { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.tdst.live { color: #d92d20; }
+.tdst.live i { width: 8px; height: 8px; border-radius: 50%; background: #d92d20; animation: tdpulse 1.4s ease-in-out infinite; }
+@keyframes tdpulse { 50% { opacity: .3; } }
+.tdrow { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+.tdt { display: grid; justify-items: center; gap: 4px; text-align: center; min-width: 0; }
+.tdt b { font-size: 14px; line-height: 1.2; overflow-wrap: anywhere; }
+.tdt img, .tdt .clogo { width: 34px; height: 34px; object-fit: contain; }
+.tdsc { font-family: "Barlow Condensed", var(--font-display); font-weight: 800; font-size: 30px; line-height: 1; letter-spacing: .02em; }
+.tdsc.ko { font-size: 22px; color: var(--muted); }
+.tdg.on .tdsc { color: #d92d20; }
+.tdlu { font-size: 13px; font-weight: 700; color: var(--accent); }
+.tdmore { justify-self: center; }
+@media (prefers-reduced-motion: reduce) { .tdst.live i { animation: none; } .tdg:hover { transform: none; } }
+/* Nyhetsfanen: ticker, dine klubber i nyhetene og rader per idrett */
+.newstop { display: grid; gap: 0; }
+.newstop[hidden], .newsrows[hidden] { display: none; }
+.ticker { display: flex; align-items: stretch; margin-top: 24px; border-radius: 14px; overflow: hidden; background: #14211d; color: #fff; }
+.tklbl { flex: none; display: flex; align-items: center; padding: 0 14px; background: #d92d20; font-family: "Barlow Condensed", var(--font-display); font-weight: 800; text-transform: uppercase; font-size: 17px; letter-spacing: .03em; }
+.tkwin { flex: 1; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
+.tktrack { display: flex; width: max-content; animation: tkroll 120s linear infinite; }
+.ticker:hover .tktrack, .ticker:focus-within .tktrack { animation-play-state: paused; }
+@keyframes tkroll { to { transform: translateX(-50%); } }
+.tktrack a { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; color: #fff; text-decoration: none; font-size: 14.5px; font-weight: 600; white-space: nowrap; border-right: 1px solid rgba(255,255,255,.12); }
+.tktrack a b { color: #7fe0b7; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+.tktrack a.mine b { color: #f4c542; }
+.tktrack a:hover { color: #7fe0b7; }
+@media (prefers-reduced-motion: reduce) { .tkwin { overflow-x: auto; mask-image: none; } .tktrack { animation: none; } }
+.cnews { display: grid; gap: 12px; margin-top: 30px; }
+.cnrow { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 300px); gap: 10px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; }
+.cnc { scroll-snap-align: start; display: grid; gap: 8px; align-content: start; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); text-decoration: none; box-shadow: inset 0 4px 0 var(--kc); }
+.cnc:hover { border-color: var(--kc); }
+.cnk { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.cnk img, .cnk .clogo { width: 24px; height: 24px; object-fit: contain; }
+.cnt { font-weight: 700; font-size: 15px; line-height: 1.3; }
+.cnm { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; color: var(--muted); }
+.newsrows { display: grid; gap: 26px; margin-top: 34px; }
+.nrow { display: grid; gap: 12px; padding-top: 14px; border-top: 3px solid var(--kc); }
+.nrh { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.nrh h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-family: "Barlow Condensed", var(--font-display); font-weight: 800; text-transform: uppercase; font-size: 26px; line-height: 1; color: var(--kc); }
+.nrh h3 svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nrall { font: inherit; font-size: 14px; font-weight: 700; border: 0; background: none; color: var(--kc); cursor: pointer; }
+.nrlist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 14px; }
+.nrlist a { display: grid; gap: 6px; align-content: start; color: var(--fg); text-decoration: none; }
+.nrlist img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--surface-2); }
+.nrt { font-weight: 700; font-size: 15px; line-height: 1.3; }
+.nrlist a:hover .nrt { color: var(--kc); }
+.nrm { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.nrm .flag { width: 16px; height: 12px; }
+/* Saker om klubbene dine */
+.gclub { margin-left: 8px; padding: 1px 7px; border-radius: 99px; background: #f4c542; color: #3d2c00; font-style: normal; font-size: 10.5px; letter-spacing: .04em; }
+.gnews .gsports .chip.gmine svg { fill: none; stroke: currentColor; stroke-width: 2; }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -2260,6 +2353,29 @@ const I18N = {
 "Hjemsted": ["Hemort","Hjemsted","Kotipaikka","Heimabær","Home town"],
 "Ferdig": ["Klar","Færdig","Valmis","Lokið","Done"],
 "Hopp over": ["Hoppa över","Spring over","Ohita","Sleppa","Skip"],
+"Kamper i dag": ["Matcher idag","Kampe i dag","Ottelut tänään","Leikir í dag","Matches today"],
+"{n} kamper med lag fra Aurora": ["{n} matcher med lag från Aurora","{n} kampe med hold fra Aurora","{n} ottelua Auroran joukkueilla","{n} leikir með liðum frá Aurora","{n} matches with teams on Aurora"],
+"Avspark": ["Avspark","Kickoff","Aloitus","Upphafsflaut","Kick-off"],
+"Se lagoppstilling": ["Se laguppställning","Se holdopstilling","Katso kokoonpanot","Sjá byrjunarlið","See line-ups"],
+"I dag for deg": ["Idag för dig","I dag for dig","Tänään sinulle","Í dag fyrir þig","Today for you"],
+"{x} spiller i dag": ["{x} spelar idag","{x} spiller i dag","{x} pelaa tänään","{x} spilar í dag","{x} play today"],
+"1 ny jobb som passer deg": ["1 nytt jobb som passar dig","1 nyt job der passer til dig","1 uusi sinulle sopiva työ","1 nýtt starf sem hentar þér","1 new job that suits you"],
+"{n} nye jobber som passer deg": ["{n} nya jobb som passar dig","{n} nye job der passer til dig","{n} uutta sinulle sopivaa työtä","{n} ný störf sem henta þér","{n} new jobs that suit you"],
+"Siden sist du var her": ["Sedan du var här sist","Siden du var her sidst","Edellisen käyntisi jälkeen","Síðan þú varst hér síðast","Since your last visit"],
+"1 sak om klubbene dine": ["1 artikel om dina klubbar","1 artikel om dine klubber","1 juttu seuroistasi","1 frétt um félögin þín","1 story about your clubs"],
+"{n} saker om klubbene dine": ["{n} artiklar om dina klubbar","{n} artikler om dine klubber","{n} juttua seuroistasi","{n} fréttir um félögin þín","{n} stories about your clubs"],
+"Siste 3 dager": ["Senaste 3 dagarna","Seneste 3 dage","Viimeiset 3 päivää","Síðustu 3 daga","Last 3 days"],
+"Dine klubber i nyhetene": ["Dina klubbar i nyheterna","Dine klubber i nyhederne","Seurasi uutisissa","Félögin þín í fréttum","Your clubs in the news"],
+"Fra lokalavisene, siste 3 dager": ["Från lokaltidningarna, senaste 3 dagarna","Fra lokalaviserne, seneste 3 dage","Paikallislehdistä, viimeiset 3 päivää","Úr héraðsmiðlum, síðustu 3 daga","From local papers, last 3 days"],
+"Se alle {n}": ["Se alla {n}","Se alle {n}","Katso kaikki {n}","Sjá allar {n}","See all {n}"],
+"For deg": ["För dig","For dig","Sinulle","Fyrir þig","For you"],
+"Om {x}": ["Om {x}","Om {x}","{x}","Um {x}","About {x}"],
+"Ny melding": ["Nytt meddelande","Ny besked","Uusi viesti","Ný skilaboð","New message"],
+"Søk etter brukernavn": ["Sök efter användarnamn","Søg efter brugernavn","Hae käyttäjänimeä","Leita að notandanafni","Search for a username"],
+"Du følger": ["Du följer","Du følger","Seuraamasi","Þú fylgir","You follow"],
+"Brukere": ["Användare","Brugere","Käyttäjät","Notendur","Users"],
+"Dere har skrevet før": ["Ni har skrivit förut","I har skrevet før","Olette kirjoittaneet ennenkin","Þið hafið skrifast á áður","You have chatted before"],
+"Du følger ingen ennå. Søk etter et brukernavn over.": ["Du följer ingen än. Sök efter ett användarnamn ovan.","Du følger ingen endnu. Søg efter et brugernavn ovenfor.","Et seuraa vielä ketään. Hae käyttäjänimeä yllä.","Þú fylgir engum ennþá. Leitaðu að notandanafni hér að ofan.","You don't follow anyone yet. Search for a username above."],
 "Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
 "Tilpass": ["Anpassa","Tilpas","Muokkaa","Aðlaga","Customise"],
 "Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
@@ -4732,7 +4848,7 @@ const fxCard = (k, n, ks) => { const [y, m, d] = n[0].split("-").map(Number); co
   return `<article class="job item"><button type="button" class="job-hit fx-hit" data-id="${k.id}" aria-label="${esc(home)} – ${esc(away)}. ${t("Les mer")}"></button>
     <div class="bib"><div class="d">${d}</div><div class="u">${monthName(m).slice(0, 3)}</div></div>
     <div class="jbody"><div class="jtitle">${esc(home)} – ${esc(away)}</div>
-      <div class="meta"><span class="emp">${esc(fxDate(n[0], true))}</span><span class="where">${flag(k.c)}${esc(fxComp(n[3]))}</span></div>
+      <div class="meta"><span class="emp">${esc(fxDate(n[0], true))}</span><span class="where">${flag(k.c)}${esc(fxComp(n[3], k.c))}</span></div>
       <div class="tags"><span class="tag">${esc(t(k.sport))}</span><span class="tag">${n[2] ? t("Hjemmekamp") : t("Bortekamp")}</span></div>${whoLine(ks)}</div>${CHEVRON}</article>`; };
 function renderEvMine() {
   const mine = FAN.filter(k => follows.has(k.id));
@@ -6414,21 +6530,27 @@ const RES = { V: "win", U: "draw", T: "loss" };
 const fx = k => FIXTURES.teams[k.id];
 const isoToday = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
 const fxDate = (s, long) => new Date(s + "T12:00:00").toLocaleDateString(LOCALE[LANG], long === "d" ? { day: "numeric", month: "long" } : long ? { weekday: "long", day: "numeric", month: "long" } : { day: "numeric", month: "short" });
-const fxComp = c => t({ "Cup": "Cupen", "Club Friendlies": "Treningskamp" }[c] || c);
+// Cupene heter forskjellig i hvert land; eldre data har bare «Cup»
+const CUP_BY = { NO: "NM-cupen", SE: "Svenska cupen", DK: "Pokalturneringen", FI: "Suomen Cup", IS: "Mjólkurbikarinn" };
+const fxComp = (c, cc) => c === "Cup" && CUP_BY[cc] ? CUP_BY[cc] : t({ "Cup": "Cupen", "Club Friendlies": "Treningskamp" }[c] || c);
+// Cupkamper får et lite pokalmerke, så man ser at det ikke er en seriekamp (Noah 2026-10-28)
+const isCup = c => /cup|pokal|bikar/i.test(c || "");
+const CUP_ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/></svg>';
+const compTag = (c, cc) => c ? `<span class="comptag${isCup(c) ? " cup" : ""}">${isCup(c) ? CUP_ICO : ""}${esc(fxComp(c, cc))}</span>` : "";
 const nextMatch = k => { const f = fx(k); return f && f.n && f.n[0] >= isoToday() ? f.n : null; };
 const resOf = m => m[3] > m[4] ? "V" : m[3] < m[4] ? "T" : "U";
 const vsText = n => n[2] ? t("Hjemme mot {x}", { x: esc(n[1]) }) : t("Borte mot {x}", { x: esc(n[1]) });
 const matchBox = k => { const f = fx(k); if (!f) return noMatchBox(k); const n = nextMatch(k);
   return `<div class="livebox" data-k="${k.id}">${liveHtml(k)}</div><div class="matches">
-      <div class="nextm"><span class="lbl">${t("Neste kamp")}</span>${n ? `<b>${esc(fxDate(n[0], true))}${n[4] ? " · " + n[4] : ""}</b><span>${vsText(n)} · ${esc(fxComp(n[3]))}</span>` : `<span>${t("Ingen kamp satt opp ennå")}</span>`}</div>
+      <div class="nextm"><span class="lbl">${t("Neste kamp")}</span>${n ? `<b>${esc(fxDate(n[0], true))}${n[4] ? " · " + n[4] : ""}</b><span>${vsText(n)} · ${esc(fxComp(n[3], k.c))}</span>` : `<span>${t("Ingen kamp satt opp ennå")}</span>`}</div>
       ${f.l ? `<div><span class="lbl">${f.l.length >= 5 ? t("Form, siste 5") : t("Siste kamper")}</span><div class="form">${f.l.slice().reverse().map(m => `<span class="r ${RES[resOf(m)]}" title="${esc(fxDate(m[0]))}: ${esc(m[1])} ${m[3]}–${m[4]}">${t(resOf(m))}</span>`).join("")}</div></div>` : ""}
     </div>`; };
 const fxSheet = k => { const f = fx(k); if (!f) return ""; const n = nextMatch(k);
   return `<div class="livebox" data-k="${k.id}">${liveHtml(k)}</div><div class="fxs">
         <h3>${t("Neste kamp")}</h3>
-        <p class="fxnext">${n ? `<b>${esc(fxDate(n[0], true))}${n[4] ? " · " + n[4] : ""}</b> · ${vsText(n)} · ${esc(fxComp(n[3]))}` : t("Ingen kamp satt opp ennå")}</p>
+        <p class="fxnext">${n ? `<b>${esc(fxDate(n[0], true))}${n[4] ? " · " + n[4] : ""}</b> · ${vsText(n)} · ${esc(fxComp(n[3], k.c))}` : t("Ingen kamp satt opp ennå")}</p>
         ${xOf(k) ? `<button type="button" class="mopen" data-m="${xOf(k)}" data-k="${k.id}">${LIVEX[xOf(k)].lu ? t("Se lagoppstilling og diskusjon") : t("Åpne kampkortet")} →</button>` : ""}
-        ${f.l ? `<h3>${t("Siste kamper")}</h3><ul class="fxlist">${f.l.map(m => `<li${m[6] ? ` class="hasm" role="button" tabindex="0" data-m="${m[6]}" data-k="${k.id}" title="${t("Se kampstatistikk")}"` : ""}><span class="r ${RES[resOf(m)]}">${t(resOf(m))}</span><span class="d">${esc(fxDate(m[0]))}</span><span>${m[2] ? t("Hjemme mot {x}", { x: esc(m[1]) }) : t("Borte mot {x}", { x: esc(m[1]) })}<span class="c">${esc(fxComp(m[5]))}</span></span><b>${m[3]}–${m[4]}</b></li>`).join("")}</ul>` : ""}
+        ${f.l ? `<h3>${t("Siste kamper")}</h3><ul class="fxlist">${f.l.map(m => `<li${m[6] ? ` class="hasm" role="button" tabindex="0" data-m="${m[6]}" data-k="${k.id}" title="${t("Se kampstatistikk")}"` : ""}><span class="r ${RES[resOf(m)]}">${t(resOf(m))}</span><span class="d">${esc(fxDate(m[0]))}</span><span>${m[2] ? t("Hjemme mot {x}", { x: esc(m[1]) }) : t("Borte mot {x}", { x: esc(m[1]) })}<span class="c">${esc(fxComp(m[5], k.c))}</span></span><b>${m[3]}–${m[4]}</b></li>`).join("")}</ul>` : ""}
         <p class="s-note">${fedOf(k) ? `${t("Offisielt kampoppsett")}: <a href="${fedOf(k)[1]}" target="_blank" rel="noopener">${esc(fedOf(k)[0])}</a>. ` : ""}${t("Kampene oppdateres jevnlig, så sjekk klubben for nøyaktig tid.")}</p>
       </div>`; };
 // Live-stilling: live.json på grenen "live" skrives hvert minutt av GitHub mens kamper pågår (scripts/live.py)
@@ -6450,6 +6572,7 @@ function paintLive() {
   const ks = liveMine(); s.hidden = !ks.length;
   s.innerHTML = ks.length ? `<span class="lbl">${t("Dine klubber nå")}</span>${ks.map(k => `<button type="button" class="livego" data-id="${k.id}">${liveHtml(k)}</button>`).join("")}` : "";
   s.querySelectorAll(".livego").forEach(b => b.onclick = () => openClub(b.dataset.id));
+  paintToday();
 }
 // Spør ofte bare når en fulgt klubb spiller i dag, eller en åpen tabell har kamper som pågår (API-et tåler 60 kall i timen)
 const playsToday = () => FAN.some(k => follows.has(k.id) && (LIVE[k.id] || (nextMatch(k) && nextMatch(k)[0] === isoToday())));
@@ -6463,13 +6586,14 @@ async function fetchLive() {
 }
 async function pollLive(now) {
   clearTimeout(liveTimer);
-  if (!(now && Date.now() - liveAt < 60e3) && !document.hidden && (follows.size || tableOpen())) {
+  if (!(now && Date.now() - liveAt < 60e3) && !document.hidden && (follows.size || tableOpen() || todayOn())) {
     liveAt = Date.now();
     try { const r = await fetch(LIVE_URL, { headers: { Accept: "application/vnd.github.raw+json" }, cache: "no-store" });
       if (r.ok) { const d = await r.json(); const fresh = Date.now() - Date.parse(d.at) < 3 * 3600e3; const was = JSON.stringify(LIVE);
-        LIVE = fresh ? d.m || {} : {}; LIVEX = fresh ? d.x || {} : {}; if (JSON.stringify(LIVE) !== was) paintLive(); } } catch (x) {}
+        const wasX = Object.keys(LIVEX).join();
+        LIVE = fresh ? d.m || {} : {}; LIVEX = fresh ? d.x || {} : {}; if (JSON.stringify(LIVE) !== was) paintLive(); else if (Object.keys(LIVEX).join() !== wasX) paintToday(); } } catch (x) {}
   }
-  liveTimer = setTimeout(pollLive, playsToday() || (tableOpen() && anyLive()) ? 75e3 : 15 * 60e3);
+  liveTimer = setTimeout(pollLive, playsToday() || (tableOpen() && anyLive()) ? 75e3 : todayOn() && Object.keys(LIVEX).length ? 120e3 : 15 * 60e3);
 }
 const LOCK = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 const pwBadge = p => p === 2 ? `<span class="pw pay">${LOCK}${t("Betalingsmur")}</span>` : p === 1 ? `<span class="pw maybe">${LOCK}${t("Kan kreve abonnement")}</span>` : "";
@@ -6520,7 +6644,7 @@ async function openMatch(k, mid) {
   const L = LIVE[k.id], liveSc = L && String(L[6]) === String(mid) ? [L[0], L[1]] : null;
   const score = j => j && j.s ? j.s.join("–") : m ? (m[2] ? m[3] + "–" + m[4] : m[4] + "–" + m[3]) : liveSc ? liveSc.join("–") : X ? new Date(X.ko).toLocaleTimeString(LOCALE[LANG], { hour: "2-digit", minute: "2-digit" }) : "";
   const head = j => `<div class="mt">${sides[0] ? clubLogo(sides[0], "clogo big") : ""}<b>${esc(names[0])}</b></div><div class="msc${!m && !liveSc ? " ko" : ""}">${esc(score(j))}</div><div class="mt">${sides[1] ? clubLogo(sides[1], "clogo big") : ""}<b>${esc(names[1])}</b></div>`;
-  const when = m ? fxDate(m[0], true) : fxDate(X.ko.slice(0, 10), true), comp = m ? fxComp(m[5]) : "";
+  const when = m ? fxDate(m[0], true) : fxDate(X.ko.slice(0, 10), true), nx = !m && nextMatch(k), comp = m ? fxComp(m[5], k.c) : X && X.c ? fxComp(X.c, k.c) : nx && nx[0] === X.ko.slice(0, 10) ? fxComp(nx[3], k.c) : "";
   // Med diskusjon: kampen til venstre og veggen til høyre på store skjermer, veggen under på mobil
   const shell = (j, body, wall = "") => `<div class="lbcard mcard${wall ? " haswall" : ""}"><button type="button" class="lbx" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="mmain"><p class="mmeta">${comp ? esc(comp) + " · " : ""}${j && j.rnd ? t("Runde {n}", { n: esc(j.rnd) }) + " · " : ""}${esc(when)}</p><div class="mhead">${head(j)}</div>${body}</div>${wall}</div>`;
@@ -6855,10 +6979,12 @@ function renderHome() {
   const ls = $("liveStrip"); $("tab-forside").appendChild(ls); // ut før hub tegnes på nytt
   $("hub").innerHTML = `<div class="welcome">
       <section class="foryou" id="foryou" aria-labelledby="fyH"></section>
+      <section class="today" id="todayHome" aria-label="${t("Kamper i dag")}" hidden></section>
     </div>`;
   $("foryou").before(ls); // live-kampene øverst i velkomstdelen
   renderForYou();
   renderGnews();
+  paintToday();
 }
 // «Til deg»: idretter man liker, hjemsted og klubbene man følger. Alt lagres bare i nettleseren (aurora-idretter, idrettsjobber-hjem, aurora-klubber).
 const INTERESTS = [
@@ -6965,7 +7091,7 @@ function renderForYou() {
   const mine = FAN.filter(k => follows.has(k.id));
   const clubCard = k => { const n = nextMatch(k), ns = newsOf(k)[0], L = LIVE[k.id], cd = n && countdown(n);
     const top = L && L[4] !== "ft" ? `<span class="fybig live">${L[4] === "ht" ? t("Pause") : "LIVE " + esc(L[5] || "")}</span><span class="fyscore">${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} <small>${t("mot {x}", { x: esc(L[3]) })}</small></span>`
-      : cd ? `<span class="fybig">${esc(cd.big)}${cd.small ? `<small> ${cd.small}</small>` : ""}</span><span class="fyvs">${vsText(n)}</span>` : `<span class="fyvs">${t("Ingen kamp satt opp ennå")}</span>`;
+      : cd ? `<span class="fybig">${esc(cd.big)}${cd.small ? `<small> ${cd.small}</small>` : ""}</span><span class="fyvs">${vsText(n)}</span>${compTag(n[3], k.c)}` : `<span class="fyvs">${t("Ingen kamp satt opp ennå")}</span>`;
     return `<button type="button" class="fyclub" data-id="${k.id}" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k, "clogo", false) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span>${top}${ns ? `<span class="fynews">${esc(ns[1])}</span>` : ""}</button>`; };
   // Arrangementer nær hjemstedet det neste året, innenfor rekkevidden brukeren har valgt med slideren
   // Forslag til klubber nær deg når man ikke følger noen ennå
@@ -6976,6 +7102,7 @@ function renderForYou() {
   const fyEdu = goals.has("utd") ? recEdu() : [];
   const near = mine.length ? [] : FAN.filter(k => k.geo && (!likes.size || liked(k.sport))).map(k => ({ k, km: kmFrom(k.geo[1], k.geo[2]) })).sort((a, b) => a.km - b.km).slice(0, 4);
   box.innerHTML = `<div class="fyh"><p class="fyhello">${greet()}${typeof authName === "function" && authName() ? ", " + esc(authName()) : ""}</p><h3 id="fyH">${t("Til deg")}</h3>${ask ? "" : `<span class="fysum">${[...GOALS.filter(([k]) => goals.has(k)), ...INTERESTS.filter(([k]) => likes.has(k))].map(([, l]) => t(l)).join(", ")}${likes.size || goals.size ? " · " : ""}${esc(homeName)}</span><button type="button" class="fyedit">${t("Tilpass")}</button>`}</div>
+    ${ask ? "" : briefHtml()}
     ${ask ? picker : ""}
     ${fyOrder().map(k => ({
       klubb: () => (mine.length ? `<div class="fysec"><p class="fyl">${t("Dine klubber")}</p><div class="fyclubs">${mine.slice(0, 6).map(clubCard).join("")}</div></div>` : "") + (near.length ? `<div class="fysec"><p class="fyl">${t("Klubber nær {x}", { x: esc(homeName) })}</p><div class="fyclubs">${near.map(({ k, km }) => `<div class="fyclub fysug" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><button type="button" class="fyopen" data-id="${k.id}"><span class="fyhead"><span class="fyico${LOGO.has(k.id) ? " haslogo" : ""}">${clubLogo(k, "clogo", false) || icoOf(k.sport)}</span><span class="fyn">${esc(k.n)}</span></span><span class="fynext">${esc(t(k.sport))} · ${esc(k.city)} · ${fmtKm(km)}</span></button>${followBtn(k)}</div>`).join("")}</div></div>` : ""),
@@ -6996,6 +7123,7 @@ function renderForYou() {
   box.querySelectorAll(".fyclub[data-id], .fyopen").forEach(b => b.onclick = () => openClub(b.dataset.id));
   box.querySelectorAll(".fyjob").forEach(b => b.onclick = () => openJob(b.dataset.j));
   box.querySelectorAll(".follow").forEach(b => b.onclick = () => { toggleFollow(b.dataset.id); renderForYou(); });
+  bindBrief(box);
 }
 // Slide for forsidekortene: nærmeste kort til midten er "aktivt"; bytter selv hvert 6. sekund til man rører den
 let slideTimer = null;
@@ -7176,21 +7304,26 @@ function renderGnews() {
   // Idrettene som har saker i valgt region, flest saker først
   const cnt = {}; pool.forEach(n => cnt[n[1]] = (cnt[n[1]] || 0) + 1);
   const sports = Object.keys(cnt).sort((a, b) => (a === "Sport") - (b === "Sport") || cnt[b] - cnt[a]);
-  if (gSport !== "all" && !cnt[gSport]) gSport = "all";
+  const mineOn = !!(authUser && (follows.size || likes.size)), mineN = mineOn ? pool.filter(newsMine).length : 0;
+  if (gSport === "mine" ? !mineN : gSport !== "all" && !cnt[gSport]) gSport = "all";
   // Med et idrettsvalg vises alle sakene i den idretten; ellers toppsaken, opptil tre fra favorittidrettene, så resten
-  const fav = likes.size ? pool.slice(1).filter(n => liked(n[1])).slice(0, 3) : [];
+  // Saker om klubbene du følger kommer først, så favorittidrettene (Noah 2026-10-28: mer personlig)
+  const fav = authUser ? [...pool.slice(1).filter(n => newsClub(n)).slice(0, 3), ...pool.slice(1).filter(n => !newsClub(n) && liked(n[1])).slice(0, 3)].slice(0, 4)
+    : likes.size ? pool.slice(1).filter(n => liked(n[1])).slice(0, 3) : [];
   // «Vis flere nyheter» legger til ni saker om gangen (tre fulle rader)
-  const all = gSport !== "all" ? pool.filter(n => n[1] === gSport)
+  const all = gSport === "mine" ? [...pool.filter(n => newsClub(n)), ...pool.filter(n => !newsClub(n) && newsMine(n))]
+    : gSport !== "all" ? pool.filter(n => n[1] === gSport)
     : [...pool.slice(0, 1), ...fav, ...pool.slice(1).filter(n => !fav.includes(n))];
   const items = all.slice(0, (gSport !== "all" ? 11 : 8) + big + gMore * 9);
+  const gLabel = g => g === "mine" ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>${t("For deg")}` : g === "all" ? t("Alle idretter") : g === "Sport" ? t("Annet") : icoOf(g) + esc(t(g));
   // Toppsaken tar to ruter, så antallet tilpasses et fullt rutenett med tre kolonner
   if (gSport === "all" && items.length < all.length) while (items.length > 2 && (items.length + 1) % 3) items.pop();
   $("gnews").innerHTML = `<div class="gh"><h3 id="gnewsH">${t("Sportsnyheter")}</h3><small>${t("Hentet {d}", { d: esc(fxDate(GNEWS.at, "d")) })}</small></div>
     ${`<div class="regions seg" data-seg="nyregion" role="group" aria-label="${t("Velg region")}">${["all", ...Object.keys(COUNTRIES)].map(c => `<button type="button" class="chip" data-r="${c}" aria-pressed="${c === region}">${c === "all" ? t("Hele Norden") : flag(c) + COUNTRIES[c]}</button>`).join("")}</div>`}
     ${sports.length > 1 ? `<div class="regions gsports seg" data-seg="nyidrett" role="group" aria-label="${t("Velg idrett")}">${gOpen
-      ? `<button type="button" class="chip" data-g="all" aria-pressed="${gSport === "all"}">${t("Alle idretter")}</button>${sports.map(sp => `<button type="button" class="chip" data-g="${esc(sp)}" aria-pressed="${sp === gSport}">${sp === "Sport" ? t("Annet") : icoOf(sp) + esc(t(sp))} <small>${cnt[sp]}</small></button>`).join("")}<button type="button" class="chip gexp" id="gExp" aria-expanded="true">${t("Vis færre")}</button>`
-      : `<button type="button" class="chip gexp gcur" id="gExp" aria-expanded="false" aria-pressed="true">${gSport === "all" ? t("Alle idretter") : (gSport === "Sport" ? t("Annet") : icoOf(gSport) + esc(t(gSport)))} <svg class="gcaret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>`}</div>` : ""}
-    <ul class="glist">${items.map((n, i) => `<li><a href="${esc(n[3])}" target="_blank" rel="noopener" data-gi="${i}" data-s="${SPORT_KIND[n[1]] || "annet"}"${(GNEWS.img || {})[n[3]] ? ' class="hasimg"' : ""}>${(GNEWS.img || {})[n[3]] ? `<img class="gimg" src="${esc(GNEWS.img[n[3]])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('hasimg');this.remove()">` : ""}${sportIcon(n[1])}<span class="gs">${esc(t(n[1]))}</span><span class="gt"${n[6] !== own ? ` lang="${{ NO: "no", SE: "sv", DK: "da", FI: "fi", IS: "is" }[n[6]]}"` : ""}>${esc(n[2])}</span><span class="nm">${region === "all" ? flag(n[6]) : ""}<span>${esc(n[4])}${n[0] ? " · " + esc(fxDate(n[0])) : ""}</span>${pwBadge(n[5])}</span></a></li>`).join("")}</ul>
+      ? `${mineN ? `<button type="button" class="chip gmine" data-g="mine" aria-pressed="${gSport === "mine"}">${gLabel("mine")} <small>${mineN}</small></button>` : ""}<button type="button" class="chip" data-g="all" aria-pressed="${gSport === "all"}">${t("Alle idretter")}</button>${sports.map(sp => `<button type="button" class="chip" data-g="${esc(sp)}" aria-pressed="${sp === gSport}">${sp === "Sport" ? t("Annet") : icoOf(sp) + esc(t(sp))} <small>${cnt[sp]}</small></button>`).join("")}<button type="button" class="chip gexp" id="gExp" aria-expanded="true">${t("Vis færre")}</button>`
+      : `<button type="button" class="chip gexp gcur" id="gExp" aria-expanded="false" aria-pressed="true">${gLabel(gSport)} <svg class="gcaret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>`}</div>` : ""}
+    <ul class="glist">${items.map((n, i) => `<li><a href="${esc(n[3])}" target="_blank" rel="noopener" data-gi="${i}" data-s="${SPORT_KIND[n[1]] || "annet"}"${(GNEWS.img || {})[n[3]] ? ' class="hasimg"' : ""}>${(GNEWS.img || {})[n[3]] ? `<img class="gimg" src="${esc(GNEWS.img[n[3]])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.remove('hasimg');this.remove()">` : ""}${sportIcon(n[1])}<span class="gs">${esc(t(n[1]))}${(c => c ? `<em class="gclub">${t("Om {x}", { x: esc(c.n) })}</em>` : "")(authUser && newsClub(n))}</span><span class="gt"${n[6] !== own ? ` lang="${{ NO: "no", SE: "sv", DK: "da", FI: "fi", IS: "is" }[n[6]]}"` : ""}>${esc(n[2])}</span><span class="nm">${region === "all" ? flag(n[6]) : ""}<span>${esc(n[4])}${n[0] ? " · " + esc(fxDate(n[0])) : ""}</span>${pwBadge(n[5])}</span></a></li>`).join("")}</ul>
     ${items.length < all.length ? `<button type="button" class="abtn ghost gmore" id="gMore">${t("Vis flere nyheter")}</button>` : ""}
     ${en ? `<p class="s-note">${t("Overskriftene står på språket til avisen de kommer fra.")}</p>` : ""}`;
   $("gnews").querySelectorAll(".regions:not(.gsports) .chip").forEach(b => b.onclick = () => { gRegion = b.dataset.r; gPicked = true; gMore = 0; try { localStorage.setItem("aurora-nyregion", gRegion); } catch (e) {} renderGnews(); syncFlag(); });
@@ -7201,6 +7334,121 @@ function renderGnews() {
   gItems = items;
   $("gnews").querySelectorAll(".glist a[data-gi]").forEach(a => a.onclick = ev => { if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button) return; ev.preventDefault(); openNews(gItems[+a.dataset.gi]); });
   segPills($("gnews"));
+  renderNewsExtras(pool, items);
+}
+
+// ---------- Kamper i dag (Noah 2026-10-28): alle kampene til lagene på siden i dag, også cupkamper, med lagoppstilling når den er ute ----------
+const todayOn = () => state.tab === "forside" || state.tab === "nyheter";
+let todayAll = false;
+function todayGames() {
+  const own = LANG_REGION[LANG];
+  return Object.entries(LIVEX).map(([mid, X]) => {
+    const ks = X.f.map(id => FAN.find(k => k.id === id)).filter(Boolean); if (!ks.length) return null;
+    const L = LIVE[ks[0].id], k0home = X.h !== undefined ? !!X.h : L ? !!L[2] : true;
+    const home = k0home ? ks[0] : ks.find(k => k !== ks[0]) || null, away = k0home ? ks.find(k => k !== ks[0]) || null : ks[0];
+    const nx = nextMatch(ks[0]), comp = X.c || (nx && nx[0] === X.ko.slice(0, 10) ? nx[3] : "");
+    const mine = ks.some(k => follows.has(k.id)), live = L && String(L[6]) === String(mid) ? L : null;
+    return { mid, X, k: ks[0], home, away, comp, mine, live, c: ks[0].c, ko: Date.parse(X.ko) };
+  }).filter(Boolean)
+    // Klubbene du følger først, så landet ditt, så det som pågår, så avsparkstid
+    .sort((a, b) => b.mine - a.mine || (b.c === own) - (a.c === own) || (b.live && b.live[4] !== "ft") - (a.live && a.live[4] !== "ft") || a.ko - b.ko);
+}
+function todayHtml() {
+  const gs = todayGames(); if (!gs.length) return "";
+  const show = todayAll ? gs : gs.slice(0, matchMedia("(max-width: 600px)").matches ? 3 : 6);
+  const side = (k, name) => `<span class="tdt">${k ? clubLogo(k, "clogo", true) : ""}<b>${esc(k ? k.n : name)}</b></span>`;
+  return `<div class="tdh"><h3>${t("Kamper i dag")}</h3><small>${t("{n} kamper med lag fra Aurora", { n: gs.length })}</small></div>
+    <div class="tdlist">${show.map(g => { const L = g.live, st = L ? L[4] : "", sc = L ? `${L[0]}–${L[1]}` : new Date(g.X.ko).toLocaleTimeString(LOCALE[LANG], { hour: "2-digit", minute: "2-digit" });
+      const badge = st === "live" ? `<span class="tdst live"><i></i>LIVE${L[5] ? " " + esc(L[5]) : ""}</span>` : st === "ht" ? `<span class="tdst live"><i></i>${t("Pause")}</span>` : st === "ft" ? `<span class="tdst">${t("Slutt")}</span>` : `<span class="tdst">${t("Avspark")}</span>`;
+      return `<button type="button" class="tdg${g.mine ? " mine" : ""}${st === "live" || st === "ht" ? " on" : ""}" data-m="${g.mid}" data-k="${g.k.id}">
+        <span class="tdtop">${compTag(g.comp, g.c)}${flag(g.c)}${badge}</span>
+        <span class="tdrow">${side(g.home, g.X.t[0])}<span class="tdsc${L ? "" : " ko"}">${sc}</span>${side(g.away, g.X.t[1])}</span>
+        <span class="tdlu">${g.X.lu ? t("Se lagoppstilling") : t("Lagoppstillingen kommer omtrent en time før avspark.")}${g.X.lu ? " →" : ""}</span></button>`; }).join("")}</div>
+    ${gs.length > show.length ? `<button type="button" class="abtn ghost tdmore">${t("Vis alle {n}", { n: gs.length })}</button>` : ""}`;
+}
+function paintToday() {
+  const html = todayOn() ? todayHtml() : "";
+  ["todayHome", "todayNews"].forEach(id => { const el = $(id); if (!el) return; el.hidden = !html; el.innerHTML = html;
+    el.querySelectorAll(".tdg").forEach(b => b.onclick = () => openMatch(FAN.find(x => x.id === b.dataset.k), b.dataset.m));
+    const m = el.querySelector(".tdmore"); if (m) m.onclick = () => { todayAll = true; paintToday(); }; });
+}
+
+// ---------- «I dag for deg»: det viktigste for den som er logget inn, samlet på én linje øverst i Til deg ----------
+// Sist besøk huskes per nettleser, så «nye jobber» betyr nye siden sist du var her
+const VISIT_KEY = "aurora-sist-her";
+let lastVisit = "";
+try { const now = isoToday(), v = JSON.parse(localStorage.getItem(VISIT_KEY) || "null");
+  // Samme dag: behold forrige dag som «sist», så tallet ikke nullstilles hver gang man laster siden på nytt
+  lastVisit = v ? (v.d === now ? v.prev : v.d) : ""; localStorage.setItem(VISIT_KEY, JSON.stringify({ d: now, prev: lastVisit })); } catch (e) {}
+function briefItems() {
+  if (!authUser) return [];
+  const out = [], today = isoToday();
+  // Klubbene du følger som spiller i dag (live først)
+  FAN.filter(k => follows.has(k.id)).forEach(k => { const L = LIVE[k.id], n = nextMatch(k);
+    if (L && L[4] !== "ft") out.push({ w: 10, cls: "live", go: "club:" + k.id, ico: clubLogo(k, "clogo", true), txt: `${esc(k.n)} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} ${t("mot {x}", { x: esc(L[3]) })}`, sub: L[4] === "ht" ? t("Pause") : "LIVE " + esc(L[5] || "") });
+    else if (L && L[4] === "ft") out.push({ w: 6, go: "club:" + k.id, ico: clubLogo(k, "clogo", true), txt: `${esc(k.n)} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} ${t("mot {x}", { x: esc(L[3]) })}`, sub: t("Slutt") });
+    else if (n && n[0] === today) out.push({ w: 8, go: "club:" + k.id, ico: clubLogo(k, "clogo", true), txt: t("{x} spiller i dag", { x: esc(k.n) }), sub: `${n[4] ? n[4] + " · " : ""}${esc(fxComp(n[3], k.c))}` }); });
+  // Frister og arrangementer som nærmer seg
+  savedItems().filter(isDue).slice(0, 2).forEach(it => out.push({ w: it.n <= 1 ? 9 : 7, cls: it.n <= 1 ? "urgent" : "", go: (it.kind === "job" ? "job:" : "ev:") + it.id,
+    ico: `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[it.kind === "job" ? "jobber" : "arrangementer"]}</svg>`, txt: esc(it.title), sub: savedWhen(it)[0] }));
+  // Nye jobber som passer, siden sist
+  if (lastVisit) { const fresh = JOBS.filter(j => (ADDED_AT[j.id] || "") > lastVisit && !(daysLeft(j.dl) < 0) && jobFit(j).why);
+    if (fresh.length) out.push({ w: 5, go: "tab:jobber", ico: `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON.jobber}</svg>`, txt: t(fresh.length === 1 ? "1 ny jobb som passer deg" : "{n} nye jobber som passer deg", { n: fresh.length }), sub: t("Siden sist du var her") }); }
+  // Saker om klubbene dine
+  const cn = clubNewsMine().length;
+  if (cn) out.push({ w: 4, go: "news:mine", ico: `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON.nyheter || ""}</svg>`, txt: t(cn === 1 ? "1 sak om klubbene dine" : "{n} saker om klubbene dine", { n: cn }), sub: t("Siste 3 dager") });
+  return out.sort((a, b) => b.w - a.w).slice(0, 5);
+}
+const briefHtml = () => { const it = briefItems(); if (!it.length) return "";
+  return `<div class="brief" role="list" aria-label="${t("I dag for deg")}">${it.map(x => `<button type="button" role="listitem" class="bri${x.cls ? " " + x.cls : ""}" data-go="${esc(x.go)}"><span class="brico">${x.ico}</span><span class="brtx"><b>${x.txt}</b><small>${x.sub}</small></span></button>`).join("")}</div>`; };
+function bindBrief(box) {
+  box.querySelectorAll(".bri").forEach(b => b.onclick = () => { const [k, id] = b.dataset.go.split(":");
+    if (k === "club") openClub(id); else if (k === "job") openJob(id); else if (k === "ev") openEvent(id);
+    else if (k === "tab") { if (id === "jobber" && fitOn()) { state.sort = "fit"; state.sortSet = true; } setTab(id); }
+    else if (k === "news") { gSport = "mine"; gMore = 0; setTab("nyheter"); } });
+}
+
+// ---------- Nyheter tilpasset deg: saker om klubbene du følger og idrettene du liker kommer først og får et merke ----------
+// Navnene vi leter etter i overskriftene: «Bodø/Glimt» gir både «bodø/glimt» og «glimt»
+const clubWords = () => FAN.filter(k => follows.has(k.id)).flatMap(k => { const c = clubCore(k.n.replace(WSUF_RE, ""));
+  return [c, ...c.split(/[\/\-]/)].map(w => w.trim()).filter(w => w.length >= 4).map(w => [k, w]); });
+const WSUF_RE = /\s+(Kvinner|dam|Kvinder|Naiset|kvenna)$/i;
+let cwMemo = { sig: "", list: [] };
+const newsClub = n => { const sig = [...follows].join();
+  if (cwMemo.sig !== sig) cwMemo = { sig, list: clubWords().map(([k, w]) => [k, new RegExp(`(^|[^\\p{L}])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^\\p{L}])`, "iu")]) };
+  const hit = cwMemo.list.find(([, re]) => re.test(n[2])); return hit ? hit[0] : null; };
+const newsMine = n => !!(authUser && (newsClub(n) || liked(n[1])));
+// Klubbnyhetene fra lokalavisene (NEWS.clubs), for klubbene du følger, nyeste først
+const clubNewsMine = () => FAN.filter(k => follows.has(k.id)).flatMap(k => newsOf(k).sort((a, b) => (b[0] || "").localeCompare(a[0] || "")).map((n, i) => ({ k, n, i })))
+  .sort((a, b) => a.i - b.i || (b.n[0] || "").localeCompare(a.n[0] || "")); // én sak fra hver klubb om gangen, nyeste først
+// Nyhetsfanen: ticker med siste nytt, kampene i dag, dine klubber i nyhetene og egne rader per idrett
+function renderNewsExtras(pool, shown) {
+  const tab = $("tab-nyheter"); if (!tab) return;
+  let top = $("newsTop"); if (!top) { top = document.createElement("div"); top.id = "newsTop"; top.className = "newstop"; }
+  let rows = $("newsRows"); if (!rows) { rows = document.createElement("div"); rows.id = "newsRows"; rows.className = "newsrows"; }
+  if (state.tab !== "nyheter") { top.hidden = rows.hidden = true; return; }
+  if (top.nextElementSibling !== $("gnews")) $("gnews").before(top);
+  if ($("gnews").nextElementSibling !== rows) $("gnews").after(rows);
+  top.hidden = rows.hidden = false;
+  // Ticker: de ferskeste overskriftene ruller sakte forbi. Står stille hvis man har bedt om mindre bevegelse
+  const tick = pool.slice(0, 14);
+  const tickItem = (n, i) => `<a href="${esc(n[3])}" target="_blank" rel="noopener" data-ti="${i}"${newsClub(n) ? ' class="mine"' : ""}><b>${esc(n[4])}</b>${esc(n[2])}</a>`;
+  const cn = authUser ? clubNewsMine().slice(0, 12) : [];
+  top.innerHTML = `${tick.length ? `<div class="ticker" aria-label="${t("Siste nytt")}"><span class="tklbl">${t("Siste nytt")}</span><div class="tkwin"><div class="tktrack">${tick.map(tickItem).join("")}${tick.map(tickItem).join("").replace(/data-ti=/g, 'aria-hidden="true" tabindex="-1" data-ti=')}</div></div></div>` : ""}
+    <section class="today" id="todayNews" aria-label="${t("Kamper i dag")}" hidden></section>
+    ${cn.length ? `<section class="cnews"><div class="tdh"><h3>${t("Dine klubber i nyhetene")}</h3><small>${t("Fra lokalavisene, siste 3 dager")}</small></div>
+      <div class="cnrow">${cn.map(({ k, n }) => `<a class="cnc" href="${esc(n[2])}" target="_blank" rel="noopener" style="--kc:${KIND_COLOR[kindOf(k.sport)]}"><span class="cnk">${clubLogo(k, "clogo", true)}<b>${esc(k.n)}</b></span><span class="cnt">${esc(n[1])}</span><span class="cnm">${n[3] ? esc(n[3]) : t("Klubbens nettside")}${n[0] ? " · " + esc(fxDate(n[0])) : ""}${pwBadge(n[4])}</span></a>`).join("")}</div></section>` : ""}`;
+  top.querySelectorAll(".tktrack a[data-ti]").forEach(a => a.onclick = ev => { if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button) return; ev.preventDefault(); openNews(tick[+a.dataset.ti]); });
+  paintToday();
+  // Rader per idrett: idrettene du liker først, ellers de med flest saker. Bare saker som ikke alt står over
+  if (gSport !== "all") { rows.innerHTML = ""; return; }
+  const left = pool.filter(n => !shown.includes(n)), cnt = {}; left.forEach(n => cnt[n[1]] = (cnt[n[1]] || 0) + 1);
+  const sps = Object.keys(cnt).filter(sp => sp !== "Sport" && cnt[sp] >= 2).sort((a, b) => liked(b) - liked(a) || cnt[b] - cnt[a]).slice(0, 3);
+  rows.innerHTML = sps.map(sp => { const ns = left.filter(n => n[1] === sp).slice(0, 4);
+    return `<section class="nrow" style="--kc:${KIND_COLOR[kindOf(sp)] || "var(--accent)"}"><div class="nrh"><h3>${icoOf(sp)}${esc(t(sp))}</h3><button type="button" class="nrall" data-g="${esc(sp)}">${t("Se alle {n}", { n: pool.filter(n => n[1] === sp).length })} →</button></div>
+      <ul class="nrlist">${ns.map(n => `<li><a href="${esc(n[3])}" target="_blank" rel="noopener" data-ri="${esc(newsKey(n[3]))}">${(GNEWS.img || {})[n[3]] ? `<img src="${esc(GNEWS.img[n[3]])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}<span class="nrt">${esc(n[2])}</span><span class="nrm">${flag(n[6])}${esc(n[4])}${n[0] ? " · " + esc(fxDate(n[0])) : ""}</span></a></li>`).join("")}</ul></section>`; }).join("");
+  rows.querySelectorAll(".nrall").forEach(b => b.onclick = () => { gSport = b.dataset.g; gMore = 0; renderGnews(); $("gnews").scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" }); });
+  rows.querySelectorAll("a[data-ri]").forEach(a => a.onclick = ev => { if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button) return; ev.preventDefault(); openNews(pool.find(n => newsKey(n[3]) === a.dataset.ri)); });
 }
 
 $("eq").addEventListener("input", e => { state.eq = e.target.value.trim(); render(); });
@@ -8058,6 +8306,29 @@ async function openInbox() {
     + (rest.length ? `${reqs.length ? `<h3 class="inboxh">${t("Meldinger")}</h3>` : ""}<div class="svlist">${rest.map(([c, i]) => row(c, i)).join("")}</div>` : "")
     : `<div class="empty">${t("Ingen meldinger ennå.")} ${t("Åpne en profil og trykk «Send melding». Følger dere ikke hverandre, blir den første meldingen en forespørsel.")}</div>`;
   box.querySelectorAll(".cvitem").forEach(b => b.onclick = () => openChat(list[+b.dataset.i]));
+  // Ny melding (Noah 2026-10-28): søk opp hvem som helst, eller velg blant dem du følger
+  box.insertAdjacentHTML("afterbegin", `<button type="button" class="newmsg" id="newMsg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>${t("Ny melding")}</button>`);
+  $("newMsg").onclick = () => newMessage(list);
+}
+function newMessage(convs) {
+  const box = $("inbox"); if (!box) return;
+  box.innerHTML = `<a href="#" class="nmback" id="nmBack">← ${t("Meldinger")}</a>
+    <label class="nmfind"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg><input type="search" id="nmIn" placeholder="${t("Søk etter brukernavn")}" aria-label="${t("Søk etter brukernavn")}" autocomplete="off" spellcheck="false"></label>
+    <h3 class="inboxh" id="nmH">${t("Du følger")}</h3><ul class="plist nmlist" id="nmRes"><li class="pnone">${t("Vent litt …")}</li></ul>`;
+  $("nmBack").onclick = e => { e.preventDefault(); openInbox(); };
+  const res = $("nmRes"), inp = $("nmIn"), had = new Set((convs || []).map(c => c.id));
+  const show = (ps, none) => { ps = ps.filter(p => p.id !== authUser.id);
+    res.innerHTML = ps.length ? ps.map((p, i) => `<li><button type="button" data-i="${i}">${avaHtml(p)}<span><b>${esc(p.username)}${ownerStar(p.id)}</b>${had.has(p.id) ? `<small>${t("Dere har skrevet før")}</small>` : ""}</span></button></li>`).join("") : `<li class="pnone">${none}</li>`;
+    res.querySelectorAll("[data-i]").forEach(b => b.onclick = () => openChat(ps[+b.dataset.i])); };
+  let following = [];
+  sb.rpc("follow_list", { uid: authUser.id, kind: "following" }).then(r => { following = Array.isArray(r.data) ? r.data : [];
+    if (!inp.value.trim()) show(following, t("Du følger ingen ennå. Søk etter et brukernavn over.")); });
+  let seq = 0, tm;
+  inp.oninput = () => { clearTimeout(tm); tm = setTimeout(async () => { const v = inp.value.trim(), my = ++seq;
+    $("nmH").textContent = v ? t("Brukere") : t("Du følger");
+    if (!v) return show(following, t("Du følger ingen ennå. Søk etter et brukernavn over."));
+    const r = await sb.rpc("search_profiles", { q: v }); if (my !== seq || !res.isConnected) return; show(r.data || [], t("Ingen brukere funnet.")); }, 200); };
+  inp.focus();
 }
 async function openChat(u) {
   if (needLogin(t("Logg inn for å sende meldinger."))) return;
