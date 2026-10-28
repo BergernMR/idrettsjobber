@@ -1732,6 +1732,11 @@ body.home .hub { margin-top: 0; }
 .mscorers span:first-child { text-align: right; } .mscorers i { font-style: normal; font-size: 12px; }
 .pitch .lgoal { position: absolute; top: -11px; left: -16px; font-size: 14px; line-height: 1; font-style: normal; white-space: nowrap; filter: drop-shadow(0 1px 1px rgba(0,0,0,.45)); letter-spacing: -3px; }
 .mbench .lgoal { margin-left: 5px; font-size: 12px; letter-spacing: -2px; }
+.pitch .lcard { position: absolute; bottom: -2px; right: -9px; width: 8px; height: 11px; border-radius: 1.5px; background: #fdb022; box-shadow: 0 1px 2px rgba(0,0,0,.45); }
+.pitch .lcard.r { background: #d92d20; }
+.mbench .lcard { display: inline-block; width: 8px; height: 11px; border-radius: 1.5px; background: #fdb022; margin-left: 5px; vertical-align: -1px; }
+.mbench .lcard.r { background: #d92d20; }
+.mscorers.red { color: #d92d20; margin-top: 2px; }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -2443,6 +2448,8 @@ const I18N = {
   "Statistikk": ["Statistik","Statistik","Tilastot","Tölfræði","Stats"],
   "målgivende": ["målgivande","målgivende","maalisyöttö","stoðsending","assist"],
   "mål": ["mål","mål","maali","mörk","goals"],
+  "Rødt kort": ["Rött kort","Rødt kort","Punainen kortti","Rautt spjald","Red card"],
+  "Gult kort": ["Gult kort","Gult kort","Keltainen kortti","Gult spjald","Yellow card"],
   "Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
 "Tilpass": ["Anpassa","Tilpas","Muokkaa","Aðlaga","Customise"],
 "Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
@@ -6652,17 +6659,35 @@ async function fetchLive() {
   try { const r = await fetch(LIVE_URL, { headers: { Accept: "application/vnd.github.raw+json" }, cache: "no-store" });
     if (r.ok) { const d = await r.json(); if (Date.now() - Date.parse(d.at) < 3 * 3600e3) { LIVE = d.m || {}; LIVEX = d.x || {}; } } } catch (x) {}
 }
+// Ny live-data inn på siden: maler om live-boksene, «Kamper i dag» og et åpent kampkort
+function applyLive(d) {
+  if (!d || !d.at) return;
+  const fresh = Date.now() - Date.parse(d.at) < 3 * 3600e3, was = JSON.stringify(LIVE), wasX = Object.keys(LIVEX).join(), wasM = curMatch && JSON.stringify(LIVEX[curMatch.mid]);
+  LIVE = fresh ? d.m || {} : {}; LIVEX = fresh ? d.x || {} : {}; if (JSON.stringify(LIVE) !== was) paintLive(); else if (Object.keys(LIVEX).join() !== wasX) paintToday();
+  if (matchOn() && (JSON.stringify(LIVEX[curMatch.mid]) !== wasM || JSON.stringify(LIVE) !== was)) openMatch(curMatch.k, curMatch.mid, true);
+}
+// Fortløpende (Noah 2026-10-28): når det er kamper i dag lytter siden på live_state i Supabase og får hver endring med en gang.
+// GitHub-hentingen under blir da bare en reserve hvert 5. minutt.
+// Supabase regnes som i orden bare når den faktisk har levert ferske data de siste 3 minuttene (kampminuttet endrer seg hvert minutt)
+let liveRt = null, liveRtAt = 0;
+const rtGood = () => Date.now() - liveRtAt < 3 * 60e3;
+function liveRealtime() {
+  if (liveRt || !(Object.keys(LIVEX).length || anyLive())) return;
+  liveRt = 1;
+  loadSupa().then(c => { if (!c) { liveRt = null; return; }
+    const got = d => { if (d && d.at && Date.now() - Date.parse(d.at) < 3 * 60e3) liveRtAt = Date.now(); applyLive(d); };
+    liveRt = c.channel("live").on("postgres_changes", { event: "*", schema: "public", table: "live_state" }, p => p.new && got(p.new.data))
+      .subscribe(st => { if (st === "SUBSCRIBED") c.from("live_state").select("data").eq("id", 1).maybeSingle().then(r => r.data && got(r.data.data)); }); });
+}
 async function pollLive(now) {
   clearTimeout(liveTimer);
   if (!(now && Date.now() - liveAt < 60e3) && !document.hidden && (follows.size || tableOpen() || todayOn() || matchOn())) {
     liveAt = Date.now();
     try { const r = await fetch(LIVE_URL, { headers: { Accept: "application/vnd.github.raw+json" }, cache: "no-store" });
-      if (r.ok) { const d = await r.json(); const fresh = Date.now() - Date.parse(d.at) < 3 * 3600e3; const was = JSON.stringify(LIVE);
-        const wasX = Object.keys(LIVEX).join(), wasM = curMatch && JSON.stringify(LIVEX[curMatch.mid]);
-        LIVE = fresh ? d.m || {} : {}; LIVEX = fresh ? d.x || {} : {}; if (JSON.stringify(LIVE) !== was) paintLive(); else if (Object.keys(LIVEX).join() !== wasX) paintToday();
-        if (matchOn() && (JSON.stringify(LIVEX[curMatch.mid]) !== wasM || JSON.stringify(LIVE) !== was)) openMatch(curMatch.k, curMatch.mid, true); } } catch (x) {}
+      if (r.ok) applyLive(await r.json()); } catch (x) {}
+    liveRealtime();
   }
-  liveTimer = setTimeout(pollLive, matchOn() ? 60e3 : playsToday() || (tableOpen() && anyLive()) ? 75e3 : todayOn() && Object.keys(LIVEX).length ? 120e3 : 15 * 60e3);
+  liveTimer = setTimeout(pollLive, rtGood() ? 5 * 60e3 : matchOn() ? 60e3 : playsToday() || (tableOpen() && anyLive()) ? 75e3 : todayOn() && Object.keys(LIVEX).length ? 120e3 : 15 * 60e3);
 }
 const LOCK = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 const pwBadge = p => p === 2 ? `<span class="pw pay">${LOCK}${t("Betalingsmur")}</span>` : p === 1 ? `<span class="pw maybe">${LOCK}${t("Kan kreve abonnement")}</span>` : "";
@@ -6752,7 +6777,9 @@ async function openMatch(k, mid, keep) {
   const facts = [ht.join("–") && j.ev.some(e => e[2] === "ht") ? t("Pause") + " " + ht.join("–") : "", j.v, j.ref && t("Dommer") + ": " + j.ref, j.att && t("Tilskuere") + ": " + Number(j.att).toLocaleString(LOCALE[LANG])].filter(Boolean);
   // Faner (Noah 2026-10-28): Mål og kort, Lagoppstilling og Statistikk, så man går rett dit
   const goals = evs.filter(e => ["g", "pen", "own"].includes(e[2])), scorers = [0, 1].map(i => goals.filter(e => e[1] === i).map(e => esc(e[3].split(" ").slice(-1)[0]) + " " + esc(e[0]) + "'").join(", "));
-  const sumHtml = goals.length ? `<div class="mscorers"><span>${scorers[0]}</span><i>⚽</i><span>${scorers[1]}</span></div>` : "";
+  const reds = [0, 1].map(i => evs.filter(e => e[2] === "r" && e[1] === i).map(e => esc(e[3].split(" ").slice(-1)[0]) + " " + esc(e[0]) + "'").join(", "));
+  const sumHtml = (goals.length ? `<div class="mscorers"><span>${scorers[0]}</span><i>⚽</i><span>${scorers[1]}</span></div>` : "") +
+    (reds[0] || reds[1] ? `<div class="mscorers red"><span>${reds[0]}</span><i>🟥</i><span>${reds[1]}</span></div>` : "");
   const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml]].filter(Boolean);
   const first = evs.length || !lu ? "ev" : "lu";
   const full = put(shell(j, `${sumHtml}${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}
@@ -6771,8 +6798,11 @@ const wallState = (ko, hasLu) => { const k = Date.parse(ko), now = Date.now();
 // Lagoppstilling på en bane: hjemmelaget nederst, bortelaget øverst. Innbyttere og trenere under.
 function lineupHtml(lu, names, open, ev = []) {
   // Fotball på målscorerne og fotballsko på den som ga målgivende (Noah 2026-10-28)
-  const did = nm => { const g = ev.filter(e => (e[2] === "g" || e[2] === "pen") && e[3] === nm).length, a = ev.filter(e => e[4] === nm).length;
-    return g || a ? `<b class="lgoal" title="${esc([g ? g + " " + t("mål") : "", a ? a + " " + t("målgivende") : ""].filter(Boolean).join(", "))}">${"⚽".repeat(g)}${"👟".repeat(a)}</b>` : ""; };
+  // Rødt kort vises med 🟥, gult med 🟨 (Noah 2026-10-28)
+  const did = nm => { const g = ev.filter(e => (e[2] === "g" || e[2] === "pen") && e[3] === nm).length, a = ev.filter(e => e[4] === nm).length,
+      r = ev.some(e => e[2] === "r" && e[3] === nm), y = !r && ev.some(e => e[2] === "y" && e[3] === nm);
+    const card = r ? `<b class="lcard r" title="${esc(t("Rødt kort"))}"></b>` : y ? `<b class="lcard" title="${esc(t("Gult kort"))}"></b>` : "";
+    return (g || a ? `<b class="lgoal" title="${esc([g ? g + " " + t("mål") : "", a ? a + " " + t("målgivende") : ""].filter(Boolean).join(", "))}">${"⚽".repeat(g)}${"👟".repeat(a)}</b>` : "") + card; };
   const last = n => { const w = String(n).split(" "); return w.length > 1 ? w.slice(1).join(" ") : n; };
   // Bytter (Noah 2026-10-28): startelleveren viser hvem som er byttet ut, «Etter bytter» viser laget slik det står nå
   const subsOf = p => Array.isArray(p[4]) ? p[4] : [];

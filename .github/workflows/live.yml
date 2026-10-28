@@ -16,3 +16,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Følg kamper som pågår
         run: python3 scripts/live.py index.html
+        env:
+          LIVE_TOKEN: ${{ secrets.LIVE_TOKEN }}
