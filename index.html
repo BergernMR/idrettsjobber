@@ -1700,7 +1700,14 @@ a.fyev.fyedu { text-decoration: none; color: inherit; }
 .mycard .news .nt { font-size: 13px; }
 .mycard .newsbox .nm { font-size: 11.5px; }
 /* Forsiden uten nordlys (Noah 2026-10-28): rolig mørk topp som glir over i bakgrunnen, og innholdet under ligger ikke lenger under toppen */
-body.home header::before { background: linear-gradient(180deg, #071019 0%, #0b1a16 calc(100% - 64px), var(--bg) 100%); }
+/* Lys modus får lys topp, mørk modus mørk (Noah 2026-10-28) */
+:root { --hero-a: #e3eee9; --hero-b: #eef4f0; --hero-fg: #0f1c22; --hero-em: #0f6b4f; --hero-chip: rgba(15,28,34,.07); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --hero-a: #071019; --hero-b: #0b1a16; --hero-fg: #fff; --hero-em: #7fe0b7; --hero-chip: rgba(255,255,255,.16); } }
+:root[data-theme="dark"] { --hero-a: #071019; --hero-b: #0b1a16; --hero-fg: #fff; --hero-em: #7fe0b7; --hero-chip: rgba(255,255,255,.16); }
+body.home header::before { background: linear-gradient(180deg, var(--hero-a) 0%, var(--hero-b) calc(100% - 64px), var(--bg) 100%); }
+body.home header, body.home h1 .brand { color: var(--hero-fg); }
+body.home .herohead em { color: var(--hero-em); }
+body.home .eyebrow { color: var(--hero-fg); background: var(--hero-chip); }
 body.home header { padding-bottom: 48px; }
 body.home .hub { margin-top: 0; }
 @media (max-width: 760px) { body.home header { padding-bottom: 32px; } body.home .hub { margin-top: 0; } }
