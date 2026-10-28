@@ -16,7 +16,8 @@ WSUF = r"\s+(Kvinner|kvinner|dam|Dam|Kvinder|Naiset|kvenna)$"
 COMP = {59: "Eliteserien", 203: "OBOS-ligaen", 204: "PostNord-ligaen", 205: "Norsk Tipping-ligaen", 67: "Allsvenskan", 168: "Superettan", 169: "Ettan",
   46: "Superligaen", 85: "1. division", 239: "2. division", 240: "3. division", 51: "Veikkausliiga", 251: "Ykkösliiga", 8969: "Ykkönen", 215: "Besta deildin",
   216: "Lengjudeildin", 10226: "2. deild", 331: "Toppserien", 332: "1. divisjon", 9089: "Damallsvenskan", 10308: "Elitettan", 256: "A-Liga", 10174: "Kansallinen Liiga", 42: "Champions League", 73: "Europa League", 10216: "Conference League", 10076: "Ligacupen"}
-for i in (206, 171, 242, 143, 217): COMP[i] = "Cup"
+# Cupene med eget navn, så «Neste kamp» viser hvilken turnering det er (Noah 2026-10-28)
+COMP.update({206: "NM-cupen", 171: "Svenska cupen", 242: "Pokalturneringen", 143: "Suomen Cup", 217: "Mjólkurbikarinn"})
 for i in (68, 172, 9634, 60, 9754, 52, 10713): COMP[i] = "Kvalifisering"
 def norm(s):
     s = s.lower().replace("þ", "th").replace("ð", "d").replace("æ", "ae").replace("ø", "o").replace("å", "a")
@@ -83,7 +84,8 @@ for k in fan:
             if st.get("finished") and st.get("scoreStr"):
                 a, b = [int(x) for x in re.findall(r"\d+", st["scoreStr"])[:2]]
                 played.append([t.strftime("%Y-%m-%d"), oname, 1 if home else 0, a if home else b, b if home else a, comp, int(m["id"])])
-            elif not st.get("started") and t > now:
+            elif (not st.get("started") and t > now) or (st.get("started") and not st.get("finished")):
+                # En kamp som pågår (f.eks. en cupkamp midt i uka) er fortsatt «neste kamp» til den er ferdig
                 upcoming.append((t, [t.strftime("%Y-%m-%d"), oname, 1 if home else 0, comp, t.strftime("%H:%M")]))
     slug = re.sub(r"[^a-z0-9]+", "-", unicodedata.normalize("NFKD", names.get(fid, k["n"]).lower()).encode("ascii", "ignore").decode()).strip("-")
     e = {"s": "FotMob", "u": f"https://www.fotmob.com/teams/{fid}/fixtures/{slug}"}
