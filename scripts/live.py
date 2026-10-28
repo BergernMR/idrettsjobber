@@ -49,7 +49,10 @@ def snapshot():
 LU, tried = {}, {}
 def add_lineups(x):
     for mid, v in x.items():
-        if mid not in LU and time.time() - tried.get(mid, 0) > 240:
+        # Mens kampen pågår hentes oppstillingen på nytt hvert 4. minutt, så byttene kommer med
+        ko = datetime.datetime.fromisoformat(v["ko"].replace("Z", "+00:00"))
+        on = ko <= datetime.datetime.now(datetime.timezone.utc) <= ko + datetime.timedelta(hours=2, minutes=30)
+        if (mid not in LU or on) and time.time() - tried.get(mid, 0) > 240:
             tried[mid] = time.time()
             lu = lineup(fetch(f"https://www.fotmob.com/api/data/matchDetails?matchId={mid}"))
             if lu: LU[mid] = lu
