@@ -460,6 +460,9 @@ table.league tr.zq td.pos, table.mini tr.zq td.pos { box-shadow: inset 3px 0 #f0
 .live .lt i { width: 8px; height: 8px; border-radius: 50%; background: #e02424; animation: livep 1.4s ease-in-out infinite; }
 .live.ht .lt i, .live.ft .lt i { animation: none; background: currentColor; opacity: .5; }
 .live.ft { background: var(--surface-2); color: var(--text); }
+.live.golive { cursor: pointer; transition: filter .15s; }
+.live.golive:hover { filter: brightness(1.08); }
+.live .lgo { margin-left: auto; font-size: 22px; line-height: 1; font-weight: 700; opacity: .7; }
 .live .ls b { font-size: 16px; margin: 0 2px; }
 @keyframes livep { 50% { opacity: .25; transform: scale(.7); } }
 @media (prefers-reduced-motion: reduce) { .live .lt i { animation: none; } }
@@ -6559,7 +6562,8 @@ let LIVE = {}, LIVEX = {};
 const liveHtml = k => { const L = LIVE[k.id]; if (!L) return ""; const [hs, as, home, opp, st, min] = L;
   const lbl = st === "ft" ? t("Slutt") : st === "ht" ? t("Pause") : "LIVE" + (min ? " " + esc(min) : "");
   const score = home ? `${esc(k.n)} <b>${hs}–${as}</b> ${esc(opp)}` : `${esc(opp)} <b>${hs}–${as}</b> ${esc(k.n)}`;
-  return `<div class="live ${st}"><span class="lt"><i></i>${lbl}</span><span class="ls">${score}</span></div>`; };
+  // Trykk på live-boksen åpner kampkortet med lagoppstilling og diskusjon (Noah 2026-10-28)
+  return `<div class="live ${st}${L[6] ? ` golive" role="button" tabindex="0" data-m="${esc(L[6])}" data-k="${k.id}" title="${t("Åpne kampkortet")}` : ""}"><span class="lt"><i></i>${lbl}</span><span class="ls">${score}</span>${L[6] ? `<span class="lgo" aria-hidden="true">›</span>` : ""}</div>`; };
 const xOf = k => Object.keys(LIVEX).find(id => LIVEX[id].f.includes(k.id));
 const liveMine = () => FAN.filter(k => follows.has(k.id) && LIVE[k.id]);
 function paintLive() {
@@ -6722,7 +6726,8 @@ async function matchWall(mid, state) {
   await draw(); list.scrollTop = list.scrollHeight;
   wallTimer = setInterval(draw, 20000);
 }
-document.addEventListener("click", e => { const li = e.target.closest(".fxlist li[data-m], .mopen[data-m]"); if (li) openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); });
+document.addEventListener("click", e => { const li = e.target.closest(".fxlist li[data-m], .mopen[data-m], .live.golive[data-m]"); if (!li) return; e.stopPropagation(); openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); }, true);
+document.addEventListener("keydown", e => { const li = (e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest(".live.golive[data-m]"); if (li) { e.preventDefault(); openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); } });
 document.addEventListener("keydown", e => { const li = e.target.closest && e.target.closest(".fxlist li[data-m]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); } });
 const nextLogo = k => { const n = k && nextMatch(k); if (!n) return "";
   const o = FAN.find(x => x.n === n[1] && x.sport === k.sport), tip = `${fxDate(n[0])}: ${n[2] ? t("Hjemme mot {x}", { x: n[1] }) : t("Borte mot {x}", { x: n[1] })}`;
@@ -7120,7 +7125,8 @@ function renderForYou() {
   const done = box.querySelector(".fydone"); if (done) done.onclick = () => { fyEdit = false; render(); };
   const skip = box.querySelector(".fyskip"); if (skip) skip.onclick = () => { fySkip = true; fyEdit = false; try { localStorage.setItem("aurora-idretter-hopp", "1"); } catch (e) {} render(); };
   const ed = box.querySelector(".fyedit"); if (ed) ed.onclick = () => { fyEdit = true; renderForYou(); };
-  box.querySelectorAll(".fyclub[data-id], .fyopen").forEach(b => b.onclick = () => openClub(b.dataset.id));
+  box.querySelectorAll(".fyclub[data-id], .fyopen").forEach(b => b.onclick = () => { const L = LIVE[b.dataset.id];
+    L && L[6] ? openMatch(FAN.find(x => x.id === b.dataset.id), L[6]) : openClub(b.dataset.id); });
   box.querySelectorAll(".fyjob").forEach(b => b.onclick = () => openJob(b.dataset.j));
   box.querySelectorAll(".follow").forEach(b => b.onclick = () => { toggleFollow(b.dataset.id); renderForYou(); });
   bindBrief(box);
@@ -7385,8 +7391,8 @@ function briefItems() {
   const out = [], today = isoToday();
   // Klubbene du følger som spiller i dag (live først)
   FAN.filter(k => follows.has(k.id)).forEach(k => { const L = LIVE[k.id], n = nextMatch(k);
-    if (L && L[4] !== "ft") out.push({ w: 10, cls: "live", go: "club:" + k.id, ico: clubLogo(k, "clogo", true), txt: `${esc(k.n)} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} ${t("mot {x}", { x: esc(L[3]) })}`, sub: L[4] === "ht" ? t("Pause") : "LIVE " + esc(L[5] || "") });
-    else if (L && L[4] === "ft") out.push({ w: 6, go: "club:" + k.id, ico: clubLogo(k, "clogo", true), txt: `${esc(k.n)} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} ${t("mot {x}", { x: esc(L[3]) })}`, sub: t("Slutt") });
+    if (L && L[4] !== "ft") out.push({ w: 10, cls: "live", go: L[6] ? `match:${k.id}:${L[6]}` : "club:" + k.id, ico: clubLogo(k, "clogo", true), txt: `${esc(k.n)} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} ${t("mot {x}", { x: esc(L[3]) })}`, sub: L[4] === "ht" ? t("Pause") : "LIVE " + esc(L[5] || "") });
+    else if (L && L[4] === "ft") out.push({ w: 6, go: L[6] ? `match:${k.id}:${L[6]}` : "club:" + k.id, ico: clubLogo(k, "clogo", true), txt: `${esc(k.n)} ${L[2] ? `${L[0]}–${L[1]}` : `${L[1]}–${L[0]}`} ${t("mot {x}", { x: esc(L[3]) })}`, sub: t("Slutt") });
     else if (n && n[0] === today) out.push({ w: 8, go: "club:" + k.id, ico: clubLogo(k, "clogo", true), txt: t("{x} spiller i dag", { x: esc(k.n) }), sub: `${n[4] ? n[4] + " · " : ""}${esc(fxComp(n[3], k.c))}` }); });
   // Frister og arrangementer som nærmer seg
   savedItems().filter(isDue).slice(0, 2).forEach(it => out.push({ w: it.n <= 1 ? 9 : 7, cls: it.n <= 1 ? "urgent" : "", go: (it.kind === "job" ? "job:" : "ev:") + it.id,
@@ -7402,8 +7408,8 @@ function briefItems() {
 const briefHtml = () => { const it = briefItems(); if (!it.length) return "";
   return `<div class="brief" role="list" aria-label="${t("I dag for deg")}">${it.map(x => `<button type="button" role="listitem" class="bri${x.cls ? " " + x.cls : ""}" data-go="${esc(x.go)}"><span class="brico">${x.ico}</span><span class="brtx"><b>${x.txt}</b><small>${x.sub}</small></span></button>`).join("")}</div>`; };
 function bindBrief(box) {
-  box.querySelectorAll(".bri").forEach(b => b.onclick = () => { const [k, id] = b.dataset.go.split(":");
-    if (k === "club") openClub(id); else if (k === "job") openJob(id); else if (k === "ev") openEvent(id);
+  box.querySelectorAll(".bri").forEach(b => b.onclick = () => { const [k, id, mid] = b.dataset.go.split(":");
+    if (k === "match") openMatch(FAN.find(x => x.id === id), mid); else if (k === "club") openClub(id); else if (k === "job") openJob(id); else if (k === "ev") openEvent(id);
     else if (k === "tab") { if (id === "jobber" && fitOn()) { state.sort = "fit"; state.sortSet = true; } setTab(id); }
     else if (k === "news") { gSport = "mine"; gMore = 0; setTab("nyheter"); } });
 }
