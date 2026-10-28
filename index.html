@@ -1704,6 +1704,16 @@ body.home header::before { background: linear-gradient(180deg, #071019 0%, #0b1a
 body.home header { padding-bottom: 48px; }
 body.home .hub { margin-top: 0; }
 @media (max-width: 760px) { body.home header { padding-bottom: 32px; } body.home .hub { margin-top: 0; } }
+/* Bytter i lagoppstillingen */
+.luview { display: flex; gap: 6px; margin: 10px 0 2px; }
+.luview .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg, #fff); border-color: var(--accent); }
+.pitch[data-v="0"] .lp.v1, .pitch[data-v="1"] .lp.v0 { display: none; }
+.pitch .lp i { position: relative; }
+.pitch .lsub { position: absolute; top: -9px; right: -16px; padding: 1px 4px; border-radius: 6px; font-size: 9.5px; font-weight: 800; line-height: 1.3; font-style: normal; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.pitch .lsub.out { background: #d92d20; color: #fff; }
+.pitch .lsub.in { background: #12b76a; color: #fff; }
+.pitch .lp.gone small { opacity: .75; text-decoration: line-through; text-decoration-thickness: 1px; }
+.mbench em.out { color: #d92d20; }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -1713,7 +1723,7 @@ body.home .hub { margin-top: 0; }
 <div class="wrap">
   <header>
     <div class="topline"><div class="eyebrow">Norge · Sverige · Danmark · Finland · Island</div>
-      <div class="langpick seg" data-seg="sprak" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn minebtn" id="mineBtn" aria-label="Min side" title="Min side"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span class="aini" id="mineIni" hidden></span><span class="n" id="mineN" hidden></span></button><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn savedbtn" id="msgBtn" aria-label="Meldinger" title="Meldinger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10.5H9.5L5 19.5V16H4z"/></svg><span class="n" id="msgN" hidden></span></button><button type="button" class="setbtn savedbtn" id="bellBtn" aria-label="Varsler" title="Varsler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="n" id="bellN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
+      <div class="langpick seg" data-seg="sprak" role="group" aria-label="Språk"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><span id="langBtns" style="display:contents"></span></div><span class="tbtns"><button type="button" class="setbtn savedbtn minebtn" id="mineBtn" aria-label="Min side" title="Min side"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></svg><span class="aini" id="mineIni" hidden></span><span class="n" id="mineN" hidden></span></button><button type="button" class="setbtn savedbtn" id="clubsBtn" aria-label="Dine klubber" title="Dine klubber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.00 3.90 L14.20 9.87 L20.56 10.12 L15.57 14.06 L17.29 20.18 L12.00 16.65 L6.71 20.18 L8.43 14.06 L3.44 10.12 L9.80 9.87z"/></svg><span class="n" id="clubsN" hidden></span></button><button type="button" class="setbtn savedbtn" id="savedBtn" aria-label="Lagret" title="Lagret"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.6 0 5.6 3.5 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg><span class="n" id="savedN" hidden></span></button><button type="button" class="setbtn savedbtn" id="msgBtn" aria-label="Meldinger" title="Meldinger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10.5H9.5L5 19.5V16H4z"/></svg><span class="n" id="msgN" hidden></span></button><button type="button" class="setbtn savedbtn" id="bellBtn" aria-label="Varsler" title="Varsler"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="n" id="bellN" hidden></span></button><button type="button" class="setbtn" id="setBtn" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></span><div class="setpop" id="setPop" role="dialog" hidden></div></div>
     <div class="gsearch" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="gq" type="search" autocomplete="off" spellcheck="false" aria-controls="gres" aria-expanded="false"><div class="gres" id="gres" hidden></div></div>
     <h1><b class="brand" id="brandHome" role="link" tabindex="0" aria-label="Aurora – forsiden"><svg class="mark" viewBox="0 0 60 32" aria-hidden="true"><defs><linearGradient id="ah0" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0f6b4f"/><stop offset=".55" stop-color="#2bd39a"/><stop offset="1" stop-color="#2bd39a" stop-opacity=".15"/></linearGradient><linearGradient id="ah1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0b7a76"/><stop offset=".55" stop-color="#22c9c0"/><stop offset="1" stop-color="#22c9c0" stop-opacity=".15"/></linearGradient><linearGradient id="ah2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2f5fb3"/><stop offset=".55" stop-color="#5b8ef0"/><stop offset="1" stop-color="#5b8ef0" stop-opacity=".15"/></linearGradient><linearGradient id="ah3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#5b4bc4"/><stop offset=".55" stop-color="#8f7dff"/><stop offset="1" stop-color="#8f7dff" stop-opacity=".15"/></linearGradient><linearGradient id="ah4" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#b3264f"/><stop offset=".55" stop-color="#f07a9b"/><stop offset="1" stop-color="#f07a9b" stop-opacity=".15"/></linearGradient><linearGradient id="ah5" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#b4532a"/><stop offset=".55" stop-color="#f0a074"/><stop offset="1" stop-color="#f0a074" stop-opacity=".15"/></linearGradient></defs><rect x="1.3" y="8" width="7.4" height="22" rx="3.7" fill="url(#ah0)"/><rect x="11.3" y="2" width="7.4" height="24" rx="3.7" fill="url(#ah1)"/><rect x="21.3" y="6" width="7.4" height="23" rx="3.7" fill="url(#ah2)"/><rect x="31.3" y="10" width="7.4" height="15" rx="3.7" fill="url(#ah3)"/><rect x="41.3" y="3" width="7.4" height="24" rx="3.7" fill="url(#ah4)"/><rect x="51.3" y="9" width="7.4" height="19" rx="3.7" fill="url(#ah5)"/></svg><span class="wm">Aurora</span></b> <span><span id="h1pre">Idretten </span><span class="h1-land" id="h1land">i Norden</span></span></h1>
     <div class="heroslides" id="heroslides" aria-hidden="true"><i></i><i></i></div><a class="herocredit" id="herocredit" target="_blank" rel="noopener"></a>
@@ -2405,6 +2415,11 @@ const I18N = {
 "Brukere": ["Användare","Brugere","Käyttäjät","Notendur","Users"],
 "Dere har skrevet før": ["Ni har skrivit förut","I har skrevet før","Olette kirjoittaneet ennenkin","Þið hafið skrifast á áður","You have chatted before"],
 "Du følger ingen ennå. Søk etter et brukernavn over.": ["Du följer ingen än. Sök efter ett användarnamn ovan.","Du følger ingen endnu. Søg efter et brugernavn ovenfor.","Et seuraa vielä ketään. Hae käyttäjänimeä yllä.","Þú fylgir engum ennþá. Leitaðu að notandanafni hér að ofan.","You don't follow anyone yet. Search for a username above."],
+"Startelleveren": ["Startelvan","Startelleveren","Avauskokoonpano","Byrjunarliðið","Starting XI"],
+"Etter bytter": ["Efter byten","Efter udskiftninger","Vaihtojen jälkeen","Eftir skiptingar","After subs"],
+"Byttet ut": ["Utbytt","Udskiftet","Vaihdettu pois","Skipt út af","Subbed off"],
+"Byttet inn": ["Inbytt","Indskiftet","Vaihdettu sisään","Skipt inn á","Subbed on"],
+"for {x}": ["för {x}","for {x}","{x}:n tilalle","fyrir {x}","for {x}"],
 "Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
 "Tilpass": ["Anpassa","Tilpas","Muokkaa","Aðlaga","Customise"],
 "Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
@@ -6465,7 +6480,7 @@ function toggleFollow(id) {
   try { localStorage.setItem(FOLLOW_KEY, JSON.stringify([...follows])); } catch (e) {}
   cloudSave(); updClubs();
 }
-const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.2l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
+const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.00 3.90 L14.20 9.87 L20.56 10.12 L15.57 14.06 L17.29 20.18 L12.00 16.65 L6.71 20.18 L8.43 14.06 L3.44 10.12 L9.80 9.87z"/></svg>';
 // Kvinnelag kjennes på navnet (Kvinner, dam, Kvinder, Naiset, kvenna) eller serien. Idretter uten kjønnsdelte lag vises i begge
 const WOMEN_RE = /(\s(Kvinner|dam|Dam|Kvinder|Naiset|kvenna)$)/, WOMEN_DIV = /kvinner|kvinder|naiset|kvenna|\bdam\b|Kvindeligaen|Toppserien|Damallsvenskan|SDHL|NDHL|Auroraliiga|Kansallinen Liiga/i;
 const isWomen = k => WOMEN_RE.test(k.n) || WOMEN_DIV.test(k.div || "");
@@ -6705,16 +6720,29 @@ const wallState = (ko, hasLu) => { const k = Date.parse(ko), now = Date.now();
 // Lagoppstilling på en bane: hjemmelaget nederst, bortelaget øverst. Innbyttere og trenere under.
 function lineupHtml(lu, names, open) {
   const last = n => { const w = String(n).split(" "); return w.length > 1 ? w.slice(1).join(" ") : n; };
-  const dot = (p, away) => { const x = away ? 100 - p[2] * 100 : p[2] * 100, y = away ? p[3] * 50 : 100 - p[3] * 50;
-    return `<span class="lp${away ? " aw" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%"><i>${esc(p[0])}</i><small>${esc(last(p[1]))}</small></span>`; };
-  const bench = (tm, i) => `<div><b>${esc(names[i])}</b>${tm.c ? `<small>${t("Trener")}: ${esc(tm.c)}</small>` : ""}<ul>${tm.b.map(b => `<li><span>${esc(b[0])}</span> ${esc(b[1])}${b[2] != null ? ` <em>↑ ${esc(b[2])}'</em>` : ""}</li>`).join("")}</ul></div>`;
+  // Bytter (Noah 2026-10-28): startelleveren viser hvem som er byttet ut, «Etter bytter» viser laget slik det står nå
+  const subsOf = p => Array.isArray(p[4]) ? p[4] : [];
+  const any = lu.some(tm => tm.s.some(p => subsOf(p).length));
+  const dot = (p, away, view) => { const x = away ? 100 - p[2] * 100 : p[2] * 100, y = away ? p[3] * 50 : 100 - p[3] * 50, ch = subsOf(p), now = view && ch.length ? ch[ch.length - 1] : null;
+    const nr = now ? now[1] : p[0], nm = now ? now[2] : p[1];
+    const tag = !view && ch.length ? `<b class="lsub out" title="${esc(t("Byttet ut"))}">↓${esc(ch[0][0])}'</b>` : now ? `<b class="lsub in" title="${esc(t("Byttet inn"))}">↑${esc(now[0])}'</b>` : "";
+    return `<span class="lp${away ? " aw" : ""}${view ? " v1" : " v0"}${!view && ch.length ? " gone" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%"><i>${esc(nr)}${tag}</i><small>${esc(last(nm))}</small></span>`; };
+  // Hvem innbytteren kom inn for
+  const forWho = tm => { const m = {}; tm.s.forEach(p => { let prev = p[1]; subsOf(p).forEach(c => { m[c[2]] = prev; prev = c[2]; }); }); return m; };
+  const bench = (tm, i) => { const fw = forWho(tm);
+    return `<div><b>${esc(names[i])}</b>${tm.c ? `<small>${t("Trener")}: ${esc(tm.c)}</small>` : ""}<ul>${tm.b.map(b => `<li><span>${esc(b[0])}</span> ${esc(b[1])}${b[2] != null ? ` <em>↑ ${esc(b[2])}'${fw[b[1]] ? ` ${t("for {x}", { x: esc(last(fw[b[1]])) })}` : ""}</em>` : ""}${b[3] != null ? ` <em class="out">↓ ${esc(b[3])}'</em>` : ""}</li>`).join("")}</ul></div>`; };
+  const views = v => lu[0].s.map(p => dot(p, false, v)).join("") + lu[1].s.map(p => dot(p, true, v)).join("");
   return `<details class="mlu"${open ? " open" : ""}><summary>${t("Lagoppstilling")}<span>${esc(lu[0].f)} – ${esc(lu[1].f)}</span></summary>
+    ${any ? `<div class="luview seg" role="group" aria-label="${t("Lagoppstilling")}"><button type="button" class="chip" data-v="0" aria-pressed="true">${t("Startelleveren")}</button><button type="button" class="chip" data-v="1" aria-pressed="false">${t("Etter bytter")}</button></div>` : ""}
     <p class="ptag aw">${esc(names[1])} · ${esc(lu[1].f)}</p>
-    <div class="pitch" role="img" aria-label="${esc(t("Lagoppstilling"))}"><div class="pl"><i class="half"></i><i class="circ"></i><i class="box b1"></i><i class="box b2"></i></div>
-      ${lu[0].s.map(p => dot(p, false)).join("")}${lu[1].s.map(p => dot(p, true)).join("")}</div>
+    <div class="pitch" data-v="0" role="img" aria-label="${esc(t("Lagoppstilling"))}"><div class="pl"><i class="half"></i><i class="circ"></i><i class="box b1"></i><i class="box b2"></i></div>
+      ${views(false)}${any ? views(true) : ""}</div>
     <p class="ptag">${esc(names[0])} · ${esc(lu[0].f)}</p>
     <p class="mbh">${t("Innbyttere")}</p><div class="mbench">${bench(lu[0], 0)}${bench(lu[1], 1)}</div></details>`;
 }
+// Bryteren mellom startelleveren og laget etter byttene
+document.addEventListener("click", e => { const b = e.target.closest(".luview [data-v]"); if (!b) return; const box = b.closest(".mlu");
+  box.querySelectorAll(".luview [data-v]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); box.querySelector(".pitch").dataset.v = b.dataset.v; });
 // Diskusjonsvegg under hver kamp: kommentarer i databasen (match_comments), hentes på nytt hvert 20. sekund mens kortet er åpent
 const wallHtml = `<section class="mwall" aria-labelledby="mwH"><h3 id="mwH"></h3><ul class="mwlist" id="mwList"><li class="mwnone">…</li></ul><div id="mwForm"></div></section>`;
 let wallTimer = 0;
