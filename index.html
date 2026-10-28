@@ -2607,7 +2607,7 @@ const I18N = {
 "Målgivende": ["Assist","Assist","Syöttö","Stoðsending","Assist"],
 "Dommer": ["Domare","Dommer","Tuomari","Dómari","Referee"],
 "Tilskuere": ["Åskådare","Tilskuere","Katsojia","Áhorfendur","Attendance"],
-"Statistikk fra Opta, via": ["Statistik från Opta, via","Statistik fra Opta, via","Tilastot: Opta, lähde","Tölfræði frá Opta, í gegnum","Stats from Opta, via"],
+"Statistikk fra Opta": ["Statistik från Opta","Statistik fra Opta","Tilastot: Opta","Tölfræði frá Opta","Stats from Opta"],
 "Utvid": ["Visa alla","Udvid","Näytä kaikki","Sýna allt","Show all"],
 "Vis flere nyheter": ["Visa fler nyheter","Vis flere nyheder","Näytä lisää uutisia","Sýna fleiri fréttir","Show more news"],
 "Neste": ["Nästa","Næste","Seuraava","Næst","Next"],
@@ -6758,7 +6758,7 @@ async function openMatch(k, mid, keep) {
   const full = put(shell(j, `${sumHtml}${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}
     <div class="mtabs seg" role="tablist">${panes.map(([id, label]) => `<button type="button" class="chip" role="tab" data-mt="${id}" aria-selected="${id === first}">${label}</button>`).join("")}</div>
     ${panes.map(([id, , html]) => `<div class="mpane" data-mp="${id}"${id === first ? "" : " hidden"}>${html.replace('<details class="mlu"', '<details class="mlu" open')}</div>`).join("")}
-    <p class="s-note">${t("Statistikk fra Opta, via")} <a href="https://www.fotmob.com/match/${esc(mid)}" target="_blank" rel="noopener">FotMob</a></p>`, wallPart));
+    <p class="s-note">${t("Statistikk fra Opta")}</p>`, wallPart));
   if (full && wallPart) matchWall(mid, wall);
 }
 document.addEventListener("click", e => { const b = e.target.closest(".mtabs [data-mt]"); if (!b) return; const box = b.closest(".mmain");
