@@ -6654,14 +6654,15 @@ async function fetchLive() {
 }
 async function pollLive(now) {
   clearTimeout(liveTimer);
-  if (!(now && Date.now() - liveAt < 60e3) && !document.hidden && (follows.size || tableOpen() || todayOn())) {
+  if (!(now && Date.now() - liveAt < 60e3) && !document.hidden && (follows.size || tableOpen() || todayOn() || matchOn())) {
     liveAt = Date.now();
     try { const r = await fetch(LIVE_URL, { headers: { Accept: "application/vnd.github.raw+json" }, cache: "no-store" });
       if (r.ok) { const d = await r.json(); const fresh = Date.now() - Date.parse(d.at) < 3 * 3600e3; const was = JSON.stringify(LIVE);
-        const wasX = Object.keys(LIVEX).join();
-        LIVE = fresh ? d.m || {} : {}; LIVEX = fresh ? d.x || {} : {}; if (JSON.stringify(LIVE) !== was) paintLive(); else if (Object.keys(LIVEX).join() !== wasX) paintToday(); } } catch (x) {}
+        const wasX = Object.keys(LIVEX).join(), wasM = curMatch && JSON.stringify(LIVEX[curMatch.mid]);
+        LIVE = fresh ? d.m || {} : {}; LIVEX = fresh ? d.x || {} : {}; if (JSON.stringify(LIVE) !== was) paintLive(); else if (Object.keys(LIVEX).join() !== wasX) paintToday();
+        if (matchOn() && (JSON.stringify(LIVEX[curMatch.mid]) !== wasM || JSON.stringify(LIVE) !== was)) openMatch(curMatch.k, curMatch.mid, true); } } catch (x) {}
   }
-  liveTimer = setTimeout(pollLive, playsToday() || (tableOpen() && anyLive()) ? 75e3 : todayOn() && Object.keys(LIVEX).length ? 120e3 : 15 * 60e3);
+  liveTimer = setTimeout(pollLive, matchOn() ? 60e3 : playsToday() || (tableOpen() && anyLive()) ? 75e3 : todayOn() && Object.keys(LIVEX).length ? 120e3 : 15 * 60e3);
 }
 const LOCK = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 const pwBadge = p => p === 2 ? `<span class="pw pay">${LOCK}${t("Betalingsmur")}</span>` : p === 1 ? `<span class="pw maybe">${LOCK}${t("Kan kreve abonnement")}</span>` : "";
@@ -6698,7 +6699,12 @@ const formDots = k => { const f = k && fx(k); if (!f || !f.l) return "";
 // Kampstatistikk for en spilt kamp: data/kamp/<FotMob-id>.json, laget av scripts/match_stats.py (Noah 2026-10-25)
 const ST_LABEL = { poss: "Ballinnehav", xg: "Forventede mål (xG)", shots: "Skudd", sot: "Skudd på mål", big: "Store sjanser", corners: "Cornere", passes: "Presise pasninger", fouls: "Frispark mot", offside: "Offside", yellow: "Gule kort", red: "Røde kort", saves: "Redninger" };
 const stNum = v => parseFloat(String(v).replace(",", ".")) || 0;
-async function openMatch(k, mid) {
+// Kampkortet som er åpent: oppdateres på stedet hvert minutt mens kampen pågår (Noah 2026-10-28: «så fort som mulig»)
+let curMatch = null;
+const matchOn = () => { const X = curMatch && LIVEX[curMatch.mid], d = $("mbox"); if (!X || !d || !d.open) return false;
+  const ko = Date.parse(X.ko); return Date.now() >= ko - 75 * 60e3 && Date.now() <= ko + 3 * 3600e3; };
+async function openMatch(k, mid, keep) {
+  curMatch = { k, mid };
   // Spilt kamp (fra FIXTURES), eller kamp som snart starter / pågår (fra live.json, 75 min før til 4 t etter avspark)
   let m = (fx(k).l || []).find(x => String(x[6]) === String(mid)), X = LIVEX[mid];
   if (!m && !X) { await fetchLive(); X = LIVEX[mid]; }
@@ -6716,8 +6722,18 @@ async function openMatch(k, mid) {
   // Med diskusjon: kampen til venstre og veggen til høyre på store skjermer, veggen under på mobil
   const shell = (j, body, wall = "") => `<div class="lbcard mcard${wall ? " haswall" : ""}"><button type="button" class="lbx" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="mmain"><p class="mmeta">${comp ? esc(comp) + " · " : ""}${j && j.rnd ? t("Runde {n}", { n: esc(j.rnd) }) + " · " : ""}${esc(when)}</p><div class="mhead">${head(j)}</div>${body}</div>${wall}</div>`;
-  d.innerHTML = shell(null, `<p class="mload">${t("Henter kampstatistikk …")}</p>`);
+  keep = keep && d.open && d.querySelector(".mmain");
+  // Ved oppdatering byttes bare kampdelen ut, så diskusjonen, valgt fane og det du skriver blir stående
+  const put = html => { if (keep && !!d.querySelector(".mwall") === html.includes('class="mwall"')) {
+      const tab = (d.querySelector(".mtabs [aria-selected=true]") || {}).dataset, pv = (d.querySelector(".pitch") || {}).dataset, tmp = document.createElement("div"); tmp.innerHTML = html;
+      d.querySelector(".mmain").replaceWith(tmp.querySelector(".mmain"));
+      if (tab && tab.mt) { const b = d.querySelector(`.mtabs [data-mt="${tab.mt}"]`); if (b) b.click(); }
+      if (pv && pv.v === "1") { const b = d.querySelector('.luview [data-v="1"]'); if (b) b.click(); }
+      return false; }
+    d.innerHTML = html; return true; };
+  if (!keep) d.innerHTML = shell(null, `<p class="mload">${t("Henter kampstatistikk …")}</p>`);
   if (!d.open) d.showModal();
+  if (!keep && matchOn()) { clearTimeout(liveTimer); liveTimer = setTimeout(pollLive, 60e3); }
   let j = null;
   if (m) { try { const r = await fetch(`data/kamp/${mid}.json`); if (r.ok) j = await r.json(); } catch (x) {} }
   // Kamp som pågår eller nettopp er ferdig: målscorere og statistikk fra live.json
@@ -6725,7 +6741,7 @@ async function openMatch(k, mid) {
   const lu = (j && j.lu) || (X && X.lu), ko = (j && j.ko) || (X && X.ko) || (m && m[0] + "T12:00:00Z");
   const luHtml = lu ? lineupHtml(lu, names, !m, j ? j.ev : []) : !m ? `<p class="mload">${t("Lagoppstillingen kommer omtrent en time før avspark.")}</p>` : "";
   const wall = wallState(ko, !!lu), wallPart = wall === "gone" ? "" : wallHtml;
-  if (!j) { d.innerHTML = shell(null, `${m ? `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>` : ""}${luHtml}`, wallPart); if (wallPart) matchWall(mid, wall); return; }
+  if (!j) { if (put(shell(null, `${m ? `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>` : ""}${luHtml}`, wallPart)) && wallPart) matchWall(mid, wall); return; }
   let ht = [0, 0], sc = [0, 0];
   const evs = j.ev.filter(e => { if (e[2] === "ht") { ht = sc.slice(); return false; } if (e[5]) sc = e[5]; return true; });
   const ico = { g: "⚽", pen: "⚽", own: "⚽", y: "🟨", r: "🟥" };
@@ -6739,11 +6755,11 @@ async function openMatch(k, mid) {
   const sumHtml = goals.length ? `<div class="mscorers"><span>${scorers[0]}</span><i>⚽</i><span>${scorers[1]}</span></div>` : "";
   const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml]].filter(Boolean);
   const first = evs.length || !lu ? "ev" : "lu";
-  d.innerHTML = shell(j, `${sumHtml}${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}
+  const full = put(shell(j, `${sumHtml}${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}
     <div class="mtabs seg" role="tablist">${panes.map(([id, label]) => `<button type="button" class="chip" role="tab" data-mt="${id}" aria-selected="${id === first}">${label}</button>`).join("")}</div>
     ${panes.map(([id, , html]) => `<div class="mpane" data-mp="${id}"${id === first ? "" : " hidden"}>${html.replace('<details class="mlu"', '<details class="mlu" open')}</div>`).join("")}
-    <p class="s-note">${t("Statistikk fra Opta, via")} <a href="https://www.fotmob.com/match/${esc(mid)}" target="_blank" rel="noopener">FotMob</a></p>`, wallPart);
-  if (wallPart) matchWall(mid, wall);
+    <p class="s-note">${t("Statistikk fra Opta, via")} <a href="https://www.fotmob.com/match/${esc(mid)}" target="_blank" rel="noopener">FotMob</a></p>`, wallPart));
+  if (full && wallPart) matchWall(mid, wall);
 }
 document.addEventListener("click", e => { const b = e.target.closest(".mtabs [data-mt]"); if (!b) return; const box = b.closest(".mmain");
   box.querySelectorAll(".mtabs [data-mt]").forEach(x => x.setAttribute("aria-selected", String(x === b)));
