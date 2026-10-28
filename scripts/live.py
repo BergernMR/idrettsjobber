@@ -2,7 +2,7 @@
 # og legger live.json på grenen "live" (siden leser den fra GitHub sitt API).
 # Kjøres av .github/workflows/live.yml hvert 5. minutt. Bruk: python3 scripts/live.py index.html
 import json, re, sys, time, datetime, subprocess, urllib.request
-from lineup import lineup
+from lineup import lineup, events, stats
 from zoneinfo import ZoneInfo
 html = open(sys.argv[1], encoding="utf-8").read()
 FM = {fm: fan for fan, fm in re.findall(r'"([a-z0-9-]+)":\{"s":"FotMob","u":"https://www\.fotmob\.com/teams/(\d+)/', html)}
@@ -46,22 +46,26 @@ def snapshot():
                     out[FM[i]] = [hs, as_, 1 if side == "home" else 0, NAME.get(FM.get(oi), on), state, lt if state == "live" else "", str(m["id"])]
     return ok, out, x, soon
 # Lagoppstillingen kommer ca. en time før avspark. Den hentes til den finnes, men høyst hvert 4. minutt per kamp.
-LU, tried = {}, {}
+# Mens kampen pågår hentes den på nytt hvert 4. minutt sammen med målscorere, kort og statistikk (ev, st), så byttene og målene kommer med.
+LU, EV, tried = {}, {}, {}
 def add_lineups(x):
     for mid, v in x.items():
-        # Mens kampen pågår hentes oppstillingen på nytt hvert 4. minutt, så byttene kommer med
         ko = datetime.datetime.fromisoformat(v["ko"].replace("Z", "+00:00"))
-        on = ko <= datetime.datetime.now(datetime.timezone.utc) <= ko + datetime.timedelta(hours=2, minutes=30)
+        on = ko <= datetime.datetime.now(datetime.timezone.utc) <= ko + datetime.timedelta(hours=3)
         if (mid not in LU or on) and time.time() - tried.get(mid, 0) > 240:
             tried[mid] = time.time()
-            lu = lineup(fetch(f"https://www.fotmob.com/api/data/matchDetails?matchId={mid}"))
+            d = fetch(f"https://www.fotmob.com/api/data/matchDetails?matchId={mid}")
+            lu = lineup(d)
             if lu: LU[mid] = lu
+            if d and on: EV[mid] = {"ev": events(d), "st": stats(d)}
         if mid in LU: v["lu"] = LU[mid]
+        if mid in EV: v.update(EV[mid])
 git("fetch", "-q", "origin", "live")
 prev = git("show", "origin/live:live.json")
 prev_d = json.loads(prev) if prev else {}
 prev_m = [prev_d.get("m"), prev_d.get("x")] if prev else None
 LU.update({mid: v["lu"] for mid, v in (prev_d.get("x") or {}).items() if v.get("lu")})
+EV.update({mid: {"ev": v["ev"], "st": v.get("st", [])} for mid, v in (prev_d.get("x") or {}).items() if "ev" in v})
 start = time.time()
 while True:
     ok, m, x, soon = snapshot()

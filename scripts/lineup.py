@@ -37,3 +37,29 @@ def lineup(d):
         coach = tm.get("coach")
         out.append({"f": tm.get("formation") or "", "s": [p(x) for x in st], "b": subs, "c": coach.get("name") if isinstance(coach, dict) else None})
     return out
+
+# Statistikken som vises, i denne rekkefølgen: FotMob-navn -> kort nøkkel (siden oversetter nøkkelen)
+WANT = [("Ball possession", "poss"), ("Expected goals (xG)", "xg"), ("Total shots", "shots"), ("Shots on target", "sot"), ("Big chances", "big"),
+        ("Corners", "corners"), ("Accurate passes", "passes"), ("Fouls committed", "fouls"), ("Offsides", "offside"), ("Yellow cards", "yellow"), ("Red cards", "red"), ("Saves", "saves")]
+# Mål, kort og pause: [minutt, 0 hjemme / 1 borte / -1, type, navn, målgivende, stilling]
+def events(d):
+    c = (d or {}).get("content") or {}
+    ev = []
+    for e in ((c.get("matchFacts") or {}).get("events") or {}).get("events") or []:
+        tm = str(e.get("time")) + (f"+{e['overloadTime']}" if e.get("overloadTime") else "")
+        side = 0 if e.get("isHome") else 1
+        if e["type"] == "Goal":
+            a = (e.get("assistStr") or "").replace("assist by ", "")
+            kind = "pen" if e.get("goalDescription") == "Penalty" or e.get("isPenaltyShootoutEvent") else "own" if e.get("ownGoal") else "g"
+            ev.append([tm, side, kind, e.get("nameStr") or "", a, e.get("newScore")])
+        elif e["type"] == "Card":
+            ev.append([tm, side, "r" if "Red" in (e.get("card") or "") else "y", e.get("nameStr") or ""])
+        elif e["type"] == "Half" and str(e.get("time")) == "45": ev.append([tm, -1, "ht", "", "", None])
+    return ev
+def stats(d):
+    c = (d or {}).get("content") or {}
+    rows = {}
+    for p in (((c.get("stats") or {}).get("Periods") or {}).get("All") or {}).get("stats") or []:
+        for x in p.get("stats") or []:
+            if x.get("title") and x.get("stats") and None not in x["stats"] and x["title"] not in rows: rows[x["title"]] = x["stats"]
+    return [[k, *rows[t]] for t, k in WANT if t in rows]
