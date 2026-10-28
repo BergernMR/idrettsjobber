@@ -1678,6 +1678,32 @@ a.fyev.fyedu { text-decoration: none; color: inherit; }
 /* Saker om klubbene dine */
 .gclub { margin-left: 8px; padding: 1px 7px; border-radius: 99px; background: #f4c542; color: #3d2c00; font-style: normal; font-size: 10.5px; letter-spacing: .04em; }
 .gnews .gsports .chip.gmine svg { fill: none; stroke: currentColor; stroke-width: 2; }
+/* Mine idrettslag: mindre kort (Noah 2026-10-28) */
+.mygrid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 10px; }
+.mycard { padding: 14px; gap: 2px; }
+.mycard .sp { font-size: 11px; }
+.mycard h3 { font-size: 20px; }
+.mycard h3 .clogo, .mycard h3 img { width: 22px; height: 22px; }
+.mycard .at { font-size: 13px; margin-bottom: 6px; }
+.mycard .stand { padding: 8px 10px; gap: 10px; }
+.mycard .spos { min-width: 36px; }
+.mycard .spos b { font-size: 26px; }
+.mycard .snums { font-size: 12px; }
+.mycard .snums b { font-size: 13.5px; }
+.mycard .mini { font-size: 12.5px; }
+.mycard .mini td { padding: 3px 5px; }
+.mycard .tablebtn { font-size: 13px; padding: 6px 12px; }
+.mycard .live { font-size: 13px; padding: 7px 10px; }
+.mycard .matches, .mycard .nextm { font-size: 13px; }
+.mycard .matches b { font-size: 14px; }
+.mycard .news li a { padding: 7px 9px; }
+.mycard .news .nt { font-size: 13px; }
+.mycard .newsbox .nm { font-size: 11.5px; }
+/* Forsiden uten nordlys (Noah 2026-10-28): rolig mørk topp som glir over i bakgrunnen, og innholdet under ligger ikke lenger under toppen */
+body.home header::before { background: linear-gradient(180deg, #071019 0%, #0b1a16 calc(100% - 64px), var(--bg) 100%); }
+body.home header { padding-bottom: 48px; }
+body.home .hub { margin-top: 0; }
+@media (max-width: 760px) { body.home header { padding-bottom: 32px; } body.home .hub { margin-top: 0; } }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
