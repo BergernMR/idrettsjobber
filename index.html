@@ -1721,6 +1721,11 @@ body.home .hub { margin-top: 0; }
 .pitch .lsub.in { background: #12b76a; color: #fff; }
 .pitch .lp.gone small { opacity: .75; text-decoration: line-through; text-decoration-thickness: 1px; }
 .mbench em.out { color: #d92d20; }
+/* Mine idrettslag: bare tabellen og live på kortet (Noah 2026-10-28) */
+.mycard .livebox:empty { display: none; }
+.mycard .livebox .live { margin: 4px 0 0; }
+.mycard .mynext { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.mycard .mynext b { color: var(--fg); }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -6895,11 +6900,8 @@ function renderClubs() {
   $("myClubsN").textContent = mine.length ? (mine.length === 1 ? "1 " + t("klubb") : mine.length + " " + t("klubber")) : "";
   $("myClubs").innerHTML = mine.length ? `<div class="mygrid">${mine.map(k => `<article class="mycard">
       <p class="sp">${esc(t(k.sport))}${k.div ? " · " + esc(t(k.div.split(", ")[0])) : ""}</p><h3><button type="button" class="clubopen" data-id="${k.id}">${clubLogo(k)}${esc(k.n)}</button></h3><p class="at">${flag(k.c)}${k.city ? esc(k.city) + ", " : ""}${COUNTRIES[k.c]}</p>
-      ${standing(k) ? standBox(k, standing(k)) : ""}
-      ${matchBox(k)}
-      ${newsBox(k)}
-      <div class="mylinks"><a class="tablebtn" href="${fixturesUrl(k)}" target="_blank" rel="noopener">${t("Kamper og resultater")} ↗</a></div>
-      <div class="acts">${siteLink(k)}${followBtn(k)}</div></article>`).join("")}</div>`
+      ${standing(k) ? standBox(k, standing(k)) : (n => n ? `<p class="mynext"><b>${esc(fxDate(n[0]))}${n[4] ? " · " + n[4] : ""}</b> ${vsText(n)}</p>` : "")(nextMatch(k))}
+      <div class="livebox" data-k="${k.id}">${liveHtml(k)}</div></article>`).join("")}</div>`
     : `<div class="empty">${t("Følg klubbene du heier på, så samles de her.")}</div>`;
   simpleChips("clubSportRow", tmap({ ...FAN_SPORTS }), "csport", s => FAN.filter(k => clubMatch(k, "sport") && (s === "all" || k.sport === s)).length);
   drawMap({ id: "mapClub", key: "cplace", items: FAN.filter(k => clubMatch(k, "map")), geo: k => k.geo, one: "klubb", many: "klubber", list: "clubCount" });
