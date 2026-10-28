@@ -1726,6 +1726,12 @@ body.home .hub { margin-top: 0; }
 .mycard .livebox .live { margin: 4px 0 0; }
 .mycard .mynext { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
 .mycard .mynext b { color: var(--fg); }
+.mtabs { display: flex; gap: 6px; margin: 14px 0 12px; flex-wrap: wrap; }
+.mtabs .chip[aria-selected="true"] { background: var(--accent); color: var(--accent-fg, #fff); border-color: var(--accent); }
+.mscorers { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: start; font-size: 13px; color: var(--muted); margin: -4px 0 6px; }
+.mscorers span:first-child { text-align: right; } .mscorers i { font-style: normal; font-size: 12px; }
+.pitch .lgoal { position: absolute; top: -11px; left: -16px; font-size: 14px; line-height: 1; font-style: normal; white-space: nowrap; filter: drop-shadow(0 1px 1px rgba(0,0,0,.45)); letter-spacing: -3px; }
+.mbench .lgoal { margin-left: 5px; font-size: 12px; letter-spacing: -2px; }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -2432,7 +2438,12 @@ const I18N = {
 "Byttet ut": ["Utbytt","Udskiftet","Vaihdettu pois","Skipt út af","Subbed off"],
 "Byttet inn": ["Inbytt","Indskiftet","Vaihdettu sisään","Skipt inn á","Subbed on"],
 "for {x}": ["för {x}","for {x}","{x}:n tilalle","fyrir {x}","for {x}"],
-"Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
+"Mål og kort": ["Mål och kort","Mål og kort","Maalit ja kortit","Mörk og spjöld","Goals and cards"],
+  "Ingen mål eller kort ennå.": ["Inga mål eller kort ännu.","Ingen mål eller kort endnu.","Ei maaleja tai kortteja vielä.","Engin mörk eða spjöld enn.","No goals or cards yet."],
+  "Statistikk": ["Statistik","Statistik","Tilastot","Tölfræði","Stats"],
+  "målgivende": ["målgivande","målgivende","maalisyöttö","stoðsending","assist"],
+  "mål": ["mål","mål","maali","mörk","goals"],
+  "Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
 "Tilpass": ["Anpassa","Tilpas","Muokkaa","Aðlaga","Customise"],
 "Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
 "Klubber nær {x}": ["Klubbar nära {x}","Klubber nær {x}","Seuroja lähellä: {x}","Félög nálægt {x}","Clubs near {x}"],
@@ -6709,8 +6720,10 @@ async function openMatch(k, mid) {
   if (!d.open) d.showModal();
   let j = null;
   if (m) { try { const r = await fetch(`data/kamp/${mid}.json`); if (r.ok) j = await r.json(); } catch (x) {} }
+  // Kamp som pågår eller nettopp er ferdig: målscorere og statistikk fra live.json
+  if (!j && X && X.ev) j = { ev: X.ev, st: X.st || [] };
   const lu = (j && j.lu) || (X && X.lu), ko = (j && j.ko) || (X && X.ko) || (m && m[0] + "T12:00:00Z");
-  const luHtml = lu ? lineupHtml(lu, names, !m) : !m ? `<p class="mload">${t("Lagoppstillingen kommer omtrent en time før avspark.")}</p>` : "";
+  const luHtml = lu ? lineupHtml(lu, names, !m, j ? j.ev : []) : !m ? `<p class="mload">${t("Lagoppstillingen kommer omtrent en time før avspark.")}</p>` : "";
   const wall = wallState(ko, !!lu), wallPart = wall === "gone" ? "" : wallHtml;
   if (!j) { d.innerHTML = shell(null, `${m ? `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>` : ""}${luHtml}`, wallPart); if (wallPart) matchWall(mid, wall); return; }
   let ht = [0, 0], sc = [0, 0];
@@ -6721,16 +6734,29 @@ async function openMatch(k, mid) {
     return `<div class="mrow"><span class="mv">${esc(a)}${key === "poss" ? "%" : ""}</span><span class="ml">${t(ST_LABEL[key] || key)}</span><span class="mv">${esc(b)}${key === "poss" ? "%" : ""}</span>
       <span class="mbar"><i style="width:${(x / sum * 100).toFixed(1)}%"></i><i style="width:${(y / sum * 100).toFixed(1)}%"></i></span></div>`; }).join("")}</div>` : `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>`;
   const facts = [ht.join("–") && j.ev.some(e => e[2] === "ht") ? t("Pause") + " " + ht.join("–") : "", j.v, j.ref && t("Dommer") + ": " + j.ref, j.att && t("Tilskuere") + ": " + Number(j.att).toLocaleString(LOCALE[LANG])].filter(Boolean);
-  d.innerHTML = shell(j, `${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}${evHtml}${luHtml}${stHtml}
+  // Faner (Noah 2026-10-28): Mål og kort, Lagoppstilling og Statistikk, så man går rett dit
+  const goals = evs.filter(e => ["g", "pen", "own"].includes(e[2])), scorers = [0, 1].map(i => goals.filter(e => e[1] === i).map(e => esc(e[3].split(" ").slice(-1)[0]) + " " + esc(e[0]) + "'").join(", "));
+  const sumHtml = goals.length ? `<div class="mscorers"><span>${scorers[0]}</span><i>⚽</i><span>${scorers[1]}</span></div>` : "";
+  const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml]].filter(Boolean);
+  const first = evs.length || !lu ? "ev" : "lu";
+  d.innerHTML = shell(j, `${sumHtml}${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}
+    <div class="mtabs seg" role="tablist">${panes.map(([id, label]) => `<button type="button" class="chip" role="tab" data-mt="${id}" aria-selected="${id === first}">${label}</button>`).join("")}</div>
+    ${panes.map(([id, , html]) => `<div class="mpane" data-mp="${id}"${id === first ? "" : " hidden"}>${html.replace('<details class="mlu"', '<details class="mlu" open')}</div>`).join("")}
     <p class="s-note">${t("Statistikk fra Opta, via")} <a href="https://www.fotmob.com/match/${esc(mid)}" target="_blank" rel="noopener">FotMob</a></p>`, wallPart);
   if (wallPart) matchWall(mid, wall);
 }
+document.addEventListener("click", e => { const b = e.target.closest(".mtabs [data-mt]"); if (!b) return; const box = b.closest(".mmain");
+  box.querySelectorAll(".mtabs [data-mt]").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  box.querySelectorAll(".mpane").forEach(x => x.hidden = x.dataset.mp !== b.dataset.mt); });
 // Diskusjonen åpner når lagoppstillingen er klar (eller 45 min før avspark om den aldri kommer) og fjernes 24 timer etter kampslutt
 const wallState = (ko, hasLu) => { const k = Date.parse(ko), now = Date.now();
   if (now > k + 26 * 3600e3) return "gone";
   return hasLu || now >= k - 45 * 60e3 ? "open" : "soon"; };
 // Lagoppstilling på en bane: hjemmelaget nederst, bortelaget øverst. Innbyttere og trenere under.
-function lineupHtml(lu, names, open) {
+function lineupHtml(lu, names, open, ev = []) {
+  // Fotball på målscorerne og fotballsko på den som ga målgivende (Noah 2026-10-28)
+  const did = nm => { const g = ev.filter(e => (e[2] === "g" || e[2] === "pen") && e[3] === nm).length, a = ev.filter(e => e[4] === nm).length;
+    return g || a ? `<b class="lgoal" title="${esc([g ? g + " " + t("mål") : "", a ? a + " " + t("målgivende") : ""].filter(Boolean).join(", "))}">${"⚽".repeat(g)}${"👟".repeat(a)}</b>` : ""; };
   const last = n => { const w = String(n).split(" "); return w.length > 1 ? w.slice(1).join(" ") : n; };
   // Bytter (Noah 2026-10-28): startelleveren viser hvem som er byttet ut, «Etter bytter» viser laget slik det står nå
   const subsOf = p => Array.isArray(p[4]) ? p[4] : [];
@@ -6738,11 +6764,11 @@ function lineupHtml(lu, names, open) {
   const dot = (p, away, view) => { const x = away ? 100 - p[2] * 100 : p[2] * 100, y = away ? p[3] * 50 : 100 - p[3] * 50, ch = subsOf(p), now = view && ch.length ? ch[ch.length - 1] : null;
     const nr = now ? now[1] : p[0], nm = now ? now[2] : p[1];
     const tag = !view && ch.length ? `<b class="lsub out" title="${esc(t("Byttet ut"))}">↓${esc(ch[0][0])}'</b>` : now ? `<b class="lsub in" title="${esc(t("Byttet inn"))}">↑${esc(now[0])}'</b>` : "";
-    return `<span class="lp${away ? " aw" : ""}${view ? " v1" : " v0"}${!view && ch.length ? " gone" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%"><i>${esc(nr)}${tag}</i><small>${esc(last(nm))}</small></span>`; };
+    return `<span class="lp${away ? " aw" : ""}${view ? " v1" : " v0"}${!view && ch.length ? " gone" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%"><i>${esc(nr)}${tag}${did(nm)}</i><small>${esc(last(nm))}</small></span>`; };
   // Hvem innbytteren kom inn for
   const forWho = tm => { const m = {}; tm.s.forEach(p => { let prev = p[1]; subsOf(p).forEach(c => { m[c[2]] = prev; prev = c[2]; }); }); return m; };
   const bench = (tm, i) => { const fw = forWho(tm);
-    return `<div><b>${esc(names[i])}</b>${tm.c ? `<small>${t("Trener")}: ${esc(tm.c)}</small>` : ""}<ul>${tm.b.map(b => `<li><span>${esc(b[0])}</span> ${esc(b[1])}${b[2] != null ? ` <em>↑ ${esc(b[2])}'${fw[b[1]] ? ` ${t("for {x}", { x: esc(last(fw[b[1]])) })}` : ""}</em>` : ""}${b[3] != null ? ` <em class="out">↓ ${esc(b[3])}'</em>` : ""}</li>`).join("")}</ul></div>`; };
+    return `<div><b>${esc(names[i])}</b>${tm.c ? `<small>${t("Trener")}: ${esc(tm.c)}</small>` : ""}<ul>${tm.b.map(b => `<li><span>${esc(b[0])}</span> ${esc(b[1])}${did(b[1])}${b[2] != null ? ` <em>↑ ${esc(b[2])}'${fw[b[1]] ? ` ${t("for {x}", { x: esc(last(fw[b[1]])) })}` : ""}</em>` : ""}${b[3] != null ? ` <em class="out">↓ ${esc(b[3])}'</em>` : ""}</li>`).join("")}</ul></div>`; };
   const views = v => lu[0].s.map(p => dot(p, false, v)).join("") + lu[1].s.map(p => dot(p, true, v)).join("");
   return `<details class="mlu"${open ? " open" : ""}><summary>${t("Lagoppstilling")}<span>${esc(lu[0].f)} – ${esc(lu[1].f)}</span></summary>
     ${any ? `<div class="luview seg" role="group" aria-label="${t("Lagoppstilling")}"><button type="button" class="chip" data-v="0" aria-pressed="true">${t("Startelleveren")}</button><button type="button" class="chip" data-v="1" aria-pressed="false">${t("Etter bytter")}</button></div>` : ""}
