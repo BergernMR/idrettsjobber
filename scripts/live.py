@@ -1,4 +1,4 @@
-# Live-stilling for klubbene på siden. Henter dagens kamper fra FotMob hvert minutt
+# Live-stilling for klubbene på siden. Henter dagens kamper fra FotMob hvert 30. sekund
 # og legger live.json på grenen "live" (siden leser den fra GitHub sitt API).
 # Kjøres av .github/workflows/live.yml hvert 5. minutt. Bruk: python3 scripts/live.py index.html
 import json, re, sys, time, datetime, subprocess, urllib.request
@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 html = open(sys.argv[1], encoding="utf-8").read()
 FM = {fm: fan for fan, fm in re.findall(r'"([a-z0-9-]+)":\{"s":"FotMob","u":"https://www\.fotmob\.com/teams/(\d+)/', html)}
 NAME = {m[0]: m[1] for m in re.findall(r'^\s*\["([^"]+)","(?:NO|SE|DK|FI|IS)","([^"]+)"', html, re.M)}
-LOOP_MIN, STEP = 24, 60
+LOOP_MIN, STEP = 24, 30
 # Cupene med samme navn som i FIXTURES (update_data.py), så kampkortet viser turneringen
 CUPN = {206: "NM-cupen", 171: "Svenska cupen", 242: "Pokalturneringen", 143: "Suomen Cup", 217: "Mjólkurbikarinn"}
 def fetch(url):
@@ -46,13 +46,13 @@ def snapshot():
                     out[FM[i]] = [hs, as_, 1 if side == "home" else 0, NAME.get(FM.get(oi), on), state, lt if state == "live" else "", str(m["id"])]
     return ok, out, x, soon
 # Lagoppstillingen kommer ca. en time før avspark. Den hentes til den finnes, men høyst hvert 4. minutt per kamp.
-# Mens kampen pågår hentes den på nytt hvert 4. minutt sammen med målscorere, kort og statistikk (ev, st), så byttene og målene kommer med.
+# Mens kampen pågår hentes den på nytt hvert 30. sekund sammen med målscorere, kort og statistikk (ev, st), så byttene og målene kommer med.
 LU, EV, tried = {}, {}, {}
 def add_lineups(x):
     for mid, v in x.items():
         ko = datetime.datetime.fromisoformat(v["ko"].replace("Z", "+00:00"))
         on = ko <= datetime.datetime.now(datetime.timezone.utc) <= ko + datetime.timedelta(hours=3)
-        if (mid not in LU or on) and time.time() - tried.get(mid, 0) > 240:
+        if (mid not in LU or on) and time.time() - tried.get(mid, 0) > (25 if on else 240):
             tried[mid] = time.time()
             d = fetch(f"https://www.fotmob.com/api/data/matchDetails?matchId={mid}")
             lu = lineup(d)
