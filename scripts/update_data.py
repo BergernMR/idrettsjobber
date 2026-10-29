@@ -92,6 +92,10 @@ for k in fan:
     if upcoming: e["n"] = sorted(upcoming)[0][1]
     played.sort(key=lambda x: x[0], reverse=True)
     if played: e["l"] = played[:5]
+    # Formen i tabellen skal bare gjelde serien (Noah 2026-10-29), ikke cup og Europa
+    lc = COMP.get(DIV_LEAGUE.get((k["div"] or "").split(", ")[0]))
+    lf = [p for p in played if p[5] == lc][:5]
+    if lf and lf != played[:5]: e["lf"] = lf
     if len(e) > 2: out[k["id"]] = e
 # Andre lagidretter fra TheSportsDB
 TS = json.load(open(os.path.join(os.path.dirname(__file__), "tsdb_teams.json")))
