@@ -56,10 +56,11 @@ def events(d):
             ev.append([tm, side, "r" if "Red" in (e.get("card") or "") else "y", e.get("nameStr") or ""])
         elif e["type"] == "Half" and str(e.get("time")) == "45": ev.append([tm, -1, "ht", "", "", None])
     return ev
-def stats(d):
+# Statistikk for hele kampen («All»), første omgang («FirstHalf») eller andre omgang («SecondHalf»)
+def stats(d, per="All"):
     c = (d or {}).get("content") or {}
     rows = {}
-    for p in (((c.get("stats") or {}).get("Periods") or {}).get("All") or {}).get("stats") or []:
+    for p in (((c.get("stats") or {}).get("Periods") or {}).get(per) or {}).get("stats") or []:
         for x in p.get("stats") or []:
             if x.get("title") and x.get("stats") and None not in x["stats"] and x["title"] not in rows: rows[x["title"]] = x["stats"]
     return [[k, *rows[t]] for t, k in WANT if t in rows]

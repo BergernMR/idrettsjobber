@@ -68,7 +68,7 @@ def add_lineups(x):
             d = fetch(f"https://www.fotmob.com/api/data/matchDetails?matchId={mid}")
             lu = lineup(d)
             if lu: LU[mid] = lu
-            if d and on: EV[mid] = {"ev": events(d), "st": stats(d)}
+            if d and on: EV[mid] = {"ev": events(d), "st": stats(d), "st1": stats(d, "FirstHalf"), "st2": stats(d, "SecondHalf")}
         if mid in LU: v["lu"] = LU[mid]
         if mid in EV: v.update(EV[mid])
 git("fetch", "-q", "origin", "live")
@@ -78,7 +78,7 @@ prev_m = [prev_d.get("m"), prev_d.get("x")] if prev else None
 # Supabase får siste kjente stand ved hver oppstart, så det er lett å se at koblingen virker
 if prev: supa_push(prev)
 LU.update({mid: v["lu"] for mid, v in (prev_d.get("x") or {}).items() if v.get("lu")})
-EV.update({mid: {"ev": v["ev"], "st": v.get("st", [])} for mid, v in (prev_d.get("x") or {}).items() if "ev" in v})
+EV.update({mid: {k: v.get(k, []) for k in ("ev", "st", "st1", "st2")} for mid, v in (prev_d.get("x") or {}).items() if "ev" in v})
 start = time.time()
 while True:
     ok, m, x, soon = snapshot()

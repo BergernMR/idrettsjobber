@@ -38,6 +38,10 @@ jobs:
         run: python3 scripts/winter.py index.html
       - name: Hent kampstatistikk for spilte kamper
         run: python3 scripts/match_stats.py index.html
+      - name: Oppdater kamphistorikken til lagene
+        continue-on-error: true
+        timeout-minutes: 5
+        run: python3 scripts/history.py index.html
       - name: Sjekk at siden fortsatt er gyldig
         run: |
           awk '/<script>/{f=1;next}/<\/script>/{f=0}f' index.html > /tmp/chk.js

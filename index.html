@@ -1744,6 +1744,19 @@ body.home .hub { margin-top: 0; }
   #sheet.clubwide .s-title { font-size: clamp(40px, 4.4vw, 60px); }
   #sheet.clubwide .s-title .clogo.big { width: 84px; height: 84px; }
 }
+.hcard { width: min(100%, 760px); justify-items: stretch; text-align: left; max-height: 90vh; overflow: auto; }
+.hhead { display: flex; align-items: center; gap: 14px; padding-right: 40px; }
+.hhead .clogo { width: 52px; height: 52px; }
+.hhead h3 { margin: 0; font-family: var(--font-display); font-size: 30px; line-height: 1; }
+.hhead .mmeta { margin: 0 0 4px; }
+.hyears { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 6px; scrollbar-width: thin; }
+.hyears .chip { flex: none; }
+.hyears .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg, #fff); border-color: var(--accent); }
+.hsum { margin: 0; font-size: 14px; color: var(--muted); }
+.hsum .win { color: #12805c; font-weight: 700; } .hsum .draw { font-weight: 700; } .hsum .loss { color: #c4320a; font-weight: 700; }
+.hcard .fxlist li .r:empty { background: transparent; border: 1px dashed var(--line); }
+.mper { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 12px; }
+.mper .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg, #fff); border-color: var(--accent); }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -2457,6 +2470,15 @@ const I18N = {
   "mål": ["mål","mål","maali","mörk","goals"],
   "Rødt kort": ["Rött kort","Rødt kort","Punainen kortti","Rautt spjald","Red card"],
   "Gult kort": ["Gult kort","Gult kort","Keltainen kortti","Gult spjald","Yellow card"],
+  "Se hele kampprogrammet": ["Se hela matchprogrammet","Se hele kampprogrammet","Katso koko otteluohjelma","Sjá alla leikjadagskrána","See all fixtures and results"],
+  "Kampprogram": ["Matchprogram","Kampprogram","Otteluohjelma","Leikjadagskrá","Fixtures"],
+  "Henter kampene …": ["Hämtar matcherna …","Henter kampene …","Haetaan otteluita …","Sæki leikina …","Loading matches …"],
+  "Ingen kamphistorikk for dette laget ennå.": ["Ingen matchhistorik för laget ännu.","Ingen kamphistorik for holdet endnu.","Joukkueelle ei ole vielä otteluhistoriaa.","Engin leikjasaga fyrir liðið enn.","No match history for this team yet."],
+  "Sesong": ["Säsong","Sæson","Kausi","Tímabil","Season"],
+  "Kamper fra FotMob": ["Matcher från FotMob","Kampe fra FotMob","Ottelut: FotMob","Leikir frá FotMob","Matches from FotMob"],
+  "Sammenlagt": ["Hela matchen","Hele kampen","Koko ottelu","Allur leikurinn","Full match"],
+  "1. omgang": ["1:a halvlek","1. halvleg","1. puoliaika","Fyrri hálfleikur","1st half"],
+  "2. omgang": ["2:a halvlek","2. halvleg","2. puoliaika","Seinni hálfleikur","2nd half"],
   "Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
 "Tilpass": ["Anpassa","Tilpas","Muokkaa","Aðlaga","Customise"],
 "Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
@@ -6634,6 +6656,7 @@ const fxSheet = k => { const f = fx(k); if (!f) return ""; const n = nextMatch(k
         <p class="fxnext">${n ? `<b>${esc(fxDate(n[0], true))}${n[4] ? " · " + n[4] : ""}</b> · ${vsText(n)} · ${esc(fxComp(n[3], k.c))}` : t("Ingen kamp satt opp ennå")}</p>
         ${xOf(k) ? `<button type="button" class="mopen" data-m="${xOf(k)}" data-k="${k.id}">${LIVEX[xOf(k)].lu ? t("Se lagoppstilling og diskusjon") : t("Åpne kampkortet")} →</button>` : ""}
         ${f.l ? `<h3>${t("Siste kamper")}</h3><ul class="fxlist">${f.l.map(m => `<li${m[6] ? ` class="hasm" role="button" tabindex="0" data-m="${m[6]}" data-k="${k.id}" title="${t("Se kampstatistikk")}"` : ""}><span class="r ${RES[resOf(m)]}">${t(resOf(m))}</span><span class="d">${esc(fxDate(m[0]))}</span><span>${m[2] ? t("Hjemme mot {x}", { x: esc(m[1]) }) : t("Borte mot {x}", { x: esc(m[1]) })}<span class="c">${esc(fxComp(m[5], k.c))}</span></span><b>${m[3]}–${m[4]}</b></li>`).join("")}</ul>` : ""}
+        ${f.s === "FotMob" ? `<button type="button" class="mopen" data-hist="${k.id}">${t("Se hele kampprogrammet")} →</button>` : ""}
         <p class="s-note">${fedOf(k) ? `${t("Offisielt kampoppsett")}: <a href="${fedOf(k)[1]}" target="_blank" rel="noopener">${esc(fedOf(k)[0])}</a>. ` : ""}${t("Kampene oppdateres jevnlig, så sjekk klubben for nøyaktig tid.")}</p>
       </div>`; };
 // Live-stilling: live.json på grenen "live" skrives hvert minutt av GitHub mens kamper pågår (scripts/live.py)
@@ -6759,10 +6782,11 @@ async function openMatch(k, mid, keep) {
   keep = keep && d.open && d.querySelector(".mmain");
   // Ved oppdatering byttes bare kampdelen ut, så diskusjonen, valgt fane og det du skriver blir stående
   const put = html => { if (keep && !!d.querySelector(".mwall") === html.includes('class="mwall"')) {
-      const tab = (d.querySelector(".mtabs [aria-selected=true]") || {}).dataset, pv = (d.querySelector(".pitch") || {}).dataset, tmp = document.createElement("div"); tmp.innerHTML = html;
+      const tab = (d.querySelector(".mtabs [aria-selected=true]") || {}).dataset, pv = (d.querySelector(".pitch") || {}).dataset, per = (d.querySelector('.mper [aria-pressed="true"]') || {}).dataset, tmp = document.createElement("div"); tmp.innerHTML = html;
       d.querySelector(".mmain").replaceWith(tmp.querySelector(".mmain"));
       if (tab && tab.mt) { const b = d.querySelector(`.mtabs [data-mt="${tab.mt}"]`); if (b) b.click(); }
       if (pv && pv.v === "1") { const b = d.querySelector('.luview [data-v="1"]'); if (b) b.click(); }
+      if (per && per.per !== "st") { const b = d.querySelector(`.mper [data-per="${per.per}"]`); if (b) b.click(); }
       return false; }
     d.innerHTML = html; return true; };
   if (!keep) d.innerHTML = shell(null, `<p class="mload">${t("Henter kampstatistikk …")}</p>`);
@@ -6771,7 +6795,7 @@ async function openMatch(k, mid, keep) {
   let j = null;
   if (m) { try { const r = await fetch(`data/kamp/${mid}.json`); if (r.ok) j = await r.json(); } catch (x) {} }
   // Kamp som pågår eller nettopp er ferdig: målscorere og statistikk fra live.json
-  if (!j && X && X.ev) j = { ev: X.ev, st: X.st || [] };
+  if (!j && X && X.ev) j = { ev: X.ev, st: X.st || [], st1: X.st1 || [], st2: X.st2 || [] };
   const lu = (j && j.lu) || (X && X.lu), ko = (j && j.ko) || (X && X.ko) || (m && m[0] + "T12:00:00Z");
   const luHtml = lu ? lineupHtml(lu, names, !m, j ? j.ev : []) : !m ? `<p class="mload">${t("Lagoppstillingen kommer omtrent en time før avspark.")}</p>` : "";
   const wall = wallState(ko, !!lu), wallPart = wall === "gone" ? "" : wallHtml;
@@ -6780,9 +6804,14 @@ async function openMatch(k, mid, keep) {
   const evs = j.ev.filter(e => { if (e[2] === "ht") { ht = sc.slice(); return false; } if (e[5]) sc = e[5]; return true; });
   const ico = { g: "⚽", pen: "⚽", own: "⚽", y: "🟨", r: "🟥" };
   const evHtml = evs.length ? `<ul class="mev">${evs.map(e => `<li class="${e[1] ? "a" : "h"}"><span class="mm">${esc(e[0])}'</span><span class="mi">${ico[e[2]] || ""}</span><span class="mp">${esc(e[3])}${e[2] === "pen" ? ` (${t("straffe")})` : e[2] === "own" ? ` (${t("selvmål")})` : ""}${e[4] ? `<small>${t("Målgivende")}: ${esc(e[4])}</small>` : ""}</span></li>`).join("")}</ul>` : "";
-  const stHtml = j.st.length ? `<div class="mst">${j.st.map(([key, a, b]) => { const x = stNum(a), y = stNum(b), sum = x + y || 1;
+  // Statistikk for hele kampen, 1. omgang eller 2. omgang (Noah 2026-10-29)
+  const stRows = st => `<div class="mst">${st.map(([key, a, b]) => { const x = stNum(a), y = stNum(b), sum = x + y || 1;
     return `<div class="mrow"><span class="mv">${esc(a)}${key === "poss" ? "%" : ""}</span><span class="ml">${t(ST_LABEL[key] || key)}</span><span class="mv">${esc(b)}${key === "poss" ? "%" : ""}</span>
-      <span class="mbar"><i style="width:${(x / sum * 100).toFixed(1)}%"></i><i style="width:${(y / sum * 100).toFixed(1)}%"></i></span></div>`; }).join("")}</div>` : `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>`;
+      <span class="mbar"><i style="width:${(x / sum * 100).toFixed(1)}%"></i><i style="width:${(y / sum * 100).toFixed(1)}%"></i></span></div>`; }).join("")}</div>`;
+  const pers = [["st", t("Sammenlagt")], ["st1", t("1. omgang")], ["st2", t("2. omgang")]].filter(([p]) => j[p] && j[p].length);
+  const stHtml = !j.st.length ? `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>` : pers.length < 2 ? stRows(j.st) :
+    `<div class="mper" role="group" aria-label="${t("Statistikk")}">${pers.map(([p, l], n) => `<button type="button" class="chip" data-per="${p}" aria-pressed="${!n}">${l}</button>`).join("")}</div>
+    ${pers.map(([p], n) => `<div class="mperp" data-pp="${p}"${n ? " hidden" : ""}>${stRows(j[p])}</div>`).join("")}`;
   const facts = [ht.join("–") && j.ev.some(e => e[2] === "ht") ? t("Pause") + " " + ht.join("–") : "", j.v, j.ref && t("Dommer") + ": " + j.ref, j.att && t("Tilskuere") + ": " + Number(j.att).toLocaleString(LOCALE[LANG])].filter(Boolean);
   // Faner (Noah 2026-10-28): Mål og kort, Lagoppstilling og Statistikk, så man går rett dit
   const goals = evs.filter(e => ["g", "pen", "own"].includes(e[2])), scorers = [0, 1].map(i => goals.filter(e => e[1] === i).map(e => esc(e[3].split(" ").slice(-1)[0]) + " " + esc(e[0]) + "'").join(", "));
@@ -6797,6 +6826,8 @@ async function openMatch(k, mid, keep) {
     <p class="s-note">${t("Statistikk fra Opta")}</p>`, wallPart));
   if (full && wallPart) matchWall(mid, wall);
 }
+document.addEventListener("click", e => { const b = e.target.closest(".mper [data-per]"); if (!b) return; const box = b.closest(".mpane");
+  box.querySelectorAll(".mper [data-per]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); box.querySelectorAll(".mperp").forEach(x => x.hidden = x.dataset.pp !== b.dataset.per); });
 document.addEventListener("click", e => { const b = e.target.closest(".mtabs [data-mt]"); if (!b) return; const box = b.closest(".mmain");
   box.querySelectorAll(".mtabs [data-mt]").forEach(x => x.setAttribute("aria-selected", String(x === b)));
   box.querySelectorAll(".mpane").forEach(x => x.hidden = x.dataset.mp !== b.dataset.mt); });
@@ -6873,6 +6904,31 @@ async function matchWall(mid, state) {
   await draw(); list.scrollTop = list.scrollHeight;
   wallTimer = setInterval(draw, 20000);
 }
+// Hele kampprogrammet år for år (Noah 2026-10-29): data/historikk/<id>.json, laget av scripts/history.py (FotMob, fra ca. 2010)
+const HIST = {};
+async function openHistory(k, year) {
+  let d = $("hbox");
+  if (!d) { d = document.createElement("dialog"); d.id = "hbox"; d.className = "lbox"; document.body.appendChild(d);
+    d.addEventListener("click", e => { if (e.target === d || e.target.closest(".lbx")) d.close(); const y = e.target.closest("[data-hy]"); if (y) openHistory(FAN.find(x => x.id === d.dataset.k), y.dataset.hy); }); }
+  d.dataset.k = k.id;
+  const shell = body => `<div class="lbcard hcard"><button type="button" class="lbx" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="hhead">${clubLogo(k, "clogo")}<div><p class="mmeta">${t("Kampprogram")}</p><h3>${esc(k.n)}</h3></div></div>${body}</div>`;
+  if (!HIST[k.id]) { d.innerHTML = shell(`<p class="mload">${t("Henter kampene …")}</p>`); if (!d.open) d.showModal();
+    try { const r = await fetch(`data/historikk/${k.id}.json`); HIST[k.id] = r.ok ? (await r.json()).m : []; } catch (x) { HIST[k.id] = []; } }
+  const all = HIST[k.id], years = [...new Set(all.map(m => m[0].slice(0, 4)))].sort().reverse();
+  if (!years.length) { d.innerHTML = shell(`<p class="mload">${t("Ingen kamphistorikk for dette laget ennå.")}</p>`); if (!d.open) d.showModal(); return; }
+  const y = year || (years.includes(String(new Date().getFullYear())) ? String(new Date().getFullYear()) : years[0]);
+  const ms = all.filter(m => m[0].startsWith(y)), played = ms.filter(m => m[3] != null), known = new Set(((fx(k) || {}).l || []).map(m => String(m[6])));
+  const cnt = r => played.filter(m => resOf(m) === r).length, gf = played.reduce((a, m) => a + m[3], 0), ga = played.reduce((a, m) => a + m[4], 0);
+  const row = m => { const ok = m[3] != null, click = ok && known.has(m[6]);
+    return `<li${click ? ` class="hasm" role="button" tabindex="0" data-m="${m[6]}" data-k="${k.id}" title="${t("Se kampstatistikk")}"` : ""}>${ok ? `<span class="r ${RES[resOf(m)]}">${t(resOf(m))}</span>` : `<span class="r"></span>`}<span class="d">${esc(fxDate(m[0].slice(0, 10)))}</span><span>${m[2] ? t("Hjemme mot {x}", { x: esc(m[1]) }) : t("Borte mot {x}", { x: esc(m[1]) })}<span class="c">${esc(fxComp(m[5], k.c))}</span></span><b>${ok ? m[3] + "–" + m[4] : esc(new Date(m[0] + ":00Z").toLocaleTimeString(LOCALE[LANG], { hour: "2-digit", minute: "2-digit" }))}</b></li>`; };
+  d.innerHTML = shell(`<div class="hyears" role="group" aria-label="${t("Sesong")}">${years.map(x => `<button type="button" class="chip" data-hy="${x}" aria-pressed="${x === y}">${x}</button>`).join("")}</div>
+    ${played.length ? `<p class="hsum"><b>${played.length}</b> ${t("kamper")} · <span class="win">${cnt("V")} ${t("V")}</span> · <span class="draw">${cnt("U")} ${t("U")}</span> · <span class="loss">${cnt("T")} ${t("T")}</span> · ${t("Mål")} ${gf}–${ga}</p>` : ""}
+    <ul class="fxlist">${ms.slice().reverse().map(row).join("")}</ul><p class="s-note">${t("Kamper fra FotMob")}</p>`);
+  if (!d.open) d.showModal();
+  const on = d.querySelector('.hyears [aria-pressed="true"]'); if (on) on.scrollIntoView({ block: "nearest", inline: "center" });
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-hist]"); if (!b) return; e.stopPropagation(); openHistory(FAN.find(x => x.id === b.dataset.hist)); }, true);
 document.addEventListener("click", e => { const li = e.target.closest(".fxlist li[data-m], .mopen[data-m], .live.golive[data-m]"); if (!li) return; e.stopPropagation(); openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); }, true);
 document.addEventListener("keydown", e => { const li = (e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest(".live.golive[data-m]"); if (li) { e.preventDefault(); openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); } });
 document.addEventListener("keydown", e => { const li = e.target.closest && e.target.closest(".fxlist li[data-m]"); if (li && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); } });
