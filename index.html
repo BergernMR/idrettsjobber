@@ -1737,6 +1737,13 @@ body.home .hub { margin-top: 0; }
 .mbench .lcard { display: inline-block; width: 8px; height: 11px; border-radius: 1.5px; background: #fdb022; margin-left: 5px; vertical-align: -1px; }
 .mbench .lcard.r { background: #d92d20; }
 .mscorers.red { color: #d92d20; margin-top: 2px; }
+@media (min-width: 761px) {
+  #sheet.clubwide .sheet { max-width: min(1180px, 100%); min-height: min(88vh, 1100px); align-content: start; }
+  #sheet.clubwide .sheet-top { padding: 34px 84px 28px 44px; }
+  #sheet.clubwide .sheet-body { padding-left: 44px; padding-right: 44px; }
+  #sheet.clubwide .s-title { font-size: clamp(40px, 4.4vw, 60px); }
+  #sheet.clubwide .s-title .clogo.big { width: 84px; height: 84px; }
+}
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -4124,8 +4131,10 @@ const avaHtml = p => `<span class="gava">${p.avatar ? `<img src="${esc(p.avatar)
 const countsHtml = (f, uid) => `<div class="pcounts"><button type="button" data-pl="followers" data-u="${uid}"><b>${f.followers}</b><small>${t(f.followers === 1 ? "følger" : "følgere")}</small></button><button type="button" data-pl="following" data-u="${uid}"><b>${f.following}</b><small>${t("Følger")}</small></button></div>`;
 const bindCounts = (root, name) => root.querySelectorAll("[data-pl]").forEach(b => b.onclick = () => peopleList(b.dataset.u, b.dataset.pl, name));
 // Helsidevisningen gjelder bare profilen: åpnes noe annet i samme vindu, eller lukkes det, blir vinduet vanlig igjen
-new MutationObserver(() => { if (!$("sheetBody").querySelector(".u-page")) $("sheet").classList.remove("upage"); }).observe($("sheetBody"), { childList: true });
-$("sheet").addEventListener("close", () => $("sheet").classList.remove("upage"));
+new MutationObserver(() => { if (!$("sheetBody").querySelector(".u-page")) $("sheet").classList.remove("upage");
+  // Klubbkortet er et stort vindu (Noah 2026-10-29)
+  $("sheet").classList.toggle("clubwide", !!$("sheetBody").querySelector(".club-x")); }).observe($("sheetBody"), { childList: true });
+$("sheet").addEventListener("close", () => $("sheet").classList.remove("upage", "clubwide"));
 // Brukerside: navn, bilde, følgere og det personen har valgt å vise (idrettslag, arrangementer, jobber). Aldri e-post.
 async function openProfile(p) {
   if (!p) return;
@@ -6923,7 +6932,7 @@ function openClub(id) {
   const fallback = t("{n} er en klubb i {sport} fra {place}.", { n: k.n, sport: t(k.sport).toLowerCase(), place: k.city ? k.city + ", " + COUNTRIES[k.c] : COUNTRIES[k.c] }) +
     (div ? " " + t("I 2026 spiller laget i {div}.", { div: t(div[0]) + (div[1] ? " (" + t(div[1]) + ")" : "") }) : "");
   $("sheetBody").innerHTML = `
-    <div class="sheet-top">
+    <div class="sheet-top club-x">
       <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="s-eyebrow">${flag(k.c)}${COUNTRIES[k.c]} · ${esc(t(k.sport))}</div>
       <h2 class="s-title" id="s-title">${LOGO.has(k.id) ? `<button type="button" class="logozoom" id="logoZoom" aria-label="${t("Vis logoen større")}">${clubLogo(k, "clogo big")}</button>` : ""}${esc(k.n)}</h2>
