@@ -75,6 +75,8 @@ git("fetch", "-q", "origin", "live")
 prev = git("show", "origin/live:live.json")
 prev_d = json.loads(prev) if prev else {}
 prev_m = [prev_d.get("m"), prev_d.get("x")] if prev else None
+# Supabase får siste kjente stand ved hver oppstart, så det er lett å se at koblingen virker
+if prev: supa_push(prev)
 LU.update({mid: v["lu"] for mid, v in (prev_d.get("x") or {}).items() if v.get("lu")})
 EV.update({mid: {"ev": v["ev"], "st": v.get("st", [])} for mid, v in (prev_d.get("x") or {}).items() if "ev" in v})
 start = time.time()
