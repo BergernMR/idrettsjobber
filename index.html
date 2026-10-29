@@ -1749,7 +1749,9 @@ body.home .hub { margin-top: 0; }
 .hhead .clogo { width: 52px; height: 52px; }
 .hhead h3 { margin: 0; font-family: var(--font-display); font-size: 30px; line-height: 1; }
 .hhead .mmeta { margin: 0 0 4px; }
-.hyears { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 6px; scrollbar-width: thin; }
+.hyears { display: flex; gap: 6px; flex-wrap: wrap; padding: 2px 0 4px; }
+.hyears[hidden] { display: none; }
+.hsel .chip.on { background: var(--accent); color: var(--accent-fg, #fff); border-color: var(--accent); }
 .hyears .chip { flex: none; }
 .hyears .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg, #fff); border-color: var(--accent); }
 .hsum { margin: 0; font-size: 14px; color: var(--muted); }
@@ -6937,14 +6939,16 @@ async function openHistory(k, year) {
   const cnt = r => played.filter(m => resOf(m) === r).length, gf = played.reduce((a, m) => a + m[3], 0), ga = played.reduce((a, m) => a + m[4], 0);
   const row = m => { const ok = m[3] != null, click = ok && known.has(m[6]);
     return `<li${click ? ` class="hasm" role="button" tabindex="0" data-m="${m[6]}" data-k="${k.id}" title="${t("Se kampstatistikk")}"` : ""}>${ok ? `<span class="r ${RES[resOf(m)]}">${t(resOf(m))}</span>` : `<span class="r"></span>`}<span class="d">${esc(fxDate(m[0].slice(0, 10)))}</span><span>${m[2] ? t("Hjemme mot {x}", { x: esc(m[1]) }) : t("Borte mot {x}", { x: esc(m[1]) })}<span class="c">${esc(fxComp(m[5], k.c))}</span></span><b>${ok ? m[3] + "–" + m[4] : esc(new Date(m[0] + ":00Z").toLocaleTimeString(LOCALE[LANG], { hour: "2-digit", minute: "2-digit" }))}</b></li>`; };
-  d.innerHTML = shell(`<div class="hyears" role="group" aria-label="${t("Sesong")}">${years.map(x => `<button type="button" class="chip" data-hy="${x}" aria-pressed="${x === y}">${x}</button>`).join("")}</div>
+  // Bare valgt sesong vises; de andre årene ligger bak «Velg sesong» (Noah 2026-10-29: «alle årene på rekke og rad er rotete»)
+  d.innerHTML = shell(`<div class="hsel"><button type="button" class="chip on" id="hyBtn" aria-expanded="false">${t("Sesong")} ${y} <span aria-hidden="true">▾</span></button></div>
+    <div class="hyears" id="hyList" role="group" aria-label="${t("Sesong")}" hidden>${years.map(x => `<button type="button" class="chip" data-hy="${x}" aria-pressed="${x === y}">${x}</button>`).join("")}</div>
     ${played.length ? `<p class="hsum"><b>${played.length}</b> ${t("kamper")} · <span class="win">${cnt("V")} ${t("V")}</span> · <span class="draw">${cnt("U")} ${t("U")}</span> · <span class="loss">${cnt("T")} ${t("T")}</span> · ${t("Mål")} ${gf}–${ga}</p>` : ""}
     ${tkeys.length ? `<div class="htabs">${tkeys.map(x => `<div class="htab" data-tb="${x}"><p class="mload">…</p></div>`).join("")}</div>` : ""}
     <h4 class="hsub">${t("Kamper")}</h4>
     <ul class="fxlist">${ms.slice().reverse().map(row).join("")}</ul><p class="s-note">${t("Kamper fra FotMob")}</p>`);
   if (!d.open) d.showModal();
   d.querySelectorAll(".htab[data-tb]").forEach(async box => { box.innerHTML = tableHtml(await loadTable(box.dataset.tb), k); });
-  const on = d.querySelector('.hyears [aria-pressed="true"]'); if (on) on.scrollIntoView({ block: "nearest", inline: "center" });
+  $("hyBtn").onclick = () => { const l = $("hyList"), open = l.hidden; l.hidden = !open; $("hyBtn").setAttribute("aria-expanded", String(open)); };
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-hist]"); if (!b) return; e.stopPropagation(); openHistory(FAN.find(x => x.id === b.dataset.hist)); }, true);
 document.addEventListener("click", e => { const li = e.target.closest(".fxlist li[data-m], .mopen[data-m], .live.golive[data-m]"); if (!li) return; e.stopPropagation(); openMatch(FAN.find(x => x.id === li.dataset.k), li.dataset.m); }, true);
