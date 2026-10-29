@@ -28,12 +28,12 @@ def compact(d):
     if ib.get("Referee"): out["ref"] = ib["Referee"].get("text")
     if ib.get("Attendance"): out["att"] = ib["Attendance"]
     if ib.get("Tournament"): out["comp"] = ib["Tournament"].get("leagueName"); out["rnd"] = ib["Tournament"].get("round")
-    out["ev"], out["st"] = events(d), stats(d)
+    out["ev"], out["st"], out["st1"], out["st2"] = events(d), stats(d), stats(d, "FirstHalf"), stats(d, "SecondHalf")
     return out
 have = {f[:-5] for f in os.listdir(DIR) if f.endswith(".json")}
-# Filer fra før lagoppstilling og avsparkstid kom med (uten "ko") hentes på nytt, maks MAX_OLD per kjøring
+# Filer fra før lagoppstilling, avsparkstid og omgangsstatistikk kom med (uten "ko" eller "st1") hentes på nytt, maks MAX_OLD per kjøring
 MAX_OLD = int(os.environ.get("MAX_OLD", "200"))
-old = sorted(m for m in have & ids if '"ko"' not in open(os.path.join(DIR, m + ".json"), encoding="utf-8").read())[:MAX_OLD]
+old = sorted(m for m in have & ids if not all(x in open(os.path.join(DIR, m + ".json"), encoding="utf-8").read() for x in ('"ko"', '"st1"')))[:MAX_OLD]
 new = 0
 for mid in sorted(ids - have) + old:
     d = fetch(f"https://www.fotmob.com/api/data/matchDetails?matchId={mid}"); time.sleep(0.6)
