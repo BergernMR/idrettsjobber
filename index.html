@@ -1757,6 +1757,14 @@ body.home .hub { margin-top: 0; }
 .hcard .fxlist li .r:empty { background: transparent; border: 1px dashed var(--line); }
 .mper { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 12px; }
 .mper .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg, #fff); border-color: var(--accent); }
+.htabs { display: grid; gap: 14px; }
+.hsub { margin: 6px 0 6px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.htable { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.htable th { font-weight: 600; color: var(--muted); font-size: 12px; padding: 4px 6px; text-align: right; }
+.htable td { padding: 6px; text-align: right; border-top: 1px solid var(--line); white-space: nowrap; }
+.htable .l { text-align: left; width: 100%; }
+.htable tr.me td { background: color-mix(in oklab, var(--accent) 16%, transparent); font-weight: 700; }
+@media (max-width: 560px) { .htable th:nth-child(7), .htable td:nth-child(7) { display: none; } }
 </style>
 
 <div id="stage" aria-hidden="true"></div>
@@ -6905,7 +6913,12 @@ async function matchWall(mid, state) {
   wallTimer = setInterval(draw, 20000);
 }
 // Hele kampprogrammet år for år (Noah 2026-10-29): data/historikk/<id>.json, laget av scripts/history.py (FotMob, fra ca. 2010)
-const HIST = {};
+const HIST = {}, TBL = {};
+const loadTable = async key => { if (!TBL[key]) { try { const r = await fetch(`data/tabell/${key}.json`); TBL[key] = r.ok ? await r.json() : null; } catch (x) { TBL[key] = null; } } return TBL[key]; };
+// Sesongtabell med laget uthevet
+const tableHtml = (tb, k) => { if (!tb) return ""; const fm = (((fx(k) || {}).u || "").match(/teams\/(\d+)/) || [])[1];
+  return `<h4 class="hsub">${esc(t("Tabell"))} · ${esc(tb.n)} ${esc(tb.s)}</h4><table class="htable"><thead><tr><th>#</th><th class="l">${t("Lag")}</th><th>${t("K")}</th><th>${t("V")}</th><th>${t("U")}</th><th>${t("T")}</th><th>${t("Mål")}</th><th>+/-</th><th>${t("P")}</th></tr></thead>
+    <tbody>${tb.r.map(r => `<tr${String(r[9]) === fm || r[1] === k.n ? ' class="me"' : ""}><td>${r[0]}</td><td class="l">${esc(r[1])}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${esc(r[6])}</td><td>${r[7] > 0 ? "+" : ""}${r[7]}</td><td><b>${r[8]}</b></td></tr>`).join("")}</tbody></table>`; };
 async function openHistory(k, year) {
   let d = $("hbox");
   if (!d) { d = document.createElement("dialog"); d.id = "hbox"; d.className = "lbox"; document.body.appendChild(d);
@@ -6914,18 +6927,23 @@ async function openHistory(k, year) {
   const shell = body => `<div class="lbcard hcard"><button type="button" class="lbx" aria-label="${t("Lukk")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="hhead">${clubLogo(k, "clogo")}<div><p class="mmeta">${t("Kampprogram")}</p><h3>${esc(k.n)}</h3></div></div>${body}</div>`;
   if (!HIST[k.id]) { d.innerHTML = shell(`<p class="mload">${t("Henter kampene …")}</p>`); if (!d.open) d.showModal();
-    try { const r = await fetch(`data/historikk/${k.id}.json`); HIST[k.id] = r.ok ? (await r.json()).m : []; } catch (x) { HIST[k.id] = []; } }
-  const all = HIST[k.id], years = [...new Set(all.map(m => m[0].slice(0, 4)))].sort().reverse();
+    try { const r = await fetch(`data/historikk/${k.id}.json`); HIST[k.id] = r.ok ? await r.json() : { m: [] }; } catch (x) { HIST[k.id] = { m: [] }; } }
+  const all = HIST[k.id].m, tb = HIST[k.id].tb || {}, years = [...new Set(all.map(m => m[0].slice(0, 4)))].sort().reverse();
   if (!years.length) { d.innerHTML = shell(`<p class="mload">${t("Ingen kamphistorikk for dette laget ennå.")}</p>`); if (!d.open) d.showModal(); return; }
   const y = year || (years.includes(String(new Date().getFullYear())) ? String(new Date().getFullYear()) : years[0]);
+  // Tabellene for sesongen (ligaer med kalenderår, eller 2025/2026-sesonger som dekker året)
+  const tkeys = Object.entries(tb).filter(([ss]) => ss.split("/").includes(y)).flatMap(([, v]) => v).sort((a, b) => (+a.split("-")[0] > 9999 || [42, 73, 10216].includes(+a.split("-")[0])) - (+b.split("-")[0] > 9999 || [42, 73, 10216].includes(+b.split("-")[0])));
   const ms = all.filter(m => m[0].startsWith(y)), played = ms.filter(m => m[3] != null), known = new Set(((fx(k) || {}).l || []).map(m => String(m[6])));
   const cnt = r => played.filter(m => resOf(m) === r).length, gf = played.reduce((a, m) => a + m[3], 0), ga = played.reduce((a, m) => a + m[4], 0);
   const row = m => { const ok = m[3] != null, click = ok && known.has(m[6]);
     return `<li${click ? ` class="hasm" role="button" tabindex="0" data-m="${m[6]}" data-k="${k.id}" title="${t("Se kampstatistikk")}"` : ""}>${ok ? `<span class="r ${RES[resOf(m)]}">${t(resOf(m))}</span>` : `<span class="r"></span>`}<span class="d">${esc(fxDate(m[0].slice(0, 10)))}</span><span>${m[2] ? t("Hjemme mot {x}", { x: esc(m[1]) }) : t("Borte mot {x}", { x: esc(m[1]) })}<span class="c">${esc(fxComp(m[5], k.c))}</span></span><b>${ok ? m[3] + "–" + m[4] : esc(new Date(m[0] + ":00Z").toLocaleTimeString(LOCALE[LANG], { hour: "2-digit", minute: "2-digit" }))}</b></li>`; };
   d.innerHTML = shell(`<div class="hyears" role="group" aria-label="${t("Sesong")}">${years.map(x => `<button type="button" class="chip" data-hy="${x}" aria-pressed="${x === y}">${x}</button>`).join("")}</div>
     ${played.length ? `<p class="hsum"><b>${played.length}</b> ${t("kamper")} · <span class="win">${cnt("V")} ${t("V")}</span> · <span class="draw">${cnt("U")} ${t("U")}</span> · <span class="loss">${cnt("T")} ${t("T")}</span> · ${t("Mål")} ${gf}–${ga}</p>` : ""}
+    ${tkeys.length ? `<div class="htabs">${tkeys.map(x => `<div class="htab" data-tb="${x}"><p class="mload">…</p></div>`).join("")}</div>` : ""}
+    <h4 class="hsub">${t("Kamper")}</h4>
     <ul class="fxlist">${ms.slice().reverse().map(row).join("")}</ul><p class="s-note">${t("Kamper fra FotMob")}</p>`);
   if (!d.open) d.showModal();
+  d.querySelectorAll(".htab[data-tb]").forEach(async box => { box.innerHTML = tableHtml(await loadTable(box.dataset.tb), k); });
   const on = d.querySelector('.hyears [aria-pressed="true"]'); if (on) on.scrollIntoView({ block: "nearest", inline: "center" });
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-hist]"); if (!b) return; e.stopPropagation(); openHistory(FAN.find(x => x.id === b.dataset.hist)); }, true);
