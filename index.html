@@ -309,11 +309,26 @@ a.item { color: inherit; text-decoration: none; grid-template-columns: 72px 1fr 
 .fxlist li.hasm b::after { content: " ›"; color: var(--muted); font-weight: 400; }
 .mcard .mmain { display: grid; gap: 12px; min-width: 0; align-content: start; }
 @media (min-width: 980px) {
-  .mcard.haswall { width: min(100%, 960px); grid-template-columns: minmax(0, 1fr) 360px; align-items: stretch; column-gap: 24px; }
+  .mcard.haswall { align-items: stretch; column-gap: 32px; }
   .mcard.haswall .mwall { border-top: 0; border-left: 1px solid var(--line); padding: 0 0 0 20px; position: sticky; top: 0; align-self: start; max-height: calc(100dvh - 80px); grid-template-rows: auto minmax(0, 1fr) auto; }
   .mcard.haswall .mwlist { max-height: none; min-height: 200px; }
 }
 .mcard { width: min(100%, 520px); max-height: calc(100dvh - 32px); overflow-y: auto; justify-items: stretch; gap: 12px; }
+@media (min-width: 760px) {
+  .lbcard.mcard { width: min(100%, 880px); min-height: min(88vh, 1000px); align-content: start; justify-items: stretch; padding: 34px 48px 30px; font-size: 16px; }
+  .lbcard.mcard .mmeta, .lbcard.mcard .mfacts { font-size: 15px; }
+  .lbcard.mcard .mt { font-size: 18px; }
+  .lbcard.mcard .mt .clogo { width: 76px; height: 76px; }
+  .lbcard.mcard .msc { font-size: 58px; }
+  .lbcard.mcard .mev { gap: 10px; }
+  .lbcard.mcard .mev li { font-size: 17px; }
+  .lbcard.mcard .mev .mm { font-size: 15px; min-width: 44px; }
+  .lbcard.mcard .mev small { font-size: 14px; }
+  .lbcard.mcard .mscorers { font-size: 15px; }
+  .lbcard.mcard .mtabs .chip { font-size: 16px; padding: 10px 18px; }
+  .lbcard.mcard .mst { font-size: 16px; }
+  .lbcard.mcard.haswall { width: min(100%, 1240px); grid-template-columns: minmax(0, 1fr) 400px; }
+}
 .mmeta { margin: 0; text-align: center; color: var(--muted); font-size: 13px; }
 .mhead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
 .mt { display: grid; justify-items: center; gap: 6px; text-align: center; font-size: 14px; }
@@ -348,6 +363,21 @@ a.item { color: inherit; text-decoration: none; grid-template-columns: 72px 1fr 
 .mbench ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 3px; }
 .mbench li span { display: inline-block; min-width: 20px; color: var(--muted); font-weight: 700; }
 .mbench em { white-space: nowrap; font-style: normal; color: #1fae7c; font-weight: 700; font-size: 12px; }
+.mh2h { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 10px; }
+.mh2h h3 { margin: 0; font-family: "Barlow Condensed", sans-serif; font-size: 22px; text-transform: uppercase; letter-spacing: .02em; }
+.h2hsum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 4px 0 12px; text-align: center; }
+.h2hsum div { background: var(--surface-2); border-radius: 14px; padding: 10px 6px; display: grid; gap: 2px; }
+.h2hsum b { font: 800 30px/1 "Barlow Condensed", sans-serif; }
+.h2hsum small { color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h2hl { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; }
+.h2hl li { display: grid; grid-template-columns: 130px 1fr auto 1fr; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 12px; background: var(--surface-2); font-size: 14px; }
+.h2hl .hd { font-size: 12.5px; color: var(--muted); display: grid; }
+.h2hl .hd small { font-size: 11.5px; }
+.h2hl .hm { text-align: right; } .h2hl .hm, .h2hl .ha { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h2hl .hs { min-width: 46px; text-align: center; padding: 3px 8px; border-radius: 8px; color: #fff; font-weight: 800; background: var(--muted); }
+.h2hl .hs.win { background: #1f8a4c; } .h2hl .hs.loss { background: #c2410c; } .h2hl .hs.draw { background: #7c828c; }
+@media (max-width: 520px) { .h2hl li { grid-template-columns: 1fr auto 1fr; } .h2hl .hd { grid-column: 1 / -1; } }
+@media (min-width: 760px) { .lbcard.mcard .h2hl li { font-size: 16px; } }
 .mwall { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 10px; }
 .mwall h3 { margin: 0; font-family: "Barlow Condensed", sans-serif; font-size: 22px; text-transform: uppercase; letter-spacing: .02em; }
 .mwlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-height: 340px; overflow-y: auto; }
@@ -1737,6 +1767,9 @@ body.home .hub { margin-top: 0; }
 .mbench .lcard { display: inline-block; width: 8px; height: 11px; border-radius: 1.5px; background: #fdb022; margin-left: 5px; vertical-align: -1px; }
 .mbench .lcard.r { background: #d92d20; }
 .mscorers.red { color: #d92d20; margin-top: 2px; }
+.mscorers.og { margin-top: 2px; } .mscorers.og i { font-size: 10px; font-weight: 800; color: #fff; background: #d92d20; border-radius: 6px; padding: 1px 5px; align-self: center; }
+.mev .mi.og { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: color-mix(in oklab, #d92d20 18%, transparent); box-shadow: 0 0 0 1.5px #d92d20 inset; }
+.mev .ogtag { font-style: normal; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: #fff; background: #d92d20; border-radius: 6px; padding: 2px 6px; margin-left: 6px; vertical-align: 2px; }
 @media (min-width: 761px) {
   #sheet.clubwide .sheet { max-width: min(1180px, 100%); min-height: min(88vh, 1100px); align-content: start; }
   #sheet.clubwide .sheet-top { padding: 34px 84px 28px 44px; }
@@ -2498,7 +2531,11 @@ const I18N = {
   "1. omgang": ["1:a halvlek","1. halvleg","1. puoliaika","Fyrri hálfleikur","1st half"],
   "2. omgang": ["2:a halvlek","2. halvleg","2. puoliaika","Seinni hálfleikur","2nd half"],
   "Følg laget": ["Följ laget","Følg holdet","Seuraa joukkuetta","Fylgstu með liðinu","Follow the team"],
-  "Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
+  "Innbyrdes": ["Inbördes möten","Indbyrdes opgør","Keskinäiset ottelut","Innbyrðis viðureignir","Head to head"],
+"Ingen tidligere kamper mellom lagene.": ["Inga tidigare matcher mellan lagen.","Ingen tidligere kampe mellem holdene.","Joukkueilla ei ole aiempia otteluita.","Engir fyrri leikir milli liðanna.","No previous matches between the teams."],
+"Selvmål": ["Självmål","Selvmål","Oma maali","Sjálfsmark","Own goal"],
+"SM": ["SM","SM","OM","SJM","OG"],
+"Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
 "Tilpass": ["Anpassa","Tilpas","Muokkaa","Aðlaga","Customise"],
 "Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
 "Klubber nær {x}": ["Klubbar nära {x}","Klubber nær {x}","Seuroja lähellä: {x}","Félög nálægt {x}","Clubs near {x}"],
@@ -6785,6 +6822,22 @@ const stNum = v => parseFloat(String(v).replace(",", ".")) || 0;
 let curMatch = null;
 const matchOn = () => { const X = curMatch && LIVEX[curMatch.mid], d = $("mbox"); if (!X || !d || !d.open) return false;
   const ko = Date.parse(X.ko); return Date.now() >= ko - 75 * 60e3 && Date.now() <= ko + 3 * 3600e3; };
+// Innbyrdes oppgjør (Noah 2026-10-31): tidligere kamper mellom lagene, fra data/historikk/<id>.json
+const h2hNorm = n => String(n).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ø/g, "o").replace(/æ/g, "ae").replace(/\b(fk|il|if|ik|sk|bk|fc|ff|ifk|aif|bif|ac|sc|kfum|tif)\b/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+async function h2hData(k, mid, oppName) {
+  if (!HIST[k.id]) { try { const r = await fetch(`data/historikk/${k.id}.json`); HIST[k.id] = r.ok ? await r.json() : { m: [] }; } catch (x) { HIST[k.id] = { m: [] }; } }
+  const all = HIST[k.id].m || [], self = all.find(x => String(x[6]) === String(mid)), want = self ? self[1] : null, o = h2hNorm(oppName);
+  return all.filter(x => String(x[6]) !== String(mid) && (want ? x[1] === want : h2hNorm(x[1]) === o)).sort((a, b) => b[0] < a[0] ? -1 : 1);
+}
+function h2hHtml(k, list, kName, oName) {
+  if (!list.length) return `<p class="mload">${t("Ingen tidligere kamper mellom lagene.")}</p>`;
+  const w = list.filter(x => x[3] > x[4]).length, dr = list.filter(x => x[3] === x[4]).length, l = list.length - w - dr;
+  const row = (x, n) => { const home = x[2] ? kName : oName, away = x[2] ? oName : kName, sc = x[2] ? x[3] + "–" + x[4] : x[4] + "–" + x[3], r = x[3] > x[4] ? "V" : x[3] < x[4] ? "T" : "U";
+    return `<li${n >= 10 ? " hidden" : ""}><span class="hd">${esc(new Date(x[0].slice(0, 10) + "T12:00:00Z").toLocaleDateString(LOCALE[LANG], { day: "numeric", month: "short", year: "numeric" }))}<small>${esc(fxComp(x[5], k.c))}</small></span><span class="hm">${esc(home)}</span><b class="hs ${RES[r]}">${esc(sc)}</b><span class="ha">${esc(away)}</span></li>`; };
+  return `<div class="h2hsum"><div><b>${w}</b><small>${esc(kName)}</small></div><div><b>${dr}</b><small>${t("Uavgjort")}</small></div><div><b>${l}</b><small>${esc(oName)}</small></div></div>
+    <ul class="h2hl">${list.map(row).join("")}</ul>${list.length > 10 ? `<button type="button" class="mopen h2hmore">${t("Vis alle {n}", { n: list.length })}</button>` : ""}`;
+}
+document.addEventListener("click", e => { const b = e.target.closest(".h2hmore"); if (!b) return; b.previousElementSibling.querySelectorAll("li[hidden]").forEach(x => x.hidden = false); b.remove(); });
 async function openMatch(k, mid, keep) {
   curMatch = { k, mid };
   // Spilt kamp (fra FIXTURES), eller kamp som snart starter / pågår (fra live.json, 75 min før til 4 t etter avspark)
@@ -6824,11 +6877,13 @@ async function openMatch(k, mid, keep) {
   const lu = (j && j.lu) || (X && X.lu), ko = (j && j.ko) || (X && X.ko) || (m && m[0] + "T12:00:00Z");
   const luHtml = lu ? lineupHtml(lu, names, !m, j ? j.ev : []) : !m ? `<p class="mload">${t("Lagoppstillingen kommer omtrent en time før avspark.")}</p>` : "";
   const wall = wallState(ko, !!lu), wallPart = wall === "gone" ? "" : wallHtml;
-  if (!j) { if (put(shell(null, `${m ? `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>` : ""}${luHtml}`, wallPart)) && wallPart) matchWall(mid, wall); return; }
+  const h2 = k.sport === "Fotball" ? await h2hData(k, mid, oppName) : [], kN = k.n, oN = opp ? opp.n : oppName;
+  const h2Part = h2.length ? `<section class="mh2h"><h3>${t("Innbyrdes")}</h3>${h2hHtml(k, h2, kN, oN)}</section>` : "";
+  if (!j) { if (put(shell(null, `${m ? `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>` : ""}${luHtml}${h2Part}`, wallPart)) && wallPart) matchWall(mid, wall); return; }
   let ht = [0, 0], sc = [0, 0];
   const evs = j.ev.filter(e => { if (e[2] === "ht") { ht = sc.slice(); return false; } if (e[5]) sc = e[5]; return true; });
   const ico = { g: "⚽", pen: "⚽", own: "⚽", y: "🟨", r: "🟥" };
-  const evHtml = evs.length ? `<ul class="mev">${evs.map(e => `<li class="${e[1] ? "a" : "h"}"><span class="mm">${esc(e[0])}'</span><span class="mi">${ico[e[2]] || ""}</span><span class="mp">${esc(e[3])}${e[2] === "pen" ? ` (${t("straffe")})` : e[2] === "own" ? ` (${t("selvmål")})` : ""}${e[4] ? `<small>${t("Målgivende")}: ${esc(e[4])}</small>` : ""}</span></li>`).join("")}</ul>` : "";
+  const evHtml = evs.length ? `<ul class="mev">${evs.map(e => `<li class="${e[1] ? "a" : "h"}"><span class="mm">${esc(e[0])}'</span><span class="mi${e[2] === "own" ? " og" : ""}"${e[2] === "own" ? ` title="${esc(t("Selvmål"))}"` : ""}>${ico[e[2]] || ""}</span><span class="mp">${esc(e[3])}${e[2] === "pen" ? ` (${t("straffe")})` : e[2] === "own" ? ` <em class="ogtag">${t("Selvmål")}</em>` : ""}${e[4] ? `<small>${t("Målgivende")}: ${esc(e[4])}</small>` : ""}</span></li>`).join("")}</ul>` : "";
   // Statistikk for hele kampen, 1. omgang eller 2. omgang (Noah 2026-10-29)
   const stRows = st => `<div class="mst">${st.map(([key, a, b]) => { const x = stNum(a), y = stNum(b), sum = x + y || 1;
     return `<div class="mrow"><span class="mv">${esc(a)}${key === "poss" ? "%" : ""}</span><span class="ml">${t(ST_LABEL[key] || key)}</span><span class="mv">${esc(b)}${key === "poss" ? "%" : ""}</span>
@@ -6839,11 +6894,14 @@ async function openMatch(k, mid, keep) {
     ${pers.map(([p], n) => `<div class="mperp" data-pp="${p}"${n ? " hidden" : ""}>${stRows(j[p])}</div>`).join("")}`;
   const facts = [ht.join("–") && j.ev.some(e => e[2] === "ht") ? t("Pause") + " " + ht.join("–") : "", j.v, j.ref && t("Dommer") + ": " + j.ref, j.att && t("Tilskuere") + ": " + Number(j.att).toLocaleString(LOCALE[LANG])].filter(Boolean);
   // Faner (Noah 2026-10-28): Mål og kort, Lagoppstilling og Statistikk, så man går rett dit
-  const goals = evs.filter(e => ["g", "pen", "own"].includes(e[2])), scorers = [0, 1].map(i => goals.filter(e => e[1] === i).map(e => esc(e[3].split(" ").slice(-1)[0]) + " " + esc(e[0]) + "'").join(", "));
+  // Selvmål er en egen kategori (Noah 2026-10-31): ikke blant målscorerne, men på en egen linje
+  const goals = evs.filter(e => ["g", "pen"].includes(e[2])), scorers = [0, 1].map(i => goals.filter(e => e[1] === i).map(e => esc(e[3].split(" ").slice(-1)[0]) + " " + esc(e[0]) + "'").join(", "));
+  const ogs = [0, 1].map(i => evs.filter(e => e[2] === "own" && e[1] === i).map(e => esc(e[3].split(" ").slice(-1)[0]) + " " + esc(e[0]) + "'").join(", "));
   const reds = [0, 1].map(i => evs.filter(e => e[2] === "r" && e[1] === i).map(e => esc(e[3].split(" ").slice(-1)[0]) + " " + esc(e[0]) + "'").join(", "));
   const sumHtml = (goals.length ? `<div class="mscorers"><span>${scorers[0]}</span><i>⚽</i><span>${scorers[1]}</span></div>` : "") +
+    (ogs[0] || ogs[1] ? `<div class="mscorers og"><span>${ogs[0]}</span><i title="${esc(t("Selvmål"))}">${t("SM")}</i><span>${ogs[1]}</span></div>` : "") +
     (reds[0] || reds[1] ? `<div class="mscorers red"><span>${reds[0]}</span><i>🟥</i><span>${reds[1]}</span></div>` : "");
-  const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml]].filter(Boolean);
+  const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml], h2.length ? ["h2", t("Innbyrdes"), h2hHtml(k, h2, kN, oN)] : null].filter(Boolean);
   const first = evs.length || !lu ? "ev" : "lu";
   const full = put(shell(j, `${sumHtml}${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}
     <div class="mtabs seg" role="tablist">${panes.map(([id, label]) => `<button type="button" class="chip" role="tab" data-mt="${id}" aria-selected="${id === first}">${label}</button>`).join("")}</div>
