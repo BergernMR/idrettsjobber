@@ -1,7 +1,8 @@
 # Lagoppstilling fra FotMob sin matchDetails, i kort form (brukes av match_stats.py og live.py).
 # [{"f": formasjon, "s": [[draktnr, navn, x, y, bytter], …] startellever, "b": [[draktnr, navn, byttet inn-minutt, byttet ut-minutt], …], "c": trener}, borte]
 # x og y er plassering på banen (0–1), y = 0 ved eget mål.
-# bytter: hvem som tok plassen, i rekkefølge: [[minutt, draktnr, navn], …] (tom hvis spilleren ble stående hele kampen)
+# bytter: hvem som tok plassen, i rekkefølge: [[minutt, draktnr, navn, id], …] (tom hvis spilleren ble stående hele kampen)
+# Siste felt i hver spiller er FotMob-id-en, som gir spillerbildet (Noah 2026-10-31)
 def lineup(d):
     content = (d or {}).get("content") or {}
     l = content.get("lineup") or {}
@@ -24,16 +25,16 @@ def lineup(d):
             while cur in swaps and cur not in seen:
                 seen.add(cur); nid, tmin = swaps[cur]; y = who.get(nid)
                 if not y: break
-                out.append([tmin, str(y.get("shirtNumber") or ""), y.get("name") or ""]); cur = nid
+                out.append([tmin, str(y.get("shirtNumber") or ""), y.get("name") or "", y.get("id")]); cur = nid
             return out
         def p(x):
             vl = x.get("verticalLayout") or {}
-            return [str(x.get("shirtNumber") or ""), x.get("name") or "", round(vl.get("x", .5), 3), round(vl.get("y", .5), 3), chain(x)]
+            return [str(x.get("shirtNumber") or ""), x.get("name") or "", round(vl.get("x", .5), 3), round(vl.get("y", .5), 3), chain(x), x.get("id")]
         subs = []
         for x in tm.get("subs") or []:
             ev = (x.get("performance") or {}).get("substitutionEvents") or []
             subs.append([str(x.get("shirtNumber") or ""), x.get("name") or "", next((e.get("time") for e in ev if e.get("type") == "subIn"), None),
-                         next((e.get("time") for e in ev if e.get("type") == "subOut"), None)])
+                         next((e.get("time") for e in ev if e.get("type") == "subOut"), None), x.get("id")])
         coach = tm.get("coach")
         out.append({"f": tm.get("formation") or "", "s": [p(x) for x in st], "b": subs, "c": coach.get("name") if isinstance(coach, dict) else None})
     return out

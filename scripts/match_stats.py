@@ -22,7 +22,7 @@ def compact(d):
     if not st.get("finished"): return None
     out = {"t": [x["name"] for x in h["teams"]], "s": [x["score"] for x in h["teams"]], "ko": st.get("utcTime")}
     lu = lineup(d)
-    if lu: out["lu"] = lu
+    if lu: out["lu"] = lu; out["pv"] = 2
     ib = (c.get("matchFacts") or {}).get("infoBox") or {}
     if ib.get("Stadium"): out["v"] = ib["Stadium"].get("name")
     if ib.get("Referee"): out["ref"] = ib["Referee"].get("text")
@@ -33,7 +33,11 @@ def compact(d):
 have = {f[:-5] for f in os.listdir(DIR) if f.endswith(".json")}
 # Filer fra før lagoppstilling, avsparkstid og omgangsstatistikk kom med (uten "ko" eller "st1") hentes på nytt, maks MAX_OLD per kjøring
 MAX_OLD = int(os.environ.get("MAX_OLD", "200"))
-old = sorted(m for m in have & ids if not all(x in open(os.path.join(DIR, m + ".json"), encoding="utf-8").read() for x in ('"ko"', '"st1"')))[:MAX_OLD]
+# Filer med lagoppstilling uten spiller-id-er ("pv") hentes også på nytt, så spillerbildene kommer med
+def stale(m):
+    t = open(os.path.join(DIR, m + ".json"), encoding="utf-8").read()
+    return not all(x in t for x in ('"ko"', '"st1"')) or ('"lu"' in t and '"pv"' not in t)
+old = sorted(m for m in have & ids if stale(m))[:MAX_OLD]
 new = 0
 for mid in sorted(ids - have) + old:
     d = fetch(f"https://www.fotmob.com/api/data/matchDetails?matchId={mid}"); time.sleep(0.6)
