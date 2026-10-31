@@ -398,6 +398,29 @@ a.item { color: inherit; text-decoration: none; grid-template-columns: 72px 1fr 
 .mwform button:disabled { opacity: .6; }
 .mwlogin { width: 100%; }
 .mwmsg { color: var(--urgent, #e05252); font-size: 13px; }
+/* Diskusjonen (Noah 2026-10-31: «gjør denne delen litt finere») */
+.mwtop { display: flex; align-items: center; gap: 10px; }
+.mwico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 12px; background: var(--accent, #1f7a55); flex: none; }
+.mwico svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; stroke-linejoin: round; }
+.mwcount { margin-left: auto; font-size: 12.5px; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
+.mwlist .mwempty { display: grid; justify-items: center; gap: 4px; padding: 28px 12px; text-align: center; }
+.mwempty span { font-size: 34px; line-height: 1; margin-bottom: 6px; }
+.mwempty b { color: var(--fg); font-size: 15.5px; }
+.mwempty small { color: var(--muted); font-size: 13.5px; max-width: 260px; }
+.mwform { position: relative; display: block; }
+.mwform textarea { width: 100%; box-sizing: border-box; padding: 13px 58px 13px 16px; border-radius: 22px; background: var(--surface); min-height: 52px; transition: border-color .15s, box-shadow .15s; }
+.mwform textarea:focus { outline: none; border-color: var(--accent, #1f7a55); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent, #1f7a55) 20%, transparent); }
+.mwform button { position: absolute; right: 8px; bottom: 8px; width: 38px; height: 38px; padding: 0; display: grid; place-items: center; }
+.mwform button svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.mwlogin { padding: 13px 18px; }
+@media (min-width: 980px) {
+  .mcard.haswall .mwall { border-left: 0; padding: 20px; border-radius: 22px; background: var(--surface-2); max-height: calc(min(88vh, 1000px) - 64px); min-height: 420px; gap: 14px; }
+  .mcard.haswall .mwlist li > div { background: var(--surface); }
+  .mcard.haswall .mwlist li.me > div { background: color-mix(in srgb, var(--accent, #1f7a55) 16%, var(--surface)); }
+  .mcard.haswall .mwlist { align-content: start; }
+  .mcard.haswall .mwlist:has(.mwempty) { align-content: center; }
+  .mcard.haswall .mwall { height: calc(min(88vh, 1000px) - 64px); }
+}
 .mev { list-style: none; margin: 0; padding: 10px 0; display: grid; gap: 6px; border-block: 1px solid var(--line); }
 .mev li { display: flex; gap: 8px; align-items: baseline; font-size: 14px; }
 .mev li.a { flex-direction: row-reverse; text-align: right; }
@@ -2535,6 +2558,9 @@ const I18N = {
 "Ingen tidligere kamper mellom lagene.": ["Inga tidigare matcher mellan lagen.","Ingen tidligere kampe mellem holdene.","Joukkueilla ei ole aiempia otteluita.","Engir fyrri leikir milli liðanna.","No previous matches between the teams."],
 "Selvmål": ["Självmål","Selvmål","Oma maali","Sjálfsmark","Own goal"],
 "SM": ["SM","SM","OM","SJM","OG"],
+"Ingen har skrevet noe ennå.": ["Ingen har skrivit något ännu.","Ingen har skrevet noget endnu.","Kukaan ei ole vielä kirjoittanut mitään.","Enginn hefur skrifað neitt enn.","No one has written anything yet."],
+"Bli den første til å si hva du mener om kampen!": ["Bli först med att säga vad du tycker om matchen!","Bliv den første til at sige, hvad du mener om kampen!","Kerro ensimmäisenä, mitä mieltä olet ottelusta!","Vertu fyrst/ur til að segja hvað þér finnst um leikinn!","Be the first to say what you think of the match!"],
+"Saker om lagene fra dagene rundt kampen, fra lokalaviser og andre medier. Saker merket med lås kan kreve abonnement hos avisen.": ["Artiklar om lagen från dagarna kring matchen, från lokaltidningar och andra medier. Artiklar med lås kan kräva prenumeration.","Artikler om holdene fra dagene omkring kampen, fra lokalaviser og andre medier. Artikler med lås kan kræve abonnement.","Juttuja joukkueista ottelun ympäriltä paikallislehdistä ja muista medioista. Lukolla merkityt voivat vaatia tilauksen.","Fréttir af liðunum dagana í kringum leikinn, úr staðarblöðum og öðrum miðlum. Fréttir með lás geta krafist áskriftar.","Stories about the teams from the days around the match, from local papers and other media. Stories with a lock may need a subscription."],
 "Til deg": ["För dig","Til dig","Sinulle","Fyrir þig","For you"],
 "Tilpass": ["Anpassa","Tilpas","Muokkaa","Aðlaga","Customise"],
 "Dine klubber": ["Dina klubbar","Dine klubber","Seurasi","Félögin þín","Your clubs"],
@@ -6838,6 +6864,22 @@ function h2hHtml(k, list, kName, oName) {
     <ul class="h2hl">${list.map(row).join("")}</ul>${list.length > 10 ? `<button type="button" class="mopen h2hmore">${t("Vis alle {n}", { n: list.length })}</button>` : ""}`;
 }
 document.addEventListener("click", e => { const b = e.target.closest(".h2hmore"); if (!b) return; b.previousElementSibling.querySelectorAll("li[hidden]").forEach(x => x.hidden = false); b.remove(); });
+// Nyheter om kampen (Noah 2026-10-31): saker om begge lagene fra dagene rundt kampen som nevner motstanderen eller selve kampen
+const MATCH_WORDS = /\b(kamp|kampen|kampens|seier|seieren|tap|tapet|tapte|vant|uavgjort|scoret|scoring|mål|straffe|cupen|finale|semifinale|kvartfinale|avspark|derby|oppgjør|match|matchen|vann|förlust|kampe|sejr|ottelu|leikur)\b/i;
+const nameKeys = x => { if (!x) return []; const w = String(x.n || x).split(/[\s/-]+/).filter(p => p.length >= 4 && !/^(fotball|fotballklubb|ballklubb|idrettslag|kvinner)$/i.test(p)); return w.map(p => p.toLowerCase()); };
+function matchNews(k, opp, oppName, ko) {
+  const t0 = Date.parse(ko), from = new Date(t0 - 3 * 864e5).toISOString().slice(0, 10), to = new Date(t0 + 2 * 864e5).toISOString().slice(0, 10), seen = new Set();
+  const keysOf = c => c === k ? nameKeys(opp || oppName) : nameKeys(k);
+  const day0 = new Date(t0 - 864e5).toISOString().slice(0, 10), day1 = new Date(t0 + 864e5).toISOString().slice(0, 10), mine = new Set([...nameKeys(k), ...nameKeys(opp || oppName)]);
+  const others = [...new Set(FAN.filter(x => x.sport === k.sport && x.c === k.c && x !== k && x !== opp).flatMap(nameKeys))].filter(w => w.length >= 5 && !mine.has(w));
+  return [[k, NEWS.clubs[k.id] || []], [opp, opp ? NEWS.clubs[opp.id] || [] : []]].flatMap(([c, ns]) => ns.filter(n => {
+    if (!n[0] || n[0] < from || n[0] > to || seen.has(n[2])) return false;
+    const tl = String(n[1]).toLowerCase(), named = keysOf(c).some(w => tl.includes(w));
+    // Saker om en annen kamp (nevner et annet lag i samme liga-land) tas ikke med
+    const other = !named && others.some(w => new RegExp(`(^|[^a-zæøåäö])${w}`).test(tl));
+    const ok = named || (!other && n[0] >= day0 && n[0] <= day1 && MATCH_WORDS.test(n[1]));
+    if (ok) seen.add(n[2]); return ok; })).sort((a, b) => (b[0] || "").localeCompare(a[0] || ""));
+}
 async function openMatch(k, mid, keep) {
   curMatch = { k, mid };
   // Spilt kamp (fra FIXTURES), eller kamp som snart starter / pågår (fra live.json, 75 min før til 4 t etter avspark)
@@ -6878,7 +6920,8 @@ async function openMatch(k, mid, keep) {
   const luHtml = lu ? lineupHtml(lu, names, !m, j ? j.ev : []) : !m ? `<p class="mload">${t("Lagoppstillingen kommer omtrent en time før avspark.")}</p>` : "";
   const wall = wallState(ko, !!lu), wallPart = wall === "gone" ? "" : wallHtml;
   const h2 = k.sport === "Fotball" ? await h2hData(k, mid, oppName) : [], kN = k.n, oN = opp ? opp.n : oppName;
-  const h2Part = h2.length ? `<section class="mh2h"><h3>${"H2H"}</h3>${h2hHtml(k, h2, kN, oN)}</section>` : "";
+  const mn = matchNews(k, opp, oppName, ko), mnHtml = `<ul class="news">${mn.slice(0, 12).map(newsItem).join("")}</ul><p class="s-note">${t("Saker om lagene fra dagene rundt kampen, fra lokalaviser og andre medier. Saker merket med lås kan kreve abonnement hos avisen.")}</p>`;
+  const h2Part = (mn.length ? `<section class="mh2h"><h3>${t("Nyheter")}</h3>${mnHtml}</section>` : "") + (h2.length ? `<section class="mh2h"><h3>${"H2H"}</h3>${h2hHtml(k, h2, kN, oN)}</section>` : "");
   if (!j) { if (put(shell(null, `${m ? `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>` : ""}${luHtml}${h2Part}`, wallPart)) && wallPart) matchWall(mid, wall); return; }
   let ht = [0, 0], sc = [0, 0];
   const evs = j.ev.filter(e => { if (e[2] === "ht") { ht = sc.slice(); return false; } if (e[5]) sc = e[5]; return true; });
@@ -6901,7 +6944,7 @@ async function openMatch(k, mid, keep) {
   const sumHtml = (goals.length ? `<div class="mscorers"><span>${scorers[0]}</span><i>⚽</i><span>${scorers[1]}</span></div>` : "") +
     (ogs[0] || ogs[1] ? `<div class="mscorers og"><span>${ogs[0]}</span><i title="${esc(t("Selvmål"))}">${t("SM")}</i><span>${ogs[1]}</span></div>` : "") +
     (reds[0] || reds[1] ? `<div class="mscorers red"><span>${reds[0]}</span><i>🟥</i><span>${reds[1]}</span></div>` : "");
-  const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml], h2.length ? ["h2", "H2H", h2hHtml(k, h2, kN, oN)] : null].filter(Boolean);
+  const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml], mn.length ? ["nw", t("Nyheter"), mnHtml] : null, h2.length ? ["h2", "H2H", h2hHtml(k, h2, kN, oN)] : null].filter(Boolean);
   const first = evs.length || !lu ? "ev" : "lu";
   const full = put(shell(j, `${sumHtml}${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}
     <div class="mtabs seg" role="tablist">${panes.map(([id, label]) => `<button type="button" class="chip" role="tab" data-mt="${id}" aria-selected="${id === first}">${label}</button>`).join("")}</div>
@@ -6951,7 +6994,7 @@ function lineupHtml(lu, names, open, ev = []) {
 document.addEventListener("click", e => { const b = e.target.closest(".luview [data-v]"); if (!b) return; const box = b.closest(".mlu");
   box.querySelectorAll(".luview [data-v]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); box.querySelector(".pitch").dataset.v = b.dataset.v; });
 // Diskusjonsvegg under hver kamp: kommentarer i databasen (match_comments), hentes på nytt hvert 20. sekund mens kortet er åpent
-const wallHtml = `<section class="mwall" aria-labelledby="mwH"><h3 id="mwH"></h3><ul class="mwlist" id="mwList"><li class="mwnone">…</li></ul><div id="mwForm"></div></section>`;
+const wallHtml = `<section class="mwall" aria-labelledby="mwH"><div class="mwtop"><span class="mwico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12z"/></svg></span><h3 id="mwH"></h3><span class="mwcount" id="mwCount" hidden></span></div><ul class="mwlist" id="mwList"><li class="mwnone">…</li></ul><div id="mwForm"></div></section>`;
 let wallTimer = 0;
 const agoText = iso => { const s = (Date.now() - new Date(iso)) / 1000;
   return s < 60 ? t("nå") : s < 3600 ? t("{n} min siden", { n: Math.floor(s / 60) }) : s < 86400 ? t("{n} t siden", { n: Math.floor(s / 3600) }) : fxDate(iso.slice(0, 10)); };
@@ -6966,12 +7009,13 @@ async function matchWall(mid, state) {
     const r = await sb.rpc("match_comments_list", { mid: +mid }); if (r.error) return;
     const cs = r.data || [], me = authUser && authUser.id, stick = list.scrollTop + list.clientHeight >= list.scrollHeight - 8;
     list.innerHTML = cs.length ? cs.map(c => `<li${c.user_id === me ? ' class="me"' : ""}>${avaHtml(c)}<div><p class="mwh"><b>${esc(c.username)}${ownerStar(c.user_id)}</b><small>${esc(agoText(c.created_at))}</small>${me && (c.user_id === me || me === OWNER_ID) ? `<button type="button" class="mwdel" data-del="${c.id}" aria-label="${t("Slett")}" title="${t("Slett")}">×</button>` : ""}</p><p class="mwb">${esc(c.body)}</p></div></li>`).join("")
-      : `<li class="mwnone">${t("Ingen har skrevet noe ennå. Bli den første!")}</li>`;
+      : `<li class="mwnone mwempty"><span aria-hidden="true">💬</span><b>${t("Ingen har skrevet noe ennå.")}</b><small>${t("Bli den første til å si hva du mener om kampen!")}</small></li>`;
+    const cnt = $("mwCount"); if (cnt) { cnt.hidden = !cs.length; cnt.textContent = cs.length; }
     if (stick) list.scrollTop = list.scrollHeight;
     list.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => { if (!confirm(t("Slette kommentaren?"))) return; await sb.from("match_comments").delete().eq("id", +b.dataset.del); draw(); });
   };
   if (authUser) {
-    form.innerHTML = `<form class="mwform" id="mwF"><textarea id="mwIn" rows="2" maxlength="500" aria-label="${t("Skriv en kommentar")}" placeholder="${t("Hva synes du om kampen?")}" required></textarea><button type="submit">${t("Send")}</button></form><small class="mwmsg" id="mwMsg" aria-live="polite"></small>`;
+    form.innerHTML = `<form class="mwform" id="mwF"><textarea id="mwIn" rows="2" maxlength="500" aria-label="${t("Skriv en kommentar")}" placeholder="${t("Hva synes du om kampen?")}" required></textarea><button type="submit" aria-label="${t("Send")}" title="${t("Send")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/></svg></button></form><small class="mwmsg" id="mwMsg" aria-live="polite"></small>`;
     const f = $("mwF"), inp = $("mwIn"), msg = $("mwMsg");
     inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); f.requestSubmit(); } });
     f.onsubmit = async e => { e.preventDefault(); const body = inp.value.trim(); if (!body) return;
@@ -8649,7 +8693,7 @@ async function openChat(u) {
   clearInterval(chatTimer); curSheet = () => openChat(u);
   $("sheetBody").innerHTML = sheetTop(`<button type="button" class="u-msg" id="chatWho" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px">${avaHtml(u)}${esc(u.username)}</button>`, `<a href="#" id="chatBack" style="color:inherit">← ${t("Meldinger")}</a>`)
     + `<div class="sheet-body"><div class="chat" id="chat"><p class="mload">${t("Vent litt …")}</p></div>
-      <form class="chatform" id="chatForm"><textarea id="chatIn" rows="1" maxlength="1000" placeholder="${t("Skriv en melding …")}" aria-label="${t("Skriv en melding …")}"></textarea><button type="submit">${t("Send")}</button></form></div>`;
+      <form class="chatform" id="chatForm"><textarea id="chatIn" rows="1" maxlength="1000" placeholder="${t("Skriv en melding …")}" aria-label="${t("Skriv en melding …")}"></textarea><button type="submit" aria-label="${t("Send")}" title="${t("Send")}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/></svg></button></form></div>`;
   showSheet();
   $("chatBack").onclick = e => { e.preventDefault(); openInbox(); };
   $("chatWho").onclick = () => openProfile(u);
