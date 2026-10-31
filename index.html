@@ -6878,7 +6878,7 @@ async function openMatch(k, mid, keep) {
   const luHtml = lu ? lineupHtml(lu, names, !m, j ? j.ev : []) : !m ? `<p class="mload">${t("Lagoppstillingen kommer omtrent en time før avspark.")}</p>` : "";
   const wall = wallState(ko, !!lu), wallPart = wall === "gone" ? "" : wallHtml;
   const h2 = k.sport === "Fotball" ? await h2hData(k, mid, oppName) : [], kN = k.n, oN = opp ? opp.n : oppName;
-  const h2Part = h2.length ? `<section class="mh2h"><h3>${t("Innbyrdes")}</h3>${h2hHtml(k, h2, kN, oN)}</section>` : "";
+  const h2Part = h2.length ? `<section class="mh2h"><h3>${"H2H"}</h3>${h2hHtml(k, h2, kN, oN)}</section>` : "";
   if (!j) { if (put(shell(null, `${m ? `<p class="mload">${t("Ingen statistikk for denne kampen ennå.")}</p>` : ""}${luHtml}${h2Part}`, wallPart)) && wallPart) matchWall(mid, wall); return; }
   let ht = [0, 0], sc = [0, 0];
   const evs = j.ev.filter(e => { if (e[2] === "ht") { ht = sc.slice(); return false; } if (e[5]) sc = e[5]; return true; });
@@ -6901,7 +6901,7 @@ async function openMatch(k, mid, keep) {
   const sumHtml = (goals.length ? `<div class="mscorers"><span>${scorers[0]}</span><i>⚽</i><span>${scorers[1]}</span></div>` : "") +
     (ogs[0] || ogs[1] ? `<div class="mscorers og"><span>${ogs[0]}</span><i title="${esc(t("Selvmål"))}">${t("SM")}</i><span>${ogs[1]}</span></div>` : "") +
     (reds[0] || reds[1] ? `<div class="mscorers red"><span>${reds[0]}</span><i>🟥</i><span>${reds[1]}</span></div>` : "");
-  const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml], h2.length ? ["h2", t("Innbyrdes"), h2hHtml(k, h2, kN, oN)] : null].filter(Boolean);
+  const panes = [["ev", t("Mål og kort"), evHtml || `<p class="mload">${t("Ingen mål eller kort ennå.")}</p>`], lu ? ["lu", t("Lagoppstilling"), luHtml] : null, ["st", t("Statistikk"), stHtml], h2.length ? ["h2", "H2H", h2hHtml(k, h2, kN, oN)] : null].filter(Boolean);
   const first = evs.length || !lu ? "ev" : "lu";
   const full = put(shell(j, `${sumHtml}${facts.length ? `<p class="mfacts">${facts.map(esc).join(" · ")}</p>` : ""}
     <div class="mtabs seg" role="tablist">${panes.map(([id, label]) => `<button type="button" class="chip" role="tab" data-mt="${id}" aria-selected="${id === first}">${label}</button>`).join("")}</div>
