@@ -96,6 +96,10 @@ for k in fan:
     lc = COMP.get(DIV_LEAGUE.get((k["div"] or "").split(", ")[0]))
     lf = [p for p in played if p[5] == lc][:5]
     if lf and lf != played[:5]: e["lf"] = lf
+    # «Neste» i tabellen skal også bare være seriekampen (Noah 2026-10-31); null når laget ikke har flere seriekamper
+    if upcoming and lc:
+        ln = next((u[1] for u in sorted(upcoming) if u[1][3] == lc), None)
+        if ln != e["n"]: e["nf"] = ln
     if len(e) > 2: out[k["id"]] = e
 # Andre lagidretter fra TheSportsDB
 TS = json.load(open(os.path.join(os.path.dirname(__file__), "tsdb_teams.json")))
