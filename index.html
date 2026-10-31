@@ -1789,6 +1789,32 @@ body.home .hub { margin-top: 0; }
 .pitch .lcard.r { background: #d92d20; }
 .mbench .lcard { display: inline-block; width: 8px; height: 11px; border-radius: 1.5px; background: #fdb022; margin-left: 5px; vertical-align: -1px; }
 .mbench .lcard.r { background: #d92d20; }
+/* Større spillerikoner med bilde (Noah 2026-10-31) */
+.lp { width: 86px; gap: 3px; }
+.lp i { width: 34px; height: 34px; font-size: 14px; position: relative; overflow: visible !important; }
+.lp i.ph { background: #e9efe9; box-shadow: 0 0 0 2.5px #fff, 0 2px 6px rgb(0 0 0 / .4); }
+.lp.aw i.ph { box-shadow: 0 0 0 2.5px #2f5fb3, 0 2px 6px rgb(0 0 0 / .4); }
+.lp i.ph img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: top; }
+.lp i em { position: absolute; z-index: 3; left: -7px; bottom: -4px; min-width: 17px; height: 17px; padding: 0 3px; box-sizing: border-box; border-radius: 9px; display: grid; place-items: center; font-style: normal; font-size: 10px; font-weight: 800; background: #fff; color: #14322a; box-shadow: 0 1px 2px rgb(0 0 0 / .4); }
+.lp.aw i em { background: #2f5fb3; color: #fff; }
+.lp small { font-size: 12px; font-weight: 600; }
+.pitch .lgoal { font-size: 17px; top: -13px; left: -20px; letter-spacing: -4px; }
+.pitch .lcard { width: 10px; height: 14px; right: -11px; }
+.pitch .lsub { font-size: 10.5px; top: -11px; right: -20px; }
+.mbench .bimg { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; object-position: top; vertical-align: middle; margin-right: 6px; background: var(--surface-2); }
+.mbench li { display: flex; align-items: center; flex-wrap: wrap; gap: 0 2px; }
+@media (min-width: 760px) {
+  .lp { width: 110px; }
+  .lp i { width: 52px; height: 52px; font-size: 17px; }
+  .lp i em { min-width: 21px; height: 21px; font-size: 12px; border-radius: 11px; left: -8px; bottom: -5px; }
+  .lp small { font-size: 14px; }
+  .pitch .lgoal { font-size: 20px; top: -14px; left: -24px; }
+  .pitch .lcard { width: 12px; height: 16px; right: -13px; }
+  .pitch .lsub { font-size: 12px; right: -26px; top: -12px; }
+  .lbcard.mcard .pitch { max-height: 900px; }
+  .lbcard.mcard .mbench { font-size: 15px; }
+  .mbench .bimg { width: 30px; height: 30px; }
+}
 .mscorers.red { color: #d92d20; margin-top: 2px; }
 .mscorers.og { margin-top: 2px; } .mscorers.og i { font-size: 10px; font-weight: 800; color: #fff; background: #d92d20; border-radius: 6px; padding: 1px 5px; align-self: center; }
 .mev .mi.og { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: color-mix(in oklab, #d92d20 18%, transparent); box-shadow: 0 0 0 1.5px #d92d20 inset; }
@@ -6962,6 +6988,8 @@ const wallState = (ko, hasLu) => { const k = Date.parse(ko), now = Date.now();
   if (now > k + 26 * 3600e3) return "gone";
   return hasLu || now >= k - 45 * 60e3 ? "open" : "soon"; };
 // Lagoppstilling på en bane: hjemmelaget nederst, bortelaget øverst. Innbyttere og trenere under.
+// Spillerbilder fra FotMob (Noah 2026-10-31); finnes ikke bildet, vises draktnummeret som før
+const pimg = id => `https://images.fotmob.com/image_resources/playerimages/${encodeURIComponent(id)}.png`;
 function lineupHtml(lu, names, open, ev = []) {
   // Fotball på målscorerne og fotballsko på den som ga målgivende (Noah 2026-10-28)
   // Rødt kort vises med 🟥, gult med 🟨 (Noah 2026-10-28)
@@ -6974,13 +7002,13 @@ function lineupHtml(lu, names, open, ev = []) {
   const subsOf = p => Array.isArray(p[4]) ? p[4] : [];
   const any = lu.some(tm => tm.s.some(p => subsOf(p).length));
   const dot = (p, away, view) => { const x = away ? 100 - p[2] * 100 : p[2] * 100, y = away ? p[3] * 50 : 100 - p[3] * 50, ch = subsOf(p), now = view && ch.length ? ch[ch.length - 1] : null;
-    const nr = now ? now[1] : p[0], nm = now ? now[2] : p[1];
+    const nr = now ? now[1] : p[0], nm = now ? now[2] : p[1], pid = now ? now[3] : p[5];
     const tag = !view && ch.length ? `<b class="lsub out" title="${esc(t("Byttet ut"))}">↓${esc(ch[0][0])}'</b>` : now ? `<b class="lsub in" title="${esc(t("Byttet inn"))}">↑${esc(now[0])}'</b>` : "";
-    return `<span class="lp${away ? " aw" : ""}${view ? " v1" : " v0"}${!view && ch.length ? " gone" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%"><i>${esc(nr)}${tag}${did(nm)}</i><small>${esc(last(nm))}</small></span>`; };
+    return `<span class="lp${away ? " aw" : ""}${view ? " v1" : " v0"}${!view && ch.length ? " gone" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%"><i${pid ? ' class="ph"' : ""}>${pid ? `<img src="${pimg(pid)}" alt="" loading="lazy" onerror="this.remove();this.parentNode.classList.remove('ph')"><em>${esc(nr)}</em>` : esc(nr)}${tag}${did(nm)}</i><small>${esc(last(nm))}</small></span>`; };
   // Hvem innbytteren kom inn for
   const forWho = tm => { const m = {}; tm.s.forEach(p => { let prev = p[1]; subsOf(p).forEach(c => { m[c[2]] = prev; prev = c[2]; }); }); return m; };
   const bench = (tm, i) => { const fw = forWho(tm);
-    return `<div><b>${esc(names[i])}</b>${tm.c ? `<small>${t("Trener")}: ${esc(tm.c)}</small>` : ""}<ul>${tm.b.map(b => `<li><span>${esc(b[0])}</span> ${esc(b[1])}${did(b[1])}${b[2] != null ? ` <em>↑ ${esc(b[2])}'${fw[b[1]] ? ` ${t("for {x}", { x: esc(last(fw[b[1]])) })}` : ""}</em>` : ""}${b[3] != null ? ` <em class="out">↓ ${esc(b[3])}'</em>` : ""}</li>`).join("")}</ul></div>`; };
+    return `<div><b>${esc(names[i])}</b>${tm.c ? `<small>${t("Trener")}: ${esc(tm.c)}</small>` : ""}<ul>${tm.b.map(b => `<li>${b[4] ? `<img class="bimg" src="${pimg(b[4])}" alt="" loading="lazy" onerror="this.remove()">` : ""}<span>${esc(b[0])}</span> ${esc(b[1])}${did(b[1])}${b[2] != null ? ` <em>↑ ${esc(b[2])}'${fw[b[1]] ? ` ${t("for {x}", { x: esc(last(fw[b[1]])) })}` : ""}</em>` : ""}${b[3] != null ? ` <em class="out">↓ ${esc(b[3])}'</em>` : ""}</li>`).join("")}</ul></div>`; };
   const views = v => lu[0].s.map(p => dot(p, false, v)).join("") + lu[1].s.map(p => dot(p, true, v)).join("");
   return `<details class="mlu"${open ? " open" : ""}><summary>${t("Lagoppstilling")}<span>${esc(lu[0].f)} – ${esc(lu[1].f)}</span></summary>
     ${any ? `<div class="luview seg" role="group" aria-label="${t("Lagoppstilling")}"><button type="button" class="chip" data-v="0" aria-pressed="true">${t("Startelleveren")}</button><button type="button" class="chip" data-v="1" aria-pressed="false">${t("Etter bytter")}</button></div>` : ""}
