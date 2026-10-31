@@ -7004,7 +7004,7 @@ function lineupHtml(lu, names, open, ev = []) {
   const dot = (p, away, view) => { const x = away ? 100 - p[2] * 100 : p[2] * 100, y = away ? p[3] * 50 : 100 - p[3] * 50, ch = subsOf(p), now = view && ch.length ? ch[ch.length - 1] : null;
     const nr = now ? now[1] : p[0], nm = now ? now[2] : p[1], pid = now ? now[3] : p[5];
     const tag = !view && ch.length ? `<b class="lsub out" title="${esc(t("Byttet ut"))}">↓${esc(ch[0][0])}'</b>` : now ? `<b class="lsub in" title="${esc(t("Byttet inn"))}">↑${esc(now[0])}'</b>` : "";
-    return `<span class="lp${away ? " aw" : ""}${view ? " v1" : " v0"}${!view && ch.length ? " gone" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%"><i${pid ? ' class="ph"' : ""}>${pid ? `<img src="${pimg(pid)}" alt="" loading="lazy" onerror="this.remove();this.parentNode.classList.remove('ph')"><em>${esc(nr)}</em>` : esc(nr)}${tag}${did(nm)}</i><small>${esc(last(nm))}</small></span>`; };
+    return `<span class="lp${away ? " aw" : ""}${view ? " v1" : " v0"}${!view && ch.length ? " gone" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%"><i${pid ? ' class="ph"' : ""}>${pid ? `<img src="${pimg(pid)}" alt="" loading="lazy" onerror="this.parentNode.classList.remove('ph');this.remove()"><em>${esc(nr)}</em>` : esc(nr)}${tag}${did(nm)}</i><small>${esc(last(nm))}</small></span>`; };
   // Hvem innbytteren kom inn for
   const forWho = tm => { const m = {}; tm.s.forEach(p => { let prev = p[1]; subsOf(p).forEach(c => { m[c[2]] = prev; prev = c[2]; }); }); return m; };
   const bench = (tm, i) => { const fw = forWho(tm);
